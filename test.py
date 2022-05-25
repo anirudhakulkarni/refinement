@@ -1,7 +1,7 @@
 import os
 
 import torch
-from utils import parse_args
+from utils import mkdir_p, parse_args,get_trained_loss
 
 from solvers.runners import test
 from solvers.loss import loss_dict
@@ -12,6 +12,7 @@ from datasets import dataloader_dict, dataset_nclasses_dict, dataset_classname_d
 import numpy as np
 
 import logging
+import json
 
 if __name__ == "__main__":
     
@@ -54,5 +55,35 @@ if __name__ == "__main__":
         auroc['auc']
     ))    
     # save the tpr and fpr
-    auroc_name=args.model+'_'+args.dataset+'_'+args.loss+'_'+strftime("%d-%b", localtime())+"_tpr_fpr.npy"
-    np.save(os.path.join(args.aurocfolder, auroc_name), auroc['fpr'].append(auroc['tpr']))
+    if not os.path.isdir(args.aurocfolder):
+        mkdir_p(args.aurocfolder)
+
+    trained_loss=get_trained_loss(args.checkpoint)
+    auroc_name=args.model+'_'+args.dataset+'_'+trained_loss+'_'+strftime("%d-%b", localtime())+"_tpr_fpr.npy"
+    np.save(os.path.join(args.aurocfolder, auroc_name), np.append(auroc['tpr'],auroc['fpr']))
+
+    # append test_loss, top1, top3, top5, sce_score, ece_score as json object
+    jsonfile=args.resultsfile
+    if not os.path.isfile(jsonfile):
+        with open(jsonfile, 'w') as f:
+            json.dump({}, f)
+    data=[]
+    if os.stat(jsonfile).st_size != 0:
+        data=json.load(open(jsonfile))
+    data.append({
+        "model": args.model,
+        "dataset": args.dataset,
+        "loss": trained_loss,
+        "date": strftime("%d-%b", localtime()),
+        "test_loss": test_loss,
+        "top1": top1,
+        "top3": top3,
+        "top5": top5,
+        "sce_score": sce_score,
+        "ece_score": ece_score,
+        "auroc": auroc['auc']
+    })
+    with open(jsonfile, 'w') as f:
+        json.dump(data, f, indent=4)
+    logging.info("Saved results to {}".format(jsonfile))
+

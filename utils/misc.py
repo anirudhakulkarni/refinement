@@ -13,7 +13,7 @@ import torch.nn as nn
 import torch.nn.init as init
 from torch.autograd import Variable
 
-__all__ = ['get_mean_and_std', 'init_params', 'mkdir_p', 'AverageMeter']
+__all__ = ['get_mean_and_std', 'init_params', 'mkdir_p', 'AverageMeter','get_trained_loss']
 
 
 def get_mean_and_std(dataset):
@@ -55,6 +55,12 @@ def mkdir_p(path):
             pass
         else:
             raise
+
+def get_trained_loss(checkpoint):
+    trained_loss=checkpoint.split('/')[-1].split('.')[0].split('_')[1:]
+    if len(trained_loss)>1:
+        return "_".join(trained_loss)
+    return trained_loss[0]
 
 class AverageMeter(object):
     """Computes and stores the average and current value

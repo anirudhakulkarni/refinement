@@ -134,3 +134,4 @@ checkpoint/
 checkpoints/
 
 *.zip
+aurocs/

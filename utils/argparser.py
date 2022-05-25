@@ -58,5 +58,6 @@ def parse_args():
     parser.add_argument('--prefix', default='', type=str, metavar='PRNAME')
     parser.add_argument('--regularizer', default='l2', type=str, metavar='RNAME')
     parser.add_argument('--patience', default=10, type=int)
+    parser.add_argument('--aurocfolder', default='./auroc/', type=str, metavar='AUFNAME')
     
     return parser.parse_args()

@@ -2,7 +2,7 @@ import os
 
 import torch
 import torch.optim as optim
-
+import torch.nn as nn
 from utils import mkdir_p, parse_args
 from utils import get_lr, save_checkpoint, create_save_path
 
@@ -42,6 +42,9 @@ if __name__ == "__main__":
     # prepare model
     logging.info(f"Using model : {args.model}")
     model = model_dict[args.model](num_classes=num_classes)
+    if torch.cuda.device_count() > 1:
+        print("Let's use", torch.cuda.device_count(), "GPUs!")
+        model = nn.DataParallel(model)
     model.cuda()
 
     # set up dataset
@@ -82,7 +85,7 @@ if __name__ == "__main__":
 
         scheduler.step()
 
-        logging.info("End of epoch {} stats: train_loss : {:.4f} | val_loss : {:.4f} | top1_train : {:.4f} | top1 : {:.4f} | SCE : {:.5f} | ECE : {:.5f} | AUROC : {:s}".format(
+        logging.info("End of epoch {} stats: train_loss : {:.4f} | val_loss : {:.4f} | top1_train : {:.4f} | top1 : {:.4f} | SCE : {:.5f} | ECE : {:.5f} | AUROC : {:5f}".format(
             epoch+1,
             train_loss,
             test_loss,
@@ -90,7 +93,8 @@ if __name__ == "__main__":
             top1,
             sce_score,
             ece_score,
-            "\n".join("{}\t{}".format(k, v) for k, v in auroc.items())
+            auroc["auc"]
+            # "\n".join("{}\t{}".format(k, v) for k, v in auroc.items())
 
         ))
 

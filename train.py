@@ -13,7 +13,7 @@ from models import model_dict
 from datasets import dataloader_dict, dataset_nclasses_dict, dataset_classname_dict
 
 from time import localtime, strftime
-
+import json
 import logging
 
 if __name__ == "__main__":
@@ -118,8 +118,31 @@ if __name__ == "__main__":
                 "top3" : top3,
                 "top5" : top5,
                 "SCE" : sce_score,
-                "ECE" : ece_score
+                "ECE" : ece_score,
+                "AUROC" : auroc["auc"],
+                "epoch" : epoch
             }
+    # save results to train_results.json
+    jsonfile=args.trainresultsfile
+    if not os.path.isfile(jsonfile):
+        with open(jsonfile, 'w') as f:
+            json.dump({}, f)
+    data=[]
+    if os.stat(jsonfile).st_size != 0:
+        data=json.load(open(jsonfile))
+    data.append({
+        "dataset":args.dataset,
+        "model":args.model,
+        "top1":best_acc_stats["top1"],
+        "top3":best_acc_stats["top3"],
+        "top5":best_acc_stats["top5"],
+        "SCE":best_acc_stats["SCE"],
+        "ECE":best_acc_stats["ECE"],
+        "AUROC":best_acc_stats["AUROC"],
+        "epoch":best_acc_stats["epoch"]
+    })
+    with open(jsonfile, 'w') as f:
+        json.dump(data, f)
 
     logging.info("training completed...")
     logging.info("The stats for best trained model on test set are as below:")

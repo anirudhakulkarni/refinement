@@ -60,5 +60,6 @@ def parse_args():
     parser.add_argument('--patience', default=10, type=int)
     parser.add_argument('--aurocfolder', default='./aurocs/', type=str, metavar='AUFNAME')
     parser.add_argument('--resultsfile', default='./results.json', type=str, metavar='RESNAME')
+    parser.add_argument('--trainresultsfile', default='./train_results.json', type=str, metavar='TRESNAME')
     
     return parser.parse_args()

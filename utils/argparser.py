@@ -6,7 +6,7 @@ def parse_args():
     # Datasets
     parser.add_argument('-d', '--dataset', default='cifar10', type=str)
     parser.add_argument('-j', '--workers', default=4, type=int, metavar='N',
-                        help='number of data loading workers (default: 4)')
+                        help='number of data loading workers (default: 8)')
     parser.add_argument('--seed', default=100, type=int,
                         help='seed to use')
     parser.add_argument('--imbalance', default=0.02, type=float,

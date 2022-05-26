@@ -60,7 +60,10 @@ def get_trained_loss(checkpoint):
     trained_loss=checkpoint.split('/')[-1].split('.')[0].split('_')[1:]
     if len(trained_loss)>1:
         return "_".join(trained_loss)
-    return trained_loss[0]
+    try:
+        return trained_loss[0]
+    except:
+        return "unknown"
 
 class AverageMeter(object):
     """Computes and stores the average and current value

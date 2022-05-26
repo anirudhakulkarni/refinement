@@ -3,7 +3,7 @@
 # cross entropy
 python train.py \
 --dataset svhn \
---model densenet121 \
+--model re \
 --schedule-steps 50 70 \
 --epochs 100 \
 --loss cross_entropy

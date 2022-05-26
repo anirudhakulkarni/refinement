@@ -10,7 +10,7 @@ from time import localtime, strftime
 from models import model_dict
 from datasets import dataloader_dict, dataset_nclasses_dict, dataset_classname_dict
 import numpy as np
-
+import torch.nn as nn 
 import logging
 import json
 
@@ -36,6 +36,7 @@ if __name__ == "__main__":
     saved_model_dict = torch.load(args.checkpoint)
 
     model = model_dict[args.model](num_classes=num_classes, alpha=args.alpha)
+    model=nn.DataParallel(model)
     model.load_state_dict(saved_model_dict['state_dict'])
     model.cuda()
 

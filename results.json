@@ -388,5 +388,18 @@
         "sce_score": 0.0016065029388851525,
         "ece_score": 0.005385300541810592,
         "auroc": 0.9280702798594177
+    },
+    {
+        "model": "resnet50_imagenet",
+        "dataset": "imagenet",
+        "loss": "cross_entropy",
+        "date": "26-May",
+        "test_loss": 1.8347473669052123,
+        "top1": 61.95,
+        "top3": 77.31,
+        "top5": 82.95,
+        "sce_score": 0.0021444802658226836,
+        "ece_score": 0.14673682357370854,
+        "auroc": 0.8501378861974866
     }
 ]

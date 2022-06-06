@@ -3,6 +3,7 @@ import torch.nn as nn
 from torch.nn import functional as F
 import torchvision.models as models
 import numpy as np
+np.random.seed(0)
 
 
 class CNN(nn.Module):

@@ -1,3 +1,5 @@
+rsync -avhq --update ./checkpoint/imagenet/ cs5190421@hpc:~/scratch/COD/MDCA-Calibration/checkpoint/imagenet --exclude data 
+
 python3 test.py --model resnet56 --dataset cifar10 --checkpoint checkpoints/cifar10/resnet56_brier_score.pth 
 
 

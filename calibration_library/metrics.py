@@ -2,6 +2,7 @@
 
 import numpy as np
 from scipy.special import softmax
+np.random.seed(0)
 
 class BrierScore():
     def __init__(self) -> None:

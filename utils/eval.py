@@ -2,6 +2,7 @@ __all__ = ['accuracy','auroc']
 import numpy as np
 from scipy.special import softmax
 from sklearn.metrics import roc_curve,roc_auc_score,roc_curve
+np.random.seed(0)
 
 def accuracy(output, target, topk=(1,)):
     """Computes the precision@k for the specified values of k"""

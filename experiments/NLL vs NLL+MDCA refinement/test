@@ -1,0 +1,14 @@
+model, resnet, beta
+resnet32, cifar10, 10.0
+resnet56, svhn, 1
+resnet50_imagenet, imagenet, 20
+
+
+python3 test.py --model resnet32 --dataset cifar10 --checkpoint checkpoint/cifar10/28-May_resnet32_cross_entropy_root/model_best.pth
+python3 test.py --model resnet32 --dataset cifar10 --checkpoint checkpoint/cifar10/28-May_resnet32_NLL+MDCA_beta=10.0_root/model_best.pth
+
+python3 test.py --model resnet56 --dataset svhn --checkpoint checkpoint/svhn/28-May_resnet56_cross_entropy_root/model_best.pth
+python3 test.py --model resnet56 --dataset svhn --checkpoint checkpoint/svhn/28-May_resnet56_NLL+MDCA_beta=1.0_root/model_best.pth
+
+python3 test.py --model resnet50_imagenet --dataset imagenet --checkpoint checkpoint/imagenet/26-May_resnet56_imagenet_cross_entropy/model_best.pth
+python3 test.py --model resnet50_imagenet --dataset imagenet --checkpoint checkpoint/imagenet/27-May_resnet56_imagenet_NLL+MDCA_beta=20.0/model_best.pth

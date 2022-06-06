@@ -6,6 +6,8 @@ import torch.optim as optim
 import torch.nn as nn
 
 from utils import Logger, parse_args
+from utils import mkdir_p, parse_args,get_trained_loss, create_save_path
+from time import localtime, strftime
 
 from solvers.runners import test
 
@@ -13,7 +15,7 @@ from models import model_dict
 from datasets import corrupted_dataloader_dict, dataset_nclasses_dict, dataset_classname_dict, corrupted_dataset_dict
 
 import logging
-
+import json
 if __name__ == "__main__":
     
     args = parse_args()
@@ -54,7 +56,6 @@ if __name__ == "__main__":
     logger = Logger(metric_log_path, resume=os.path.exists(metric_log_path))
 
     logger.set_names(['method', 'test_nll', 'top1', 'top3', 'top5', 'SCE', 'ECE','AUROC'])
-
     # read corruptions
     corruption_list = ["art", "cartoon", "sketch"]
     
@@ -68,7 +69,7 @@ if __name__ == "__main__":
         _, _, testloader = corrupted_dataloader_dict[args.dataset](args, target_type=c_type)
         test_loss, top1, top3, top5, cce_score, ece_score,auroc = test(testloader, model, criterion)
         method_name = c_type
-        logger.append([method_name, test_loss, top1, top3, top5, cce_score, ece_score, auroc])
+        logger.append([method_name, test_loss, top1, top3, top5, cce_score, ece_score, auroc["auc"]])
 
         top1_avg.update(top1)
         top3_avg.update(top3)
@@ -77,4 +78,31 @@ if __name__ == "__main__":
         test_nll_avg.update(test_loss)
         auroc_avg.update(auroc["auc"])
     logger.append(["avg_domains", test_nll_avg.avg, top1_avg.avg, top3_avg.avg, top3_avg.avg, sce_avg.avg, ece_avg.avg,auroc_avg.avg])
+    # create file with json list
+    trained_loss=get_trained_loss(args.checkpoint)
+
+    username=os.getlogin()
+    # append test_loss, top1, top3, top5, sce_score, ece_score, auroc as json object
+    jsonfile=args.resultsfile+"_"+username+".json"
+    if not os.path.isfile(jsonfile):
+        with open(jsonfile, 'w') as f:
+            json.dump([{}], f)
+    data=[]
+    if os.stat(jsonfile).st_size != 0:
+        data=json.load(open(jsonfile))
+    data.append({
+        "model": args.model,
+        "dataset": args.dataset,
+        "loss": trained_loss,
+        "date": strftime("%d-%b", localtime()),
+        "test_loss": test_loss,
+        "top1": top1_avg.avg,
+        "top3": top3_avg.avg,
+        "sce_score": sce_avg.avg,
+        "ece_score": ece_avg.avg,
+        "auroc": auroc_avg.avg
+    })
+    with open(jsonfile, 'w') as f:
+        json.dump(data, f, indent=4)
+    logging.info("Saved results to {}".format(jsonfile))
 

@@ -12,6 +12,7 @@ from torch.autograd import Variable
 
 from scipy.special import lambertw
 import numpy as np
+np.random.seed(0)
 
 
 def get_gamma(p=0.2):

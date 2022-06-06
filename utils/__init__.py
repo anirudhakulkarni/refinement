@@ -4,6 +4,8 @@ from .eval import *
 from .argparser import parse_args
 from .misc import *
 from .earlystopper import EarlyStopping
+from .crl_utils import *
+
 import torch
 import os
 import shutil
@@ -29,6 +31,9 @@ def create_save_path(args):
     if "focal_loss" in args.loss or "FL" in args.loss:
         ans_str += f"_gamma={args.gamma}"
     
+    if "CRL" in args.loss:
+        ans_str += f"_gamma={args.gamma}"
+
     if "LS" in args.loss:
         ans_str += f"_alpha={args.alpha}"
 

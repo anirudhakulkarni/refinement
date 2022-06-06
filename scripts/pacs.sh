@@ -13,6 +13,6 @@ python train.py \
 python experiments/ood_pacs.py \
 --dataset pacs \
 --model resnet_pacs \
---checkpoint checkpoint/pacs/18-Aug_resnet_pacs_cross_entropy/model_best.pth
+--checkpoint checkpoint/pacs/03-Jun_resnet_pacs_cross_entropy_anirudha/model_best.pth
 
 # to train pacs on other methods, refer to scripts/cifar10.sh

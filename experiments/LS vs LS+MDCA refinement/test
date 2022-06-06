@@ -1,0 +1,15 @@
+python3 test.py --model resnet32 --dataset cifar10 --checkpoint checkpoint/cifar10/01-Jun_resnet32_LS_alpha=0.1_anirudha/model_best.pth
+python3 test.py --model resnet32 --dataset cifar10 --checkpoint checkpoint/cifar10/01-Jun_resnet32_LS+MDCA_alpha=0.1_beta=25.0_anirudha/model_best.pth
+
+python3 test.py --model resnet56 --dataset svhn --checkpoint checkpoint/svhn/01-Jun_resnet56_LS_alpha=0.1_anirudha/model_best.pth
+python3 test.py --model resnet56 --dataset svhn --checkpoint checkpoint/svhn/01-Jun_resnet56_LS+MDCA_alpha=0.1_beta=20.0_anirudha/model_best.pth
+python3 test.py --model resnet56 --dataset svhn --checkpoint checkpoint/svhn/01-Jun_resnet56_LS+MDCA_alpha=0.1_beta=1.0_anirudha/model_best.pth
+
+python3 test.py --model resnet50_imagenet --dataset imagenet --checkpoint checkpoint/imagenet/01-Jun_resnet50_imagenet_LS_alpha=0.1_root/model_best.pth
+python3 test.py --model resnet50_imagenet --dataset imagenet --checkpoint checkpoint/imagenet/01-Jun_resnet50_imagenet_LS+MDCA_alpha=0.1_beta=15.0_root/model_best.pth
+python3 test.py --model resnet50_imagenet --dataset imagenet --checkpoint checkpoint/imagenet/01-Jun_resnet50_imagenet_LS+MDCA_alpha=0.1_beta=25.0_root/model_best.pth
+
+
+
+
+

@@ -10,7 +10,7 @@ def parse_args():
     parser.add_argument('--seed', default=100, type=int,
                         help='seed to use')
     parser.add_argument('--imbalance', default=0.02, type=float,
-                        help='Imbalance to use in long tailed CIFAR10/100')
+                        help='Imbalance to use in long tailed CIFAR10/100. 0.02 means 1/0.02=50 imbalance factor')
     parser.add_argument('--delta', default=0.25, type=float,
                         help='delta to use in Huber Loss in MDCA')
     # Optimization options
@@ -59,7 +59,8 @@ def parse_args():
     parser.add_argument('--regularizer', default='l2', type=str, metavar='RNAME')
     parser.add_argument('--patience', default=10, type=int)
     parser.add_argument('--aurocfolder', default='./aurocs/', type=str, metavar='AUFNAME')
-    parser.add_argument('--resultsfile', default='./results.json', type=str, metavar='RESNAME')
-    parser.add_argument('--trainresultsfile', default='./train_results.json', type=str, metavar='TRESNAME')
+    parser.add_argument('--resultsfile', default='./results', type=str, metavar='RESNAME')
+    parser.add_argument('--trainresultsfile', default='./train_results', type=str, metavar='TRESNAME')
+    parser.add_argument('--rank-target', default='softmax', type=str, help='Rank_target name to use [softmax, margin, entropy]')
     
     return parser.parse_args()

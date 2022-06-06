@@ -2,6 +2,7 @@
 # (C) Wei YANG 2017
 import matplotlib.pyplot as plt
 import numpy as np
+np.random.seed(0)
 
 __all__ = ['Logger', 'LoggerMonitor', 'savefig']
 

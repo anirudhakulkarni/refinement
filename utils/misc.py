@@ -57,7 +57,8 @@ def mkdir_p(path):
             raise
 
 def get_trained_loss(checkpoint):
-    trained_loss=checkpoint.split('/')[-1].split('.')[0].split('_')[1:]
+    trained_loss=checkpoint.split('/')[-2]
+    return trained_loss
     if len(trained_loss)>1:
         return "_".join(trained_loss)
     try:

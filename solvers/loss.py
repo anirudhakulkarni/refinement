@@ -4,7 +4,9 @@ import logging
 
 from .mmce import MMCE_weighted
 from .flsd import FocalLossAdaptive
-
+import sys
+sys.path.append("..")
+from utils import crl_utils
 
 # from https://github.com/torrvision/focal_calibration/blob/main/Losses/focal_loss.py
 class FocalLoss(nn.Module):
@@ -26,6 +28,26 @@ class FocalLoss(nn.Module):
         loss = -1 * (1-pt)**self.gamma * logpt
         
         return loss.mean()
+# from https://openreview.net/pdf?id=NJS8kp15zzH
+class InverseFocalLoss(nn.Module):
+    def __init__(self, gamma=0, **kwargs):
+        super(InverseFocalLoss, self).__init__()
+
+        self.gamma = gamma
+        logging.info("using gamma={}".format(gamma))
+
+    def forward(self, input, target):
+
+        target = target.view(-1,1)
+
+        logpt = torch.nn.functional.log_softmax(input, dim=1)
+        logpt = logpt.gather(1,target)
+        logpt = logpt.view(-1)
+        pt = logpt.exp()
+
+        loss = -1 * (1+pt)**self.gamma * logpt
+        
+        return loss.mean()
 
 class CrossEntropy(nn.Module):
     def __init__(self, **kwargs) -> None:
@@ -34,6 +56,71 @@ class CrossEntropy(nn.Module):
 
     def forward(self, input, target):
         return self.criterion(input, target)
+
+class CRL(nn.Module):
+    def __init__(self,arguments,history, **kwargs) -> None:
+        super(CRL, self).__init__()
+        self.args=arguments
+        self.history = history
+        self.criterion = nn.MarginRankingLoss(margin=0.0).cuda()
+
+    def forward(self, logits, targets, idx):
+        if self.args.rank_target == 'softmax':
+            conf = nn.functional.softmax(logits, dim=1)
+            confidence, _ = conf.max(dim=1)
+        # entropy
+        elif self.args.rank_target == 'entropy':
+            if self.args.dataset == 'cifar100':
+                value_for_normalizing = 4.605170
+            else:
+                value_for_normalizing = 2.302585
+            confidence = crl_utils.negative_entropy(logits,
+                                                    normalize=True,
+                                                    max_value=value_for_normalizing)
+        # margin
+        elif self.args.rank_target == 'margin':
+            conf, _ = torch.topk(F.softmax(logits), 2, dim=1)
+            conf[:,0] = conf[:,0] - conf[:,1]
+            confidence = conf[:,0]
+
+        # make input pair
+        rank_input1 = confidence
+        rank_input2 = torch.roll(confidence, -1)
+        idx2 = torch.roll(idx, -1)
+
+        # calc target, margin
+        rank_target, rank_margin = self.history.get_target_margin(idx, idx2)
+        rank_target_nonzero = rank_target.clone()
+        rank_target_nonzero[rank_target_nonzero == 0] = 1
+        rank_input2 = rank_input2 + rank_margin / rank_target_nonzero
+
+        return self.criterion(rank_input1, rank_input2, rank_target)
+
+class ClassficationAndCRL(nn.Module):
+    def __init__(self, arguments,history,**kwargs):
+        super(ClassficationAndCRL, self).__init__()
+        self.history = history
+        self.args = arguments
+        self.classification_loss = nn.CrossEntropyLoss()
+        self.CRL = CRL(arguments,history)
+
+    def forward(self, logits, targets,idx):
+        loss_cls = self.classification_loss(logits, targets)
+        loss_ref = self.CRL(logits, targets,idx)
+        return loss_cls + self.args.gamma * loss_ref
+
+class ClassficationAndCRLAndMDCA(nn.Module):
+    def __init__(self, arguments,history,**kwargs):
+        super(ClassficationAndCRLAndMDCA, self).__init__()
+        self.history = history
+        self.args = arguments
+        self.ClassficationAndCRL = ClassficationAndCRL(arguments,history)
+        self.MDCA = MDCA()
+
+    def forward(self, logits, targets,idx):
+        loss_cal = self.MDCA(logits, targets)
+        loss_ref = self.ClassficationAndCRL(logits, targets,idx)
+        return loss_ref + self.args.beta * loss_cal
 
 class LabelSmoothingLoss(nn.Module):
     def __init__(self, alpha=0.0, dim=-1, **kwargs):
@@ -69,10 +156,10 @@ class MDCA(torch.nn.Module):
         loss /= denom
         return loss
 
+
 class ClassficationAndMDCA(nn.Module):
-    def __init__(self, loss="NLL+MDCA", alpha=0.1, beta=1.0, gamma=1.0, **kwargs):
+    def __init__(self, loss="NLL+CRL", alpha=0.1, beta=1.0, gamma=1.0, **kwargs):
         super(ClassficationAndMDCA, self).__init__()
-        
         self.alpha = alpha
         self.beta = beta
         self.gamma = gamma
@@ -80,6 +167,8 @@ class ClassficationAndMDCA(nn.Module):
             self.classification_loss = nn.CrossEntropyLoss()
         elif "FL" in loss:
             self.classification_loss = FocalLoss(gamma=self.gamma)
+        elif "CRL" in loss:
+            self.classification_loss = CRL(gamma=self.gamma)
         else:
             self.classification_loss = LabelSmoothingLoss(alpha=self.alpha) 
         self.MDCA = MDCA()
@@ -150,5 +239,8 @@ loss_dict = {
     "brier_loss" : BrierScore,
     "NLL+DCA" : DCA,
     "MMCE" : MMCE,
-    "FLSD" : FLSD
+    "FLSD" : FLSD,
+    "IFL" : InverseFocalLoss,
+    "CRL" : ClassficationAndCRL,
+    "CRL+MDCA" : ClassficationAndCRLAndMDCA
 }

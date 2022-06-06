@@ -1,0 +1,2369 @@
+[
+    {
+        "model": "resnet56",
+        "dataset": "svhn",
+        "loss": "NLL+MDCA",
+        "alpha": 5.0,
+        "beta": 25.0,
+        "gamma": 1,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 96.39290104486786,
+        "top3": 99.1279963122311,
+        "top5": 99.56976029502151,
+        "SCE": 0.0032606639920790257,
+        "ECE": 0.013650067142006526,
+        "AUROC": 0.9183555384831049,
+        "epoch": 121
+    },
+    {
+        "model": "resnet32",
+        "dataset": "cifar10",
+        "loss": "focal_loss",
+        "alpha": 5.0,
+        "beta": 10,
+        "gamma": 1.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 92.71,
+        "top3": 99.08,
+        "top5": 99.77,
+        "SCE": 0.004302046671464341,
+        "ECE": 0.01209921912252902,
+        "AUROC": 0.916329279658578,
+        "epoch": 142
+    },
+    {
+        "model": "resnet32",
+        "dataset": "cifar10",
+        "loss": "focal_loss",
+        "alpha": 5.0,
+        "beta": 10,
+        "gamma": 2.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 92.48,
+        "top3": 99.2,
+        "top5": 99.8,
+        "SCE": 0.004996343437607865,
+        "ECE": 0.01912864518761634,
+        "AUROC": 0.9111307275178533,
+        "epoch": 146
+    },
+    {
+        "model": "resnet50_imagenet",
+        "dataset": "imagenet",
+        "loss": "NLL+MDCA",
+        "alpha": 5.0,
+        "beta": 1.0,
+        "gamma": 1,
+        "total_epochs": 100,
+        "scheduler steps": [
+            40,
+            60
+        ],
+        "top1": 62.58,
+        "top3": 78.48,
+        "top5": 83.92,
+        "SCE": 0.0020965300940671,
+        "ECE": 0.13956962224468586,
+        "AUROC": 0.8589918213078493,
+        "epoch": 98
+    },
+    {
+        "model": "resnet56",
+        "dataset": "svhn",
+        "loss": "focal_loss",
+        "alpha": 5.0,
+        "beta": 10,
+        "gamma": 1.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 96.77320221266135,
+        "top3": 99.25860479409957,
+        "top5": 99.67347879532882,
+        "SCE": 0.00771546964317808,
+        "ECE": 0.036273910559269686,
+        "AUROC": 0.9247149038243434,
+        "epoch": 81
+    },
+    {
+        "model": "resnet32",
+        "dataset": "cifar10",
+        "loss": "focal_loss",
+        "alpha": 5.0,
+        "beta": 10,
+        "gamma": 3.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 92.4,
+        "top3": 99.17,
+        "top5": 99.81,
+        "SCE": 0.012184071828431915,
+        "ECE": 0.05737486089020965,
+        "AUROC": 0.8995862525632263,
+        "epoch": 142
+    },
+    {
+        "model": "resnet32",
+        "dataset": "cifar10",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 1.0,
+        "gamma": 3.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 92.41,
+        "top3": 99.11,
+        "top5": 99.82,
+        "SCE": 0.006959616649555975,
+        "ECE": 0.02867477614581582,
+        "AUROC": 0.9104510616675214,
+        "epoch": 158
+    },
+    {
+        "model": "resnet56",
+        "dataset": "svhn",
+        "loss": "focal_loss",
+        "alpha": 5.0,
+        "beta": 10,
+        "gamma": 2.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 95.84357713583282,
+        "top3": 99.06653349723418,
+        "top5": 99.53518746158574,
+        "SCE": 0.0074386782337333025,
+        "ECE": 0.032684415677297865,
+        "AUROC": 0.9190180360721443,
+        "epoch": 128
+    },
+    {
+        "model": "resnet32",
+        "dataset": "cifar10",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 5.0,
+        "gamma": 3.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 91.74,
+        "top3": 99.07,
+        "top5": 99.84,
+        "SCE": 0.005790062119336798,
+        "ECE": 0.020808339914679536,
+        "AUROC": 0.921783506498785,
+        "epoch": 124
+    },
+    {
+        "model": "resnet32",
+        "dataset": "cifar10",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 10.0,
+        "gamma": 3.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 92.06,
+        "top3": 99.14,
+        "top5": 99.8,
+        "SCE": 0.003831992666933219,
+        "ECE": 0.0070748444944620514,
+        "AUROC": 0.9228626358562563,
+        "epoch": 146
+    },
+    {
+        "model": "resnet56",
+        "dataset": "svhn",
+        "loss": "focal_loss",
+        "alpha": 5.0,
+        "beta": 10,
+        "gamma": 3.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 96.5119852489244,
+        "top3": 99.24323909035034,
+        "top5": 99.62738168408113,
+        "SCE": 0.026444673910842577,
+        "ECE": 0.133636915440927,
+        "AUROC": 0.9270450065472613,
+        "epoch": 81
+    },
+    {
+        "model": "resnet32",
+        "dataset": "cifar10",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 20.0,
+        "gamma": 3.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 90.69,
+        "top3": 98.74,
+        "top5": 99.8,
+        "SCE": 0.005354178103044396,
+        "ECE": 0.006947860255837422,
+        "AUROC": 0.9082077387599712,
+        "epoch": 156
+    },
+    {
+        "model": "resnet56",
+        "dataset": "svhn",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 1.0,
+        "gamma": 3.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 96.56576521204671,
+        "top3": 99.19714197910264,
+        "top5": 99.61585740626921,
+        "SCE": 0.020894990665697524,
+        "ECE": 0.1043418426977925,
+        "AUROC": 0.9261005647038637,
+        "epoch": 81
+    },
+    {
+        "model": "resnet56",
+        "dataset": "svhn",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 5.0,
+        "gamma": 3.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 96.39290104486786,
+        "top3": 99.13567916410571,
+        "top5": 99.58512599877075,
+        "SCE": 0.0019530294547232953,
+        "ECE": 0.0037639386512306745,
+        "AUROC": 0.9192235130256872,
+        "epoch": 129
+    },
+    {
+        "model": "resnet56",
+        "dataset": "svhn",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 10.0,
+        "gamma": 3.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 96.269975414874,
+        "top3": 99.14720344191764,
+        "top5": 99.58128457283344,
+        "SCE": 0.003228082357159051,
+        "ECE": 0.0134170544748758,
+        "AUROC": 0.9261564706934853,
+        "epoch": 146
+    },
+    {
+        "model": "resnet56",
+        "dataset": "svhn",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 20.0,
+        "gamma": 3.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 96.18162261831591,
+        "top3": 99.06653349723418,
+        "top5": 99.60049170251997,
+        "SCE": 0.002194416351416501,
+        "ECE": 0.006652415471899074,
+        "AUROC": 0.92026232802197,
+        "epoch": 121
+    },
+    {
+        "model": "resnet32",
+        "dataset": "cifar10",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 1.0,
+        "gamma": 1.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 92.68,
+        "top3": 98.89,
+        "top5": 99.77,
+        "SCE": 0.004640564513215796,
+        "ECE": 0.016705611473321894,
+        "AUROC": 0.9196914997488272,
+        "epoch": 147
+    },
+    {
+        "model": "resnet32",
+        "dataset": "cifar10",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 5.0,
+        "gamma": 1.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 92.43,
+        "top3": 98.94,
+        "top5": 99.76,
+        "SCE": 0.005759195939549244,
+        "ECE": 0.02571342187970873,
+        "AUROC": 0.9196043390899836,
+        "epoch": 159
+    },
+    {
+        "model": "resnet56",
+        "dataset": "svhn",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 1.0,
+        "gamma": 2.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 96.4620467117394,
+        "top3": 99.13952059004302,
+        "top5": 99.57360172095882,
+        "SCE": 0.015476651031010345,
+        "ECE": 0.07697644430947086,
+        "AUROC": 0.9279676845014434,
+        "epoch": 81
+    },
+    {
+        "model": "resnet32",
+        "dataset": "cifar10",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 10.0,
+        "gamma": 1.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 92.07,
+        "top3": 98.84,
+        "top5": 99.7,
+        "SCE": 0.006774968756877936,
+        "ECE": 0.028049429175257694,
+        "AUROC": 0.918456624167888,
+        "epoch": 151
+    },
+    {
+        "model": "resnet32",
+        "dataset": "cifar10",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 20.0,
+        "gamma": 1.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 91.44,
+        "top3": 98.82,
+        "top5": 99.76,
+        "SCE": 0.005310475061874606,
+        "ECE": 0.01945773589611054,
+        "AUROC": 0.9119028053736273,
+        "epoch": 141
+    },
+    {
+        "model": "resnet56",
+        "dataset": "svhn",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 5.0,
+        "gamma": 2.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 96.65027658266749,
+        "top3": 99.25476336816226,
+        "top5": 99.66579594345421,
+        "SCE": 0.008889290059702522,
+        "ECE": 0.0426385685917134,
+        "AUROC": 0.9300546228905645,
+        "epoch": 81
+    },
+    {
+        "model": "resnet32",
+        "dataset": "cifar10",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 1.0,
+        "gamma": 2.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 92.82,
+        "top3": 99.04,
+        "top5": 99.82,
+        "SCE": 0.004881550129626412,
+        "ECE": 0.015554437245428545,
+        "AUROC": 0.9142063832175252,
+        "epoch": 134
+    },
+    {
+        "model": "resnet32",
+        "dataset": "cifar10",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 5.0,
+        "gamma": 2.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 92.7,
+        "top3": 99.09,
+        "top5": 99.84,
+        "SCE": 0.0038886255050066382,
+        "ECE": 0.006599127800762674,
+        "AUROC": 0.9179386295458911,
+        "epoch": 154
+    },
+    {
+        "model": "resnet56",
+        "dataset": "svhn",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 10.0,
+        "gamma": 2.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 96.61954517516902,
+        "top3": 99.18177627535341,
+        "top5": 99.58512599877075,
+        "SCE": 0.007149667898057946,
+        "ECE": 0.03460823638065868,
+        "AUROC": 0.9272736082798403,
+        "epoch": 81
+    },
+    {
+        "model": "resnet32",
+        "dataset": "cifar10",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 10.0,
+        "gamma": 2.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 91.12,
+        "top3": 98.77,
+        "top5": 99.69,
+        "SCE": 0.0044696641837281646,
+        "ECE": 0.011993418243527391,
+        "AUROC": 0.9165411021205577,
+        "epoch": 138
+    },
+    {
+        "model": "resnet32",
+        "dataset": "cifar10",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 20.0,
+        "gamma": 2.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 91.66,
+        "top3": 99.1,
+        "top5": 99.86,
+        "SCE": 0.0044338428949948884,
+        "ECE": 0.013437792956829042,
+        "AUROC": 0.9199319793565104,
+        "epoch": 148
+    },
+    {
+        "model": "resnet56",
+        "dataset": "svhn",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 20.0,
+        "gamma": 2.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 95.98570989551321,
+        "top3": 98.89366933005532,
+        "top5": 99.46988322065151,
+        "SCE": 0.004590331997419353,
+        "ECE": 0.020543370045007156,
+        "AUROC": 0.9142603148852715,
+        "epoch": 146
+    },
+    {
+        "model": "resnet56",
+        "dataset": "svhn",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 1.0,
+        "gamma": 1.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 96.63875230485556,
+        "top3": 99.2778119237861,
+        "top5": 99.62354025814382,
+        "SCE": 0.006981433165666004,
+        "ECE": 0.03161787650288621,
+        "AUROC": 0.9308342012163613,
+        "epoch": 81
+    },
+    {
+        "model": "resnet56",
+        "dataset": "svhn",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 5.0,
+        "gamma": 1.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 96.88460356484327,
+        "top3": 99.21634910878919,
+        "top5": 99.62738168408113,
+        "SCE": 0.005212589568314338,
+        "ECE": 0.025067324671131853,
+        "AUROC": 0.9266846062313465,
+        "epoch": 81
+    },
+    {
+        "model": "resnet56",
+        "dataset": "svhn",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 10.0,
+        "gamma": 1.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 96.7040565457898,
+        "top3": 99.28933620159803,
+        "top5": 99.65043023970497,
+        "SCE": 0.004258568234251805,
+        "ECE": 0.01890717018979529,
+        "AUROC": 0.925817313826768,
+        "epoch": 81
+    },
+    {
+        "model": "resnet56",
+        "dataset": "svhn",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 20.0,
+        "gamma": 1.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 96.48125384142594,
+        "top3": 99.13567916410571,
+        "top5": 99.53902888752305,
+        "SCE": 0.003931269487298465,
+        "ECE": 0.017343398719366587,
+        "AUROC": 0.9256296852473519,
+        "epoch": 81
+    },
+    {
+        "model": "resnet32",
+        "dataset": "cifar10",
+        "loss": "LS",
+        "alpha": 0.1,
+        "beta": 10,
+        "gamma": 1,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 92.65,
+        "top3": 98.84,
+        "top5": 99.56,
+        "SCE": 0.014526018114220348,
+        "ECE": 0.06300277628898626,
+        "AUROC": 0.8338459787584758,
+        "epoch": 144
+    },
+    {
+        "model": "resnet56",
+        "dataset": "svhn",
+        "loss": "LS",
+        "alpha": 0.1,
+        "beta": 10,
+        "gamma": 1,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 96.8500307314075,
+        "top3": 99.25860479409957,
+        "top5": 99.63122311001844,
+        "SCE": 0.020043308826084842,
+        "ECE": 0.09401308063397065,
+        "AUROC": 0.8631274596301414,
+        "epoch": 83
+    },
+    {
+        "model": "resnet50_imagenet",
+        "dataset": "imagenet",
+        "loss": "LS+MDCA",
+        "alpha": 0.1,
+        "beta": 1.0,
+        "gamma": 1,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 64.9,
+        "top3": 79.18,
+        "top5": 83.77,
+        "SCE": 0.0018463150225640859,
+        "ECE": 0.1078769199334085,
+        "AUROC": 0.8549768436209113,
+        "epoch": 142
+    },
+    {
+        "model": "resnet50_imagenet",
+        "dataset": "imagenet",
+        "loss": "LS+MDCA",
+        "alpha": 0.1,
+        "beta": 1.0,
+        "gamma": 1,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 64.82,
+        "top3": 78.98,
+        "top5": 83.61,
+        "SCE": 0.001858435882289253,
+        "ECE": 0.11553865057528016,
+        "AUROC": 0.858608541885966,
+        "epoch": 141
+    },
+    {
+        "model": "resnet_pacs",
+        "dataset": "pacs",
+        "loss": "cross_entropy",
+        "alpha": 5.0,
+        "beta": 10,
+        "gamma": 1,
+        "total_epochs": 30,
+        "scheduler steps": [
+            20
+        ],
+        "top1": 58.203125,
+        "top3": 79.150390625,
+        "top5": 89.55078125,
+        "SCE": 0.06947217159440047,
+        "ECE": 0.10122744913678616,
+        "AUROC": 0.8179108778147148,
+        "epoch": 20
+    },
+    {
+        "model": "resnet32",
+        "dataset": "cifar10",
+        "loss": "IFL",
+        "alpha": 5.0,
+        "beta": 10,
+        "gamma": 0.1,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 92.85,
+        "top3": 99.18,
+        "top5": 99.73,
+        "SCE": 0.008669694161625812,
+        "ECE": 0.04058691076934336,
+        "AUROC": 0.9197743559617549,
+        "epoch": 149
+    },
+    {
+        "model": "resnet_pacs",
+        "dataset": "pacs",
+        "loss": "NLL+MDCA",
+        "alpha": 5.0,
+        "beta": 10,
+        "gamma": 1,
+        "total_epochs": 30,
+        "scheduler steps": [
+            20
+        ],
+        "top1": 59.08203125,
+        "top3": 80.419921875,
+        "top5": 90.966796875,
+        "SCE": 0.06995992840834983,
+        "ECE": 0.13717107677075546,
+        "AUROC": 0.8100199214974655,
+        "epoch": 20
+    },
+    {
+        "model": "resnet32",
+        "dataset": "cifar10",
+        "loss": "IFL",
+        "alpha": 5.0,
+        "beta": 10,
+        "gamma": 1.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 93.01,
+        "top3": 99.06,
+        "top5": 99.72,
+        "SCE": 0.009622492177227684,
+        "ECE": 0.04552781890928741,
+        "AUROC": 0.9055564809973976,
+        "epoch": 149
+    },
+    {
+        "model": "resnet_pacs",
+        "dataset": "pacs",
+        "loss": "NLL+MDCA",
+        "alpha": 5.0,
+        "beta": 1.0,
+        "gamma": 1,
+        "total_epochs": 30,
+        "scheduler steps": [
+            20
+        ],
+        "top1": 59.1796875,
+        "top3": 79.78515625,
+        "top5": 90.33203125,
+        "SCE": 0.06142495326077681,
+        "ECE": 0.062964423916128,
+        "AUROC": 0.8172501460672383,
+        "epoch": 4
+    },
+    {
+        "model": "resnet_pacs",
+        "dataset": "pacs",
+        "loss": "cross_entropy",
+        "alpha": 5.0,
+        "beta": 10,
+        "gamma": 1,
+        "total_epochs": 30,
+        "scheduler steps": [
+            20
+        ],
+        "top1": 58.203125,
+        "top3": 79.150390625,
+        "top5": 89.55078125,
+        "SCE": 0.06947217159440047,
+        "ECE": 0.10122744913678616,
+        "AUROC": 0.8179108778147148,
+        "epoch": 20
+    },
+    {
+        "model": "resnet_pacs",
+        "dataset": "pacs",
+        "loss": "NLL+MDCA",
+        "alpha": 5.0,
+        "beta": 1.0,
+        "gamma": 1,
+        "total_epochs": 30,
+        "scheduler steps": [
+            20
+        ],
+        "top1": 59.1796875,
+        "top3": 79.78515625,
+        "top5": 90.33203125,
+        "SCE": 0.06142495326077681,
+        "ECE": 0.062964423916128,
+        "AUROC": 0.8172501460672383,
+        "epoch": 4
+    },
+    {
+        "model": "resnet_pacs",
+        "dataset": "pacs",
+        "loss": "NLL+MDCA",
+        "alpha": 5.0,
+        "beta": 5.0,
+        "gamma": 1,
+        "total_epochs": 30,
+        "scheduler steps": [
+            20
+        ],
+        "top1": 58.69140625,
+        "top3": 79.39453125,
+        "top5": 89.990234375,
+        "SCE": 0.07012397249205346,
+        "ECE": 0.11211863195057958,
+        "AUROC": 0.8105029836010118,
+        "epoch": 18
+    },
+    {
+        "model": "resnet56",
+        "dataset": "svhn",
+        "loss": "IFL",
+        "alpha": 5.0,
+        "beta": 10,
+        "gamma": 0.1,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 96.72710510141364,
+        "top3": 99.28165334972341,
+        "top5": 99.64274738783037,
+        "SCE": 0.0015555303279807776,
+        "ECE": 0.004016411732870777,
+        "AUROC": 0.9250222808921307,
+        "epoch": 81
+    },
+    {
+        "model": "resnet32",
+        "dataset": "cifar10",
+        "loss": "IFL",
+        "alpha": 5.0,
+        "beta": 10,
+        "gamma": 2.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 92.24,
+        "top3": 98.96,
+        "top5": 99.81,
+        "SCE": 0.011279820660714758,
+        "ECE": 0.05463552231192587,
+        "AUROC": 0.9219800598617682,
+        "epoch": 132
+    },
+    {
+        "model": "resnet_pacs",
+        "dataset": "pacs",
+        "loss": "NLL+MDCA",
+        "alpha": 5.0,
+        "beta": 10.0,
+        "gamma": 1,
+        "total_epochs": 30,
+        "scheduler steps": [
+            20
+        ],
+        "top1": 59.08203125,
+        "top3": 80.419921875,
+        "top5": 90.966796875,
+        "SCE": 0.06995992840834983,
+        "ECE": 0.13717107677075546,
+        "AUROC": 0.8100199214974655,
+        "epoch": 20
+    },
+    {
+        "model": "resnet_pacs",
+        "dataset": "pacs",
+        "loss": "NLL+MDCA",
+        "alpha": 5.0,
+        "beta": 15.0,
+        "gamma": 1,
+        "total_epochs": 30,
+        "scheduler steps": [
+            20
+        ],
+        "top1": 58.59375,
+        "top3": 77.392578125,
+        "top5": 85.986328125,
+        "SCE": 0.07840285841400275,
+        "ECE": 0.17991941883519758,
+        "AUROC": 0.8141814072327045,
+        "epoch": 11
+    },
+    {
+        "model": "resnet_pacs",
+        "dataset": "pacs",
+        "loss": "NLL+MDCA",
+        "alpha": 5.0,
+        "beta": 20.0,
+        "gamma": 1,
+        "total_epochs": 30,
+        "scheduler steps": [
+            20
+        ],
+        "top1": 59.326171875,
+        "top3": 78.22265625,
+        "top5": 87.40234375,
+        "SCE": 0.0791409999817623,
+        "ECE": 0.20278850314207375,
+        "AUROC": 0.8075274554266151,
+        "epoch": 16
+    },
+    {
+        "model": "resnet_pacs",
+        "dataset": "pacs",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 1.0,
+        "gamma": 1.0,
+        "total_epochs": 30,
+        "scheduler steps": [
+            20
+        ],
+        "top1": 58.544921875,
+        "top3": 79.248046875,
+        "top5": 89.697265625,
+        "SCE": 0.0647578586288416,
+        "ECE": 0.04964813010883518,
+        "AUROC": 0.8096764971987847,
+        "epoch": 4
+    },
+    {
+        "model": "resnet_pacs",
+        "dataset": "pacs",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 5.0,
+        "gamma": 1.0,
+        "total_epochs": 30,
+        "scheduler steps": [
+            20
+        ],
+        "top1": 58.0078125,
+        "top3": 79.248046875,
+        "top5": 89.74609375,
+        "SCE": 0.06980861878452872,
+        "ECE": 0.0997656224790262,
+        "AUROC": 0.8140885600187926,
+        "epoch": 22
+    },
+    {
+        "model": "resnet_pacs",
+        "dataset": "pacs",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 10.0,
+        "gamma": 1.0,
+        "total_epochs": 30,
+        "scheduler steps": [
+            20
+        ],
+        "top1": 58.154296875,
+        "top3": 79.736328125,
+        "top5": 90.52734375,
+        "SCE": 0.06969658559822685,
+        "ECE": 0.12848543585278094,
+        "AUROC": 0.8161199270687292,
+        "epoch": 19
+    },
+    {
+        "model": "resnet_pacs",
+        "dataset": "pacs",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 15.0,
+        "gamma": 1.0,
+        "total_epochs": 30,
+        "scheduler steps": [
+            20
+        ],
+        "top1": 58.69140625,
+        "top3": 78.125,
+        "top5": 87.255859375,
+        "SCE": 0.07766505058767896,
+        "ECE": 0.17508039447420742,
+        "AUROC": 0.8076506649673711,
+        "epoch": 18
+    },
+    {
+        "model": "resnet_pacs",
+        "dataset": "pacs",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 20.0,
+        "gamma": 1.0,
+        "total_epochs": 30,
+        "scheduler steps": [
+            20
+        ],
+        "top1": 58.69140625,
+        "top3": 79.00390625,
+        "top5": 88.232421875,
+        "SCE": 0.08029190801352115,
+        "ECE": 0.2237126160543994,
+        "AUROC": 0.804791954307832,
+        "epoch": 16
+    },
+    {
+        "model": "resnet_pacs",
+        "dataset": "pacs",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 1.0,
+        "gamma": 2.0,
+        "total_epochs": 30,
+        "scheduler steps": [
+            20
+        ],
+        "top1": 58.349609375,
+        "top3": 79.931640625,
+        "top5": 90.234375,
+        "SCE": 0.06248139622130111,
+        "ECE": 0.046654214216687244,
+        "AUROC": 0.8090294162370565,
+        "epoch": 4
+    },
+    {
+        "model": "resnet_pacs",
+        "dataset": "pacs",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 5.0,
+        "gamma": 2.0,
+        "total_epochs": 30,
+        "scheduler steps": [
+            20
+        ],
+        "top1": 57.958984375,
+        "top3": 79.638671875,
+        "top5": 91.30859375,
+        "SCE": 0.062017619914253634,
+        "ECE": 0.04483126197737873,
+        "AUROC": 0.8041882296305212,
+        "epoch": 1
+    },
+    {
+        "model": "resnet_pacs",
+        "dataset": "pacs",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 10.0,
+        "gamma": 2.0,
+        "total_epochs": 30,
+        "scheduler steps": [
+            20
+        ],
+        "top1": 58.69140625,
+        "top3": 79.736328125,
+        "top5": 90.91796875,
+        "SCE": 0.06807888287400081,
+        "ECE": 0.12159203061310109,
+        "AUROC": 0.8067552896472782,
+        "epoch": 26
+    },
+    {
+        "model": "resnet_pacs",
+        "dataset": "pacs",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 15.0,
+        "gamma": 2.0,
+        "total_epochs": 30,
+        "scheduler steps": [
+            20
+        ],
+        "top1": 58.69140625,
+        "top3": 79.00390625,
+        "top5": 88.37890625,
+        "SCE": 0.07155211249805202,
+        "ECE": 0.17487822362454608,
+        "AUROC": 0.8160630627441261,
+        "epoch": 9
+    },
+    {
+        "model": "resnet_pacs",
+        "dataset": "pacs",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 20.0,
+        "gamma": 2.0,
+        "total_epochs": 30,
+        "scheduler steps": [
+            20
+        ],
+        "top1": 59.1796875,
+        "top3": 78.125,
+        "top5": 86.376953125,
+        "SCE": 0.07755198004186273,
+        "ECE": 0.19735196550027467,
+        "AUROC": 0.8001854461761965,
+        "epoch": 20
+    },
+    {
+        "model": "resnet_pacs",
+        "dataset": "pacs",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 1.0,
+        "gamma": 3.0,
+        "total_epochs": 30,
+        "scheduler steps": [
+            20
+        ],
+        "top1": 58.447265625,
+        "top3": 79.638671875,
+        "top5": 90.966796875,
+        "SCE": 0.05905729096223565,
+        "ECE": 0.05954168237076374,
+        "AUROC": 0.8151685520106572,
+        "epoch": 6
+    },
+    {
+        "model": "resnet32",
+        "dataset": "cifar10",
+        "loss": "IFL",
+        "alpha": 5.0,
+        "beta": 10,
+        "gamma": 3.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 92.47,
+        "top3": 98.87,
+        "top5": 99.74,
+        "SCE": 0.01202733456819784,
+        "ECE": 0.05682275323271755,
+        "AUROC": 0.9035753457099112,
+        "epoch": 149
+    },
+    {
+        "model": "resnet_pacs",
+        "dataset": "pacs",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 5.0,
+        "gamma": 3.0,
+        "total_epochs": 30,
+        "scheduler steps": [
+            20
+        ],
+        "top1": 59.1796875,
+        "top3": 81.0546875,
+        "top5": 92.578125,
+        "SCE": 0.05911681366277272,
+        "ECE": 0.030402047297684465,
+        "AUROC": 0.7625667171980355,
+        "epoch": 1
+    },
+    {
+        "model": "resnet_pacs",
+        "dataset": "pacs",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 10.0,
+        "gamma": 3.0,
+        "total_epochs": 30,
+        "scheduler steps": [
+            20
+        ],
+        "top1": 57.861328125,
+        "top3": 79.052734375,
+        "top5": 89.697265625,
+        "SCE": 0.06999615446485612,
+        "ECE": 0.12636798511084635,
+        "AUROC": 0.8145620957214311,
+        "epoch": 28
+    },
+    {
+        "model": "resnet_pacs",
+        "dataset": "pacs",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 15.0,
+        "gamma": 3.0,
+        "total_epochs": 30,
+        "scheduler steps": [
+            20
+        ],
+        "top1": 58.056640625,
+        "top3": 77.1484375,
+        "top5": 87.59765625,
+        "SCE": 0.08017748369581211,
+        "ECE": 0.17969093669671565,
+        "AUROC": 0.8080219239027524,
+        "epoch": 23
+    },
+    {
+        "model": "resnet_pacs",
+        "dataset": "pacs",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 20.0,
+        "gamma": 3.0,
+        "total_epochs": 30,
+        "scheduler steps": [
+            20
+        ],
+        "top1": 58.88671875,
+        "top3": 78.7109375,
+        "top5": 87.59765625,
+        "SCE": 0.07800724116828762,
+        "ECE": 0.21366215145098977,
+        "AUROC": 0.8051143727128413,
+        "epoch": 19
+    },
+    {
+        "model": "resnet_pacs",
+        "dataset": "pacs",
+        "loss": "LS",
+        "alpha": 0.01,
+        "beta": 10,
+        "gamma": 1,
+        "total_epochs": 30,
+        "scheduler steps": [
+            20
+        ],
+        "top1": 56.494140625,
+        "top3": 77.44140625,
+        "top5": 86.474609375,
+        "SCE": 0.07406339270547894,
+        "ECE": 0.08499375927931395,
+        "AUROC": 0.8075977289460436,
+        "epoch": 20
+    },
+    {
+        "model": "resnet_pacs",
+        "dataset": "pacs",
+        "loss": "LS+MDCA",
+        "alpha": 0.01,
+        "beta": 1.0,
+        "gamma": 1,
+        "total_epochs": 30,
+        "scheduler steps": [
+            20
+        ],
+        "top1": 57.568359375,
+        "top3": 79.443359375,
+        "top5": 90.33203125,
+        "SCE": 0.06118587510965361,
+        "ECE": 0.05036566527996911,
+        "AUROC": 0.8183828818672765,
+        "epoch": 2
+    },
+    {
+        "model": "resnet_pacs",
+        "dataset": "pacs",
+        "loss": "LS+MDCA",
+        "alpha": 0.01,
+        "beta": 5.0,
+        "gamma": 1,
+        "total_epochs": 30,
+        "scheduler steps": [
+            20
+        ],
+        "top1": 58.0078125,
+        "top3": 78.857421875,
+        "top5": 88.134765625,
+        "SCE": 0.06901364111113903,
+        "ECE": 0.08877353045681959,
+        "AUROC": 0.8102737647795788,
+        "epoch": 17
+    },
+    {
+        "model": "resnet_pacs",
+        "dataset": "pacs",
+        "loss": "LS+MDCA",
+        "alpha": 0.01,
+        "beta": 10.0,
+        "gamma": 1,
+        "total_epochs": 30,
+        "scheduler steps": [
+            20
+        ],
+        "top1": 58.837890625,
+        "top3": 79.58984375,
+        "top5": 89.599609375,
+        "SCE": 0.06751090599072995,
+        "ECE": 0.11966083140578121,
+        "AUROC": 0.7987364825288069,
+        "epoch": 15
+    },
+    {
+        "model": "resnet_pacs",
+        "dataset": "pacs",
+        "loss": "LS+MDCA",
+        "alpha": 0.01,
+        "beta": 15.0,
+        "gamma": 1,
+        "total_epochs": 30,
+        "scheduler steps": [
+            20
+        ],
+        "top1": 55.615234375,
+        "top3": 73.291015625,
+        "top5": 83.056640625,
+        "SCE": 0.08723612550968644,
+        "ECE": 0.1941368538682582,
+        "AUROC": 0.8205294629550752,
+        "epoch": 9
+    },
+    {
+        "model": "resnet_pacs",
+        "dataset": "pacs",
+        "loss": "LS+MDCA",
+        "alpha": 0.01,
+        "beta": 20.0,
+        "gamma": 1,
+        "total_epochs": 30,
+        "scheduler steps": [
+            20
+        ],
+        "top1": 57.32421875,
+        "top3": 76.416015625,
+        "top5": 85.3515625,
+        "SCE": 0.08474599075444596,
+        "ECE": 0.2063604012801079,
+        "AUROC": 0.8140137767572773,
+        "epoch": 10
+    },
+    {
+        "model": "resnet56",
+        "dataset": "svhn",
+        "loss": "IFL",
+        "alpha": 5.0,
+        "beta": 10,
+        "gamma": 1.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 96.97295636140136,
+        "top3": 99.2701290719115,
+        "top5": 99.64658881376766,
+        "SCE": 0.0020986980905960064,
+        "ECE": 0.008017145870018734,
+        "AUROC": 0.924567389788356,
+        "epoch": 82
+    },
+    {
+        "model": "resnet56",
+        "dataset": "svhn",
+        "loss": "IFL",
+        "alpha": 5.0,
+        "beta": 10,
+        "gamma": 2.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 96.46972956361401,
+        "top3": 99.16641057160417,
+        "top5": 99.6120159803319,
+        "SCE": 0.0033624539770172614,
+        "ECE": 0.01405162633280489,
+        "AUROC": 0.9273462188124042,
+        "epoch": 80
+    },
+    {
+        "model": "resnet32",
+        "dataset": "im_cifar10",
+        "loss": "cross_entropy",
+        "alpha": 5.0,
+        "beta": 10,
+        "gamma": 1,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 73.51,
+        "top3": 93.18,
+        "top5": 97.59,
+        "SCE": 0.04210518173584423,
+        "ECE": 0.1859189355418086,
+        "AUROC": 0.8158870740667533,
+        "epoch": 107
+    },
+    {
+        "model": "resnet32",
+        "dataset": "im_cifar10",
+        "loss": "NLL+MDCA",
+        "alpha": 5.0,
+        "beta": 1.0,
+        "gamma": 1,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 73.97,
+        "top3": 93.19,
+        "top5": 97.91,
+        "SCE": 0.04095471921209247,
+        "ECE": 0.17028461153805255,
+        "AUROC": 0.8068577188444963,
+        "epoch": 96
+    },
+    {
+        "model": "resnet32",
+        "dataset": "im_cifar10",
+        "loss": "NLL+MDCA",
+        "alpha": 5.0,
+        "beta": 5.0,
+        "gamma": 1,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 71.77,
+        "top3": 92.4,
+        "top5": 97.59,
+        "SCE": 0.04465738533145108,
+        "ECE": 0.19884431123435498,
+        "AUROC": 0.8013143789758986,
+        "epoch": 118
+    },
+    {
+        "model": "resnet32",
+        "dataset": "im_cifar10",
+        "loss": "NLL+MDCA",
+        "alpha": 5.0,
+        "beta": 10.0,
+        "gamma": 1,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 72.63,
+        "top3": 93.47,
+        "top5": 97.85,
+        "SCE": 0.03851035262521065,
+        "ECE": 0.15510170193165546,
+        "AUROC": 0.7899596560783679,
+        "epoch": 90
+    },
+    {
+        "model": "resnet56",
+        "dataset": "svhn",
+        "loss": "IFL",
+        "alpha": 5.0,
+        "beta": 10,
+        "gamma": 3.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 96.31223110018439,
+        "top3": 98.95129071911494,
+        "top5": 99.51213890596189,
+        "SCE": 0.005714299986387071,
+        "ECE": 0.027537767627100786,
+        "AUROC": 0.8785090190252074,
+        "epoch": 138
+    },
+    {
+        "model": "resnet32",
+        "dataset": "im_cifar10",
+        "loss": "NLL+MDCA",
+        "alpha": 5.0,
+        "beta": 15.0,
+        "gamma": 1,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 71.74,
+        "top3": 92.0,
+        "top5": 97.15,
+        "SCE": 0.0380699634168949,
+        "ECE": 0.15921435691416266,
+        "AUROC": 0.7975600338645232,
+        "epoch": 107
+    },
+    {
+        "model": "resnet32",
+        "dataset": "im_cifar10",
+        "loss": "NLL+MDCA",
+        "alpha": 5.0,
+        "beta": 20.0,
+        "gamma": 1,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 67.82,
+        "top3": 91.51,
+        "top5": 97.1,
+        "SCE": 0.047901921361014246,
+        "ECE": 0.18878753451108932,
+        "AUROC": 0.7500176178342152,
+        "epoch": 126
+    },
+    {
+        "model": "resnet32",
+        "dataset": "im_cifar10",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 1.0,
+        "gamma": 1.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 72.48,
+        "top3": 93.04,
+        "top5": 97.72,
+        "SCE": 0.037438361481365284,
+        "ECE": 0.11619261406064033,
+        "AUROC": 0.81089874131276,
+        "epoch": 85
+    },
+    {
+        "model": "resnet50_imagenet",
+        "dataset": "imagenet",
+        "loss": "IFL",
+        "alpha": 5.0,
+        "beta": 10,
+        "gamma": 0.1,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 66.12,
+        "top3": 80.88,
+        "top5": 85.35,
+        "SCE": 0.0018836376190477606,
+        "ECE": 0.12692206115126609,
+        "AUROC": 0.8624813940665285,
+        "epoch": 159
+    },
+    {
+        "model": "resnet32",
+        "dataset": "im_cifar10",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 5.0,
+        "gamma": 1.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 72.49,
+        "top3": 92.84,
+        "top5": 97.53,
+        "SCE": 0.03835491136334836,
+        "ECE": 0.1535199786186218,
+        "AUROC": 0.7970481294277469,
+        "epoch": 100
+    },
+    {
+        "model": "resnet32",
+        "dataset": "im_cifar10",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 10.0,
+        "gamma": 1.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 72.2,
+        "top3": 92.38,
+        "top5": 97.51,
+        "SCE": 0.03765766377693973,
+        "ECE": 0.1536104189515114,
+        "AUROC": 0.7905472906992965,
+        "epoch": 118
+    },
+    {
+        "model": "resnet32",
+        "dataset": "im_cifar10",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 15.0,
+        "gamma": 1.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 68.64,
+        "top3": 91.46,
+        "top5": 96.94,
+        "SCE": 0.04505726610763348,
+        "ECE": 0.18129329017996793,
+        "AUROC": 0.7537515497894962,
+        "epoch": 159
+    },
+    {
+        "model": "resnet32",
+        "dataset": "im_cifar10",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 20.0,
+        "gamma": 1.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 64.14,
+        "top3": 90.3,
+        "top5": 96.81,
+        "SCE": 0.040836287976948084,
+        "ECE": 0.1272244870007038,
+        "AUROC": 0.7393948437180171,
+        "epoch": 111
+    },
+    {
+        "model": "resnet32",
+        "dataset": "im_cifar10",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 1.0,
+        "gamma": 2.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 71.13,
+        "top3": 91.84,
+        "top5": 97.55,
+        "SCE": 0.04015283619712922,
+        "ECE": 0.09037516415268182,
+        "AUROC": 0.7931770769951407,
+        "epoch": 85
+    },
+    {
+        "model": "resnet32",
+        "dataset": "im_cifar10",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 5.0,
+        "gamma": 2.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 71.57,
+        "top3": 91.89,
+        "top5": 97.26,
+        "SCE": 0.040568779080309904,
+        "ECE": 0.14419669563472273,
+        "AUROC": 0.790602889781574,
+        "epoch": 107
+    },
+    {
+        "model": "resnet32",
+        "dataset": "im_cifar10",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 10.0,
+        "gamma": 2.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 69.73,
+        "top3": 91.82,
+        "top5": 97.11,
+        "SCE": 0.039113913609796436,
+        "ECE": 0.10500558296442031,
+        "AUROC": 0.7669243219552163,
+        "epoch": 91
+    },
+    {
+        "model": "resnet32",
+        "dataset": "im_cifar10",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 15.0,
+        "gamma": 2.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 67.57,
+        "top3": 91.05,
+        "top5": 96.88,
+        "SCE": 0.04289306579611381,
+        "ECE": 0.14718385519683364,
+        "AUROC": 0.7436285966230656,
+        "epoch": 115
+    },
+    {
+        "model": "resnet32",
+        "dataset": "im_cifar10",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 20.0,
+        "gamma": 2.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 63.37,
+        "top3": 89.76,
+        "top5": 96.67,
+        "SCE": 0.04787382686931175,
+        "ECE": 0.16051675337851046,
+        "AUROC": 0.7272215693392906,
+        "epoch": 155
+    },
+    {
+        "model": "resnet32",
+        "dataset": "im_cifar10",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 1.0,
+        "gamma": 3.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 70.5,
+        "top3": 91.94,
+        "top5": 97.43,
+        "SCE": 0.04153381128448179,
+        "ECE": 0.05799186496436597,
+        "AUROC": 0.7903154706094483,
+        "epoch": 85
+    },
+    {
+        "model": "resnet32",
+        "dataset": "im_cifar10",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 5.0,
+        "gamma": 3.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 70.72,
+        "top3": 91.13,
+        "top5": 96.97,
+        "SCE": 0.04135485234991415,
+        "ECE": 0.14354798418581483,
+        "AUROC": 0.7914166765184951,
+        "epoch": 118
+    },
+    {
+        "model": "resnet32",
+        "dataset": "im_cifar10",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 10.0,
+        "gamma": 3.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 67.48,
+        "top3": 90.53,
+        "top5": 96.46,
+        "SCE": 0.04353652645386989,
+        "ECE": 0.1412670124694705,
+        "AUROC": 0.7513866347169695,
+        "epoch": 144
+    },
+    {
+        "model": "resnet32",
+        "dataset": "im_cifar10",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 15.0,
+        "gamma": 3.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 65.84,
+        "top3": 90.63,
+        "top5": 97.17,
+        "SCE": 0.0443945601160312,
+        "ECE": 0.1297379222422838,
+        "AUROC": 0.7326772277766552,
+        "epoch": 144
+    },
+    {
+        "model": "resnet32",
+        "dataset": "im_cifar10",
+        "loss": "FL+MDCA",
+        "alpha": 5.0,
+        "beta": 20.0,
+        "gamma": 3.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 65.01,
+        "top3": 89.12,
+        "top5": 96.39,
+        "SCE": 0.04431988843134954,
+        "ECE": 0.10627855508476497,
+        "AUROC": 0.7445324765697664,
+        "epoch": 116
+    },
+    {
+        "model": "resnet32",
+        "dataset": "im_cifar10",
+        "loss": "LS",
+        "alpha": 0.01,
+        "beta": 10,
+        "gamma": 1,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 73.02,
+        "top3": 92.7,
+        "top5": 97.73,
+        "SCE": 0.04029596077138791,
+        "ECE": 0.16614150945395229,
+        "AUROC": 0.8013764266174829,
+        "epoch": 107
+    },
+    {
+        "model": "resnet32",
+        "dataset": "im_cifar10",
+        "loss": "LS+MDCA",
+        "alpha": 0.01,
+        "beta": 1.0,
+        "gamma": 1,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 73.34,
+        "top3": 92.98,
+        "top5": 97.48,
+        "SCE": 0.038409149108881824,
+        "ECE": 0.15232664235681298,
+        "AUROC": 0.8127888513579171,
+        "epoch": 90
+    },
+    {
+        "model": "resnet32",
+        "dataset": "im_cifar10",
+        "loss": "LS+MDCA",
+        "alpha": 0.01,
+        "beta": 5.0,
+        "gamma": 1,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 72.97,
+        "top3": 93.08,
+        "top5": 97.7,
+        "SCE": 0.037364509928822516,
+        "ECE": 0.13905128664225336,
+        "AUROC": 0.8050730460488047,
+        "epoch": 85
+    },
+    {
+        "model": "resnet32",
+        "dataset": "im_cifar10",
+        "loss": "LS+MDCA",
+        "alpha": 0.01,
+        "beta": 10.0,
+        "gamma": 1,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 71.58,
+        "top3": 92.48,
+        "top5": 97.51,
+        "SCE": 0.03834269828835851,
+        "ECE": 0.1471883894577622,
+        "AUROC": 0.7919726681897432,
+        "epoch": 93
+    },
+    {
+        "model": "resnet32",
+        "dataset": "im_cifar10",
+        "loss": "LS+MDCA",
+        "alpha": 0.01,
+        "beta": 15.0,
+        "gamma": 1,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 70.36,
+        "top3": 91.88,
+        "top5": 97.28,
+        "SCE": 0.04193976912352024,
+        "ECE": 0.17229862209558483,
+        "AUROC": 0.7680442263769363,
+        "epoch": 119
+    },
+    {
+        "model": "resnet32",
+        "dataset": "im_cifar10",
+        "loss": "LS+MDCA",
+        "alpha": 0.01,
+        "beta": 20.0,
+        "gamma": 1,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 69.41,
+        "top3": 91.66,
+        "top5": 97.13,
+        "SCE": 0.04385008019195753,
+        "ECE": 0.17945035466253756,
+        "AUROC": 0.7677343182879055,
+        "epoch": 144
+    },
+    {
+        "model": "resnet50_imagenet",
+        "dataset": "imagenet",
+        "loss": "IFL",
+        "alpha": 5.0,
+        "beta": 10,
+        "gamma": 1.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 66.41,
+        "top3": 80.94,
+        "top5": 85.57,
+        "SCE": 0.002043024345689993,
+        "ECE": 0.14793120298460125,
+        "AUROC": 0.8703020098651018,
+        "epoch": 144
+    },
+    {
+        "model": "resnet50_imagenet",
+        "dataset": "imagenet",
+        "loss": "IFL",
+        "alpha": 5.0,
+        "beta": 10,
+        "gamma": 2.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 64.67,
+        "top3": 79.02,
+        "top5": 84.1,
+        "SCE": 0.002351563026153642,
+        "ECE": 0.18047705801129338,
+        "AUROC": 0.8612477963521479,
+        "epoch": 129
+    },
+    {
+        "model": "resnet_pacs",
+        "dataset": "pacs",
+        "loss": "focal_loss",
+        "alpha": 5.0,
+        "beta": 10,
+        "gamma": 1.0,
+        "total_epochs": 30,
+        "scheduler steps": [
+            20
+        ],
+        "top1": 55.712890625,
+        "top3": 76.416015625,
+        "top5": 87.451171875,
+        "SCE": 0.07648456797180968,
+        "ECE": 0.08496704902790952,
+        "AUROC": 0.8157827859466783,
+        "epoch": 28
+    },
+    {
+        "model": "resnet_pacs",
+        "dataset": "pacs",
+        "loss": "focal_loss",
+        "alpha": 5.0,
+        "beta": 10,
+        "gamma": 2.0,
+        "total_epochs": 30,
+        "scheduler steps": [
+            20
+        ],
+        "top1": 54.78515625,
+        "top3": 74.755859375,
+        "top5": 86.328125,
+        "SCE": 0.07598771065100404,
+        "ECE": 0.07093622776301345,
+        "AUROC": 0.8183820160697304,
+        "epoch": 7
+    },
+    {
+        "model": "resnet_pacs",
+        "dataset": "pacs",
+        "loss": "focal_loss",
+        "alpha": 5.0,
+        "beta": 10,
+        "gamma": 3.0,
+        "total_epochs": 30,
+        "scheduler steps": [
+            20
+        ],
+        "top1": 53.90625,
+        "top3": 74.0234375,
+        "top5": 85.83984375,
+        "SCE": 0.08228773160512251,
+        "ECE": 0.07084090713760814,
+        "AUROC": 0.813992070437239,
+        "epoch": 20
+    },
+    {
+        "model": "resnet32",
+        "dataset": "im_cifar10",
+        "loss": "focal_loss",
+        "alpha": 5.0,
+        "beta": 10,
+        "gamma": 1.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 72.25,
+        "top3": 92.72,
+        "top5": 97.96,
+        "SCE": 0.03915282427671133,
+        "ECE": 0.11779704049229622,
+        "AUROC": 0.8084469715390131,
+        "epoch": 85
+    },
+    {
+        "model": "resnet50_imagenet",
+        "dataset": "imagenet",
+        "loss": "IFL",
+        "alpha": 5.0,
+        "beta": 10,
+        "gamma": 3.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 65.76,
+        "top3": 80.12,
+        "top5": 84.55,
+        "SCE": 0.002393489341298999,
+        "ECE": 0.18774255429804326,
+        "AUROC": 0.8669664149725993,
+        "epoch": 144
+    },
+    {
+        "model": "resnet32",
+        "dataset": "im_cifar10",
+        "loss": "focal_loss",
+        "alpha": 5.0,
+        "beta": 10,
+        "gamma": 2.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 71.28,
+        "top3": 92.9,
+        "top5": 97.82,
+        "SCE": 0.03872601005460834,
+        "ECE": 0.09312902903556827,
+        "AUROC": 0.7926114137740763,
+        "epoch": 91
+    },
+    {
+        "model": "resnet32",
+        "dataset": "im_cifar10",
+        "loss": "focal_loss",
+        "alpha": 5.0,
+        "beta": 10,
+        "gamma": 3.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 71.31,
+        "top3": 92.81,
+        "top5": 97.92,
+        "SCE": 0.03803573587314925,
+        "ECE": 0.03983319486677647,
+        "AUROC": 0.7992326446285636,
+        "epoch": 85
+    },
+    {
+        "model": "resnet32",
+        "dataset": "im_cifar10",
+        "loss": "focal_loss",
+        "alpha": 5.0,
+        "beta": 10,
+        "gamma": 3.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 70.75,
+        "top3": 92.22,
+        "top5": 97.51,
+        "SCE": 0.041267294732232104,
+        "ECE": 0.09804107208847998,
+        "AUROC": 0.7918300987587207,
+        "epoch": 144
+    },
+    {
+        "model": "resnet32",
+        "dataset": "cifar10_CRL",
+        "loss": "CRL",
+        "alpha": 5.0,
+        "beta": 10,
+        "gamma": 1.0,
+        "total_epochs": 100,
+        "scheduler steps": [
+            40,
+            60
+        ],
+        "top1": 91.64,
+        "top3": 98.82,
+        "top5": 99.77,
+        "SCE": 0.004239865281148813,
+        "ECE": 0.015266542196273769,
+        "AUROC": 0.9159076811905961,
+        "epoch": 75
+    },
+    {
+        "model": "resnet32",
+        "dataset": "cifar10",
+        "loss": "cross_entropy",
+        "alpha": 5.0,
+        "beta": 10,
+        "gamma": 1.0,
+        "total_epochs": 100,
+        "scheduler steps": [
+            40,
+            60
+        ],
+        "top1": 91.86,
+        "top3": 98.95,
+        "top5": 99.8,
+        "SCE": 0.007491883999464334,
+        "ECE": 0.03396169576495881,
+        "AUROC": 0.9188360024414891,
+        "epoch": 63
+    },
+    {
+        "model": "resnet32",
+        "dataset": "cifar10_CRL",
+        "loss": "CRL",
+        "alpha": 5.0,
+        "beta": 10,
+        "gamma": 2.0,
+        "total_epochs": 100,
+        "scheduler steps": [
+            40,
+            60
+        ],
+        "top1": 90.0,
+        "top3": 98.52,
+        "top5": 99.65,
+        "SCE": 0.004635753953249659,
+        "ECE": 0.010999849148094687,
+        "AUROC": 0.9090432222222222,
+        "epoch": 88
+    },
+    {
+        "model": "resnet32",
+        "dataset": "cifar10_CRL",
+        "loss": "CRL",
+        "alpha": 5.0,
+        "beta": 10,
+        "gamma": 1.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 92.21,
+        "top3": 99.1,
+        "top5": 99.8,
+        "SCE": 0.005215680312176702,
+        "ECE": 0.018856288868188836,
+        "AUROC": 0.9277812171497248,
+        "epoch": 154
+    },
+    {
+        "model": "resnet56",
+        "dataset": "cifar10_CRL",
+        "loss": "CRL",
+        "alpha": 5.0,
+        "beta": 10,
+        "gamma": 1.0,
+        "total_epochs": 300,
+        "scheduler steps": [
+            100,
+            200
+        ],
+        "top1": 93.21,
+        "top3": 99.21,
+        "top5": 99.83,
+        "SCE": 0.0040977592375339,
+        "ECE": 0.014555305409431448,
+        "AUROC": 0.9296644993276145,
+        "epoch": 293
+    },
+    {
+        "model": "resnet32",
+        "dataset": "cifar10_CRL",
+        "loss": "CRL",
+        "alpha": 5.0,
+        "beta": 10,
+        "gamma": 1.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 92.17,
+        "top3": 98.98,
+        "top5": 99.86,
+        "SCE": 0.00474410369897145,
+        "ECE": 0.018370688368380104,
+        "AUROC": 0.9247224331850566,
+        "epoch": 152
+    },
+    {
+        "model": "resnet32",
+        "dataset": "cifar10_CRL",
+        "loss": "CRL+MDCA",
+        "alpha": 5.0,
+        "beta": 1.0,
+        "gamma": 2.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 90.62,
+        "top3": 98.71,
+        "top5": 99.67,
+        "SCE": 0.005033581848631147,
+        "ECE": 0.012939146408438658,
+        "AUROC": 0.9114967419421478,
+        "epoch": 153
+    },
+    {
+        "model": "resnet32",
+        "dataset": "cifar10_CRL",
+        "loss": "CRL+MDCA",
+        "alpha": 5.0,
+        "beta": 1.0,
+        "gamma": 1.0,
+        "total_epochs": 160,
+        "scheduler steps": [
+            80,
+            120
+        ],
+        "top1": 92.61,
+        "top3": 99.11,
+        "top5": 99.78,
+        "SCE": 0.004400680388265173,
+        "ECE": 0.017242951470613506,
+        "AUROC": 0.9303061903929044,
+        "epoch": 155
+    }
+]

@@ -3,10 +3,11 @@ import os
 import torch
 import torch.optim as optim
 import torch.nn as nn
+
 from utils import mkdir_p, parse_args
 from utils import get_lr, save_checkpoint, create_save_path
-from utils import crl_utils
-from solvers.runners import train, test,train_CRL, test_CRL
+
+from solvers.runners import train, test
 from solvers.loss import loss_dict
 
 from models import model_dict
@@ -15,7 +16,6 @@ from datasets import dataloader_dict, dataset_nclasses_dict, dataset_classname_d
 from time import localtime, strftime
 import json
 import logging
-torch.manual_seed(0)
 
 if __name__ == "__main__":
     
@@ -23,8 +23,9 @@ if __name__ == "__main__":
 
     current_time = strftime("%d-%b", localtime())
     # prepare save path
+    # model_save_pth = f"{args.checkpoint}/{args.dataset}_IF={args.imbalance}/{current_time}{create_save_path(args)}"
     username = os.getlogin()
-    model_save_pth = f"{args.checkpoint}/{args.dataset}/{current_time}{create_save_path(args)}_{username}"
+    model_save_pth = f"{args.checkpoint}/{args.dataset}_IF={args.imbalance}/{current_time}{create_save_path(args)}_{username}"
     checkpoint_dir_name = model_save_pth
 
     if not os.path.isdir(model_save_pth):
@@ -46,12 +47,14 @@ if __name__ == "__main__":
     model = model_dict[args.model](num_classes=num_classes)
     print("Let's use", torch.cuda.device_count(), "GPUs!")
     model = nn.DataParallel(model)
+
     model.cuda()
 
     # set up dataset
     logging.info(f"Using dataset : {args.dataset}")
     trainloader, valloader, testloader = dataloader_dict[args.dataset](args)
 
+    logging.info(f"Using imbalanced CIFAR10 with imbalance: {args.imbalance}")
     logging.info(f"Setting up optimizer : {args.optimizer}")
 
     if args.optimizer == "sgd":
@@ -64,8 +67,8 @@ if __name__ == "__main__":
         optimizer = optim.Adam(model.parameters(),
                                lr=args.lr,
                                weight_decay=args.weight_decay)
-    history=crl_utils.History(len(trainloader.dataset))
-    criterion = loss_dict[args.loss](gamma=args.gamma, alpha=args.alpha, beta=args.beta, loss=args.loss, delta=args.delta,history=history,arguments=args)
+    
+    criterion = loss_dict[args.loss](gamma=args.gamma, alpha=args.alpha, beta=args.beta, loss=args.loss, delta=args.delta)
     test_criterion = loss_dict["cross_entropy"]()
     
     logging.info(f"Step sizes : {args.schedule_steps} | lr-decay-factor : {args.lr_decay_factor}")
@@ -75,17 +78,13 @@ if __name__ == "__main__":
     
     best_acc = 0.
     best_acc_stats = {"top1" : 0.0}
-    if("CRL" in args.loss):
-        train=train_CRL
-        test=test_CRL
 
     for epoch in range(start_epoch, args.epochs):
 
         logging.info('Epoch: [%d | %d] LR: %f' % (epoch + 1, args.epochs, get_lr(optimizer)))
         
         train_loss, top1_train = train(trainloader, model, optimizer, criterion)
-        val_loss, top1_val, _, _, sce_score_val, ece_score_val,_ = test(valloader, model, test_criterion)
-        test_loss, top1, top3, top5, sce_score, ece_score,auroc = test(testloader, model, test_criterion)
+        test_loss, top1, top3, top5, cce_score, ece_score,auroc = test(testloader, model, test_criterion)
 
         scheduler.step()
 
@@ -95,17 +94,14 @@ if __name__ == "__main__":
             test_loss,
             top1_train,
             top1,
-            sce_score,
+            cce_score,
             ece_score,
             auroc["auc"]
-            # "\n".join("{}\t{}".format(k, v) for k, v in auroc.items())
-
         ))
 
-
         # save best accuracy model
-        is_best = top1_val > best_acc
-        best_acc = max(best_acc, top1_val)
+        is_best = top1 > best_acc
+        best_acc = max(best_acc, top1)
 
         save_checkpoint({
                 'epoch': epoch + 1,
@@ -122,7 +118,7 @@ if __name__ == "__main__":
                 "top1" : top1,
                 "top3" : top3,
                 "top5" : top5,
-                "SCE" : sce_score,
+                "SCE" : cce_score,
                 "ECE" : ece_score,
                 "AUROC" : auroc["auc"],
                 "epoch" : epoch
@@ -159,4 +155,3 @@ if __name__ == "__main__":
     logging.info("training completed...")
     logging.info("The stats for best trained model on test set are as below:")
     logging.info(best_acc_stats)
-    

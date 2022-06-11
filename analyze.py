@@ -64,8 +64,10 @@ if __name__ == "__main__":
     plt.ylabel('accuracy')
     plt.savefig(args.logfile+'_top1_traintest.png')
     plt.clf()
-    plt.plot(sce, label='sce')
-    plt.plot(ece, label='ece')
+    sce=[x*1000 for x in sce]
+    ece = [x*100 for x in ece]
+    plt.plot(sce, label='sce (10^-3)')
+    plt.plot(ece, label='ece (%)')
     plt.legend()
     plt.xlabel('epoch')
     plt.ylabel('error')

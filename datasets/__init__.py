@@ -25,6 +25,7 @@ from .mnist import get_transforms as mnisttransforms
 from .imagenet import get_train_valid_test_loader as imagenetloader
 from .imagenet import get_datasets as imagenetdatasets
 from .imagenet import get_transforms as imagenettransforms
+from .imagenet_CRL import get_train_valid_test_loader as imagenetCRLloader
 
 from .imbalanced_cifar import get_transforms as imbalanced_cifartransforms
 from .imbalanced_cifar import get_train_valid_test_loader as imbalanced_cifarloader
@@ -39,7 +40,8 @@ dataloader_dict = {
     "mnist" : mnistloader,
     "imagenet" : imagenetloader,        # tinyimagenet
     "im_cifar10" : imbalanced_cifarloader,
-    "cifar10_CRL" : crlloader
+    "cifar10_CRL" : crlloader,
+    "imagenet_CRL" : imagenetCRLloader
 }
 
 corrupted_dataloader_dict = {
@@ -71,7 +73,9 @@ dataset_nclasses_dict = {
     "mnist" : 10,
     "imagenet" : 200,
     "im_cifar10" : 10,
-    "cifar10_CRL": 10
+    "cifar10_CRL": 10,
+    "imagenet_CRL" : 200,
+
 }
 
 dataset_classname_dict = {
@@ -102,7 +106,9 @@ dataset_classname_dict = {
     "imagenet" : [f"{i}" for i in range(200)],
 
     "im_cifar10" : ['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck'],
-    "cifar10_CRL":['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']
+    "cifar10_CRL":['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck'],
+    "imagenet_CRL" : [f"{i}" for i in range(200)],
+
 }
 
 dataset_transform_dict = {

@@ -1,4 +1,5 @@
 __all__ = ['negative_entropy','History','crl_accuracy']
+import re
 import numpy as np
 import torch
 import torch.nn.functional as F
@@ -44,8 +45,10 @@ class History(object):
     def correctness_normalize(self, data):
         data_min = self.correctness.min()
         data_max = float(self.max_correctness)
-
-        return (data - data_min) / (data_max - data_min)
+        returnval=(data - data_min) / (data_max - data_min)
+        if not (returnval.all()<=1.0 and returnval.all()>=0.0 ):
+            print(returnval)
+        return returnval
 
     # get target & margin
     def get_target_margin(self, data_idx1, data_idx2):
@@ -57,8 +60,13 @@ class History(object):
         cum_correctness2 = self.correctness_normalize(cum_correctness2)
         # make target pair
         n_pair = len(data_idx1)
+        # print(len(cum_correctness1),len(data_idx1))
+        # print("Check:",cum_correctness1== cum_correctness1[:n_pair])
         target1 = cum_correctness1[:n_pair]
         target2 = cum_correctness2[:n_pair]
+        # np.testing.assert_array_equal(target1,cum_correctness1)
+        # np.testing.assert_array_equal(target2,cum_correctness2)
+        
         # calc target
         greater = np.array(target1 > target2, dtype='float')
         less = np.array(target1 < target2, dtype='float') * (-1)
@@ -67,6 +75,7 @@ class History(object):
         target = torch.from_numpy(target).float().cuda()
         # calc margin
         margin = abs(target1 - target2)
+        # margin = target1 - target2
         margin = torch.from_numpy(margin).float().cuda()
 
         return target, margin

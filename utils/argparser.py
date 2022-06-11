@@ -62,5 +62,6 @@ def parse_args():
     parser.add_argument('--resultsfile', default='./results', type=str, metavar='RESNAME')
     parser.add_argument('--trainresultsfile', default='./train_results', type=str, metavar='TRESNAME')
     parser.add_argument('--rank-target', default='softmax', type=str, help='Rank_target name to use [softmax, margin, entropy]')
-    
+    parser.add_argument('--theta', default=1, type=float,
+                        metavar='THETA', help='theta to train Correctness Ranking Loss with')
     return parser.parse_args()

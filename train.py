@@ -142,6 +142,7 @@ if __name__ == "__main__":
         "alpha": args.alpha,
         "beta": args.beta,
         "gamma": args.gamma,
+        "theta": args.theta,
         "total_epochs": args.epochs,
         "scheduler steps": args.schedule_steps,
         "top1":best_acc_stats["top1"],

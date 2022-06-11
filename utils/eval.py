@@ -26,7 +26,12 @@ def auroc(targets, outputs):
     preds=np.argmax(outputs,axis=1)
     true=np.equal(targets,preds).astype(int)
     outputs=np.max(outputs,axis=1)
-    roc_auc_value=roc_auc_score(true,outputs)
+    try:
+        roc_auc_value=roc_auc_score(true,outputs)
+        np.savetxt("outputs.txt",outputs)
+        np.savetxt("targets.txt",targets)
+    except:
+        roc_auc_value=0.0
     tpr,fpr,_=roc_curve(true,outputs)
     return {'tpr':tpr,'fpr':fpr,'auc':roc_auc_value}
  

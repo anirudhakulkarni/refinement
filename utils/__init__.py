@@ -32,7 +32,7 @@ def create_save_path(args):
         ans_str += f"_gamma={args.gamma}"
     
     if "CRL" in args.loss:
-        ans_str += f"_gamma={args.gamma}"
+        ans_str += f"_theta={args.theta}"
 
     if "LS" in args.loss:
         ans_str += f"_alpha={args.alpha}"

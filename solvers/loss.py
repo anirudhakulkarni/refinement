@@ -59,6 +59,7 @@ class CrossEntropy(nn.Module):
         return self.criterion(input, target)
 
 # https://github.com/pytorch/pytorch/blob/cde0cefa1cbd7fac553880f5e77a99d771bf837a/torch/_refs/nn/functional/__init__.py#L258
+# incorrect implementation
 class MarginRankingLossPow(nn.Module):
     def __init__(self, margin: float = 0., p=1) -> None:
         super(MarginRankingLossPow, self).__init__( )
@@ -96,7 +97,7 @@ class MarginRankingLossSmooth(nn.Module):
     def __init__(self) -> None:
         super(MarginRankingLossSmooth, self).__init__( )
 
-    def forward(self,input1,input2,target,margin):
+    def forward(ctx,input1,input2,target,margin):
         '''
         # loss_without_reduction =  0 if target * (input1 − input2) >= margin
                                     1/(2*margin) * (margin - target * (input1 − input2))^2 elsif 0 < target * (input1 − input2) < margin
@@ -114,9 +115,29 @@ class MarginRankingLossSmooth(nn.Module):
         # interval2_mask is interscetion of interval2_mask and negation of interval3_mask
         interval2_mask = interval2_mask*(1-interval3_mask)
         loss = interval1_mask*0+interval2_mask*0.5*torch.pow(add_margin,2)/margin+interval3_mask*(margin/2-mul_target_input)
+        # ctx.save_for_backward(input1,input2,target,margin)
         return loss.mean()
-    
 
+    # def backward(ctx,grad_output):
+    #     print("backward")
+    #     '''
+    #     gradient of loss_without_reduction = 0 if target * (input1 − input2) >= margin
+    #                                         (margin) * (target * (input1 − input2) - margin) elsif 0 < target * (input1 − input2) < margin
+    #                                         -1 else
+    #     '''
+    #     input1,input2,target,margin = ctx.saved_tensors
+    #     epsilon=1e-12
+    #     margin=margin+epsilon
+    #     interval1_mask = (target*(input1-input2)>=margin).float()
+    #     interval2_mask = (target*(input1-input2)<margin).float()
+    #     interval3_mask = (target*(input1-input2)<=0).float()
+    #     # interval2_mask is interscetion of interval2_mask and negation of interval3_mask
+    #     interval2_mask = interval2_mask*(1-interval3_mask)
+    #     grad_input = interval1_mask*0+interval2_mask*(margin-target*(input1-input2))/margin+interval3_mask*(-1)
+    #     return grad_output*grad_input
+    
+    
+# incorrect implementation
 class MarginRankingLossExp(nn.Module):
     def __init__(self) -> None:
         super(MarginRankingLossExp, self).__init__( )
@@ -147,13 +168,28 @@ class CRL(nn.Module):
         elif "square" in arguments.loss:
             self.criterion=MarginRankingLossPow(margin=0.0,p=2).cuda()
         elif "scale" in arguments.loss:
-            self.criterion=MarginRankingLossScale(p=1.25).cuda()
+            self.criterion=MarginRankingLossScale(p=self.args.scalefactor).cuda()
         elif "smooth" in arguments.loss:
             self.criterion=MarginRankingLossSmooth().cuda()
         else:
             self.criterion = nn.MarginRankingLoss(margin=0.0).cuda()
 
+
+    def generateAllPairs(self,conf,idx):
+        '''Given torch tensor generate all possible pairs and return 2 arrays'''
+        if self.args.pairing == "complete":
+            conf=torch.combinations(conf,r=2)
+            pairfirst=conf[:,0]
+            pairsecond=conf[:,1]
+            idx=torch.combinations(idx,r=2)
+            idxfirst=idx[:,0]
+            idxsecond=idx[:,1]
+            return pairfirst,pairsecond,idxfirst,idxsecond
+        else:
+            return conf, torch.roll(conf,-1), idx, torch.roll(idx,-1)
+
     def forward(self, logits, targets, idx):
+        # print("forward")
         if self.args.rank_target == 'softmax':
             conf = nn.functional.softmax(logits, dim=1)
             confidence, _ = conf.max(dim=1)
@@ -173,13 +209,14 @@ class CRL(nn.Module):
             confidence = conf[:,0]
 
         # make input pair
-
-
-        rank_input1 = confidence
-        rank_input2 = torch.roll(confidence, -1)
-        
-        idx1 = idx
-        idx2 = torch.roll(idx, -1)
+        # print("generating pairs")
+        rank_input1,rank_input2,idx1,idx2 = self.generateAllPairs(confidence,idx)
+        # print("generated pairs")
+        # BUG: uncomment below for pairwise computation
+        # rank_input1 = confidence
+        # rank_input2 = torch.roll(confidence, -1)
+        # idx1 = idx
+        # idx2 = torch.roll(idx, -1)
 
         # rank_target is the indicator function with 1 if x1>x2 or -1 if x1<x2 or 0 if x1=x2 on correctness
         # margin is absolute difference in correctness. |x1-x2|
@@ -214,13 +251,8 @@ class ClassficationAndCRL(nn.Module):
         self.counter+=1
         self.recordclassification+=loss_cls
         self.recordrefinementloss+=loss_ref
-        if self.counter>=704:
-            print("focal loss:",self.recordclassification/self.counter, "refinement loss:",self.recordrefinementloss/self.counter)
-            logging.info("class loss={}, refinement loss={}".format(self.recordclassification/self.counter, self.recordrefinementloss/self.counter))
-            self.counter=0
-            self.recordrefinementloss=0.0
-            self.recordclassification=0.0
-                
+        # if self.co
+        
         return loss_cls + self.args.theta * loss_ref
 
 class ClassficationAndCRLAndMDCA(nn.Module):
@@ -359,12 +391,12 @@ loss_dict = {
     "NLL+CRLexp" : ClassficationAndCRL,
     "NLL+CRLcubic" : ClassficationAndCRL,
     "NLL+CRLsquare" : ClassficationAndCRL,
-    "NLL+CRL+MDCA" : ClassficationAndCRLAndMDCA,
-    "FL+CRL+MDCA" : ClassficationAndCRLAndMDCA,
-    "FL+CRL+MDCAexp" : ClassficationAndCRLAndMDCA,
-    "FL+CRL+MDCAcubic" : ClassficationAndCRLAndMDCA,
-    "FL+CRL+MDCAsquare" : ClassficationAndCRLAndMDCA,
-    "FL+CRL+MDCAscale" : ClassficationAndCRLAndMDCA,
-    "FL+CRL+MDCAsmooth" : ClassficationAndCRLAndMDCA
+    "NLL+MDCA+CRL" : ClassficationAndCRLAndMDCA,
+    "FL+MDCA+CRL" : ClassficationAndCRLAndMDCA,
+    "FL+MDCA+CRLexp" : ClassficationAndCRLAndMDCA,
+    "FL+MDCA+CRLcubic" : ClassficationAndCRLAndMDCA,
+    "FL+MDCA+CRLsquare" : ClassficationAndCRLAndMDCA,
+    "FL+MDCA+CRLscale" : ClassficationAndCRLAndMDCA,
+    "FL+MDCA+CRLsmooth" : ClassficationAndCRLAndMDCA
     
 }

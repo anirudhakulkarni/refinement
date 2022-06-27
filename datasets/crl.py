@@ -25,8 +25,8 @@ def get_loader(args):
         stdv = [0.247, 0.243, 0.262]
     # elif data == 'svhn':
     else:
-        mean = [0.5, 0.5, 0.5]
-        stdv = [0.5, 0.5, 0.5]
+        mean = [0.4914, 0.4822, 0.4465]
+        stdv =[0.2023, 0.1994, 0.2010]
 
     # augmentation
     train_transforms = tv.transforms.Compose([
@@ -82,7 +82,7 @@ def get_loader(args):
 
     # make Custom_Dataset
     print(data)
-    if data == 'svhn':
+    if 'svhn' in data:
         train_data = Custom_Dataset(train_set.data,
                                     train_set.labels,
                                     'svhn', train_transforms)
@@ -144,9 +144,9 @@ class Custom_Dataset(Dataset):
 
     # return idx
     def __getitem__(self, idx):
-        if self.data == 'cifar':
+        if 'cifar' in self.data:
             img = Image.fromarray(self.x_data[idx])
-        elif self.data == 'svhn':
+        elif 'svhn' in self.data:
             img = Image.fromarray(np.transpose(self.x_data[idx], (1, 2, 0)))
 
         x = self.transform(img)
@@ -154,7 +154,6 @@ class Custom_Dataset(Dataset):
         return x, self.y_data[idx], idx
 
 def one_hot_encoding(label):
-    print("one_hot_encoding process")
     cls = set(label)
     class_dict = {c: np.identity(len(cls))[i, :] for i, c in enumerate(cls)}
     one_hot = np.array(list(map(class_dict.get, label)))

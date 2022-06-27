@@ -30,93 +30,115 @@ from .imagenet_CRL import get_train_valid_test_loader as imagenetCRLloader
 from .imbalanced_cifar import get_transforms as imbalanced_cifartransforms
 from .imbalanced_cifar import get_train_valid_test_loader as imbalanced_cifarloader
 
+from .chexpert import get_train_valid_test_loader as chexpertloader
 from .crl import get_loader as crlloader
 dataloader_dict = {
-    "cifar10" : cifar10loader,
-    "cifar100" : cifar100loader,
-    "svhn" : svhnloader,
-    "mendley" : mendleyloader,
-    "pacs" : pacs_corruptedloader,
-    "mnist" : mnistloader,
-    "imagenet" : imagenetloader,        # tinyimagenet
-    "im_cifar10" : imbalanced_cifarloader,
-    "cifar10_CRL" : crlloader,
-    "imagenet_CRL" : imagenetCRLloader
+    "cifar10": cifar10loader,
+    "cifar100": cifar100loader,
+    "svhn": svhnloader,
+    "mendley": mendleyloader,
+    "pacs": pacs_corruptedloader,
+    "mnist": mnistloader,
+    "imagenet": imagenetloader,        # tinyimagenet
+    "im_cifar10": imbalanced_cifarloader,
+    "cifar10_CRL": crlloader,
+    "cifar100_CRL": crlloader,
+    "svhn_CRL": crlloader,
+    "imagenet_CRL": imagenetCRLloader,
+    "chexpert": chexpertloader
 }
 
 corrupted_dataloader_dict = {
-    "pacs" : pacs_corruptedloader,
-    "mnist" : mnistloader,
+    "pacs": pacs_corruptedloader,
+    "mnist": mnistloader,
 }
 
 dataset_dict = {
-    "cifar10" : cifar10datasets,
-    "cifar100" : cifar100datasets,
-    "svhn" : svhndatasets,
-    "mendley" : mendleydatasets,
-    "pacs" : pacs_corrupteddatasets,
-    "mnist" : mnistdatasets,
-    "imagenet" : imagenetdatasets,
+    "cifar10": cifar10datasets,
+    "cifar100": cifar100datasets,
+    "svhn": svhndatasets,
+    "mendley": mendleydatasets,
+    "pacs": pacs_corrupteddatasets,
+    "mnist": mnistdatasets,
+    "imagenet": imagenetdatasets,
+    
 }
 
 corrupted_dataset_dict = {
-    "pacs" : pacs_corrupteddatasets,
-    "mnist" : mnistdatasets
+    "pacs": pacs_corrupteddatasets,
+    "mnist": mnistdatasets
 }
 
 dataset_nclasses_dict = {
-    "cifar10" : 10,
-    "cifar100" : 100,
-    "svhn" : 10,
-    "mendley" : 2,
-    "pacs" : 7,
-    "mnist" : 10,
-    "imagenet" : 200,
-    "im_cifar10" : 10,
+    "cifar10": 10,
+    "cifar100": 100,
+    "svhn": 10,
+    "mendley": 2,
+    "pacs": 7,
+    "mnist": 10,
+    "imagenet": 200,
+    "im_cifar10": 10,
     "cifar10_CRL": 10,
-    "imagenet_CRL" : 200,
-
+    "svhn_CRL": 10,
+    "cifar100_CRL": 100,
+    "imagenet_CRL": 200,
+    "chexpert" : 5
 }
 
 dataset_classname_dict = {
-    "cifar10" : ['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck'],
+    "cifar10": ['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck'],
 
-    "cifar100" : ['apple', 'aquarium_fish', 'baby', 'bear', 'beaver', 'bed', 'bee', 'beetle', 
-                'bicycle', 'bottle', 'bowl', 'boy', 'bridge', 'bus', 'butterfly', 'camel', 
-                'can', 'castle', 'caterpillar', 'cattle', 'chair', 'chimpanzee', 'clock', 'cloud',
-                'cockroach', 'couch', 'crab', 'crocodile', 'cup', 'dinosaur', 'dolphin',
-                'elephant', 'flatfish', 'forest', 'fox', 'girl', 'hamster', 'house',
-                'kangaroo', 'keyboard', 'lamp', 'lawn_mower', 'leopard', 'lion', 'lizard', 'lobster', 
-                'man', 'maple_tree', 'motorcycle', 'mountain', 'mouse', 'mushroom', 'oak_tree', 'orange', 
-                'orchid', 'otter', 'palm_tree', 'pear', 'pickup_truck', 'pine_tree', 'plain', 'plate',
-                'poppy', 'porcupine', 'possum', 'rabbit', 'raccoon', 'ray', 'road', 'rocket',
-                'rose', 'sea', 'seal', 'shark', 'shrew', 'skunk', 'skyscraper', 'snail',
-                'snake', 'spider', 'squirrel', 'streetcar', 'sunflower', 'sweet_pepper', 'table', 'tank',
-                'telephone', 'television', 'tiger', 'tractor', 'train', 'trout', 'tulip', 'turtle', 'wardrobe',
-                'whale', 'willow_tree', 'wolf', 'woman', 'worm'],
-                
-    "svhn" : [f"{i}" for i in range(10)],
+    "cifar100": ['apple', 'aquarium_fish', 'baby', 'bear', 'beaver', 'bed', 'bee', 'beetle',
+                 'bicycle', 'bottle', 'bowl', 'boy', 'bridge', 'bus', 'butterfly', 'camel',
+                 'can', 'castle', 'caterpillar', 'cattle', 'chair', 'chimpanzee', 'clock', 'cloud',
+                 'cockroach', 'couch', 'crab', 'crocodile', 'cup', 'dinosaur', 'dolphin',
+                 'elephant', 'flatfish', 'forest', 'fox', 'girl', 'hamster', 'house',
+                 'kangaroo', 'keyboard', 'lamp', 'lawn_mower', 'leopard', 'lion', 'lizard', 'lobster',
+                 'man', 'maple_tree', 'motorcycle', 'mountain', 'mouse', 'mushroom', 'oak_tree', 'orange',
+                 'orchid', 'otter', 'palm_tree', 'pear', 'pickup_truck', 'pine_tree', 'plain', 'plate',
+                 'poppy', 'porcupine', 'possum', 'rabbit', 'raccoon', 'ray', 'road', 'rocket',
+                 'rose', 'sea', 'seal', 'shark', 'shrew', 'skunk', 'skyscraper', 'snail',
+                 'snake', 'spider', 'squirrel', 'streetcar', 'sunflower', 'sweet_pepper', 'table', 'tank',
+                 'telephone', 'television', 'tiger', 'tractor', 'train', 'trout', 'tulip', 'turtle', 'wardrobe',
+                 'whale', 'willow_tree', 'wolf', 'woman', 'worm'],
 
-    "mendley" : ["Normal", "Abnormal"],
 
-    "pacs" : ['Dog', 'Elephant', 'Giraffe', 'Guitar', 'Horse', 'House', 'Person'],
+    "svhn": [f"{i}" for i in range(10)],
 
-    "mnist" : [f"{i}" for i in range(10)],
+    "mendley": ["Normal", "Abnormal"],
 
-    "imagenet" : [f"{i}" for i in range(200)],
+    "pacs": ['Dog', 'Elephant', 'Giraffe', 'Guitar', 'Horse', 'House', 'Person'],
 
-    "im_cifar10" : ['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck'],
-    "cifar10_CRL":['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck'],
-    "imagenet_CRL" : [f"{i}" for i in range(200)],
+    "mnist": [f"{i}" for i in range(10)],
 
+    "imagenet": [f"{i}" for i in range(200)],
+
+    "im_cifar10": ['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck'],
+    "cifar10_CRL": ['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck'],
+    "cifar100_CRL": ['apple', 'aquarium_fish', 'baby', 'bear', 'beaver', 'bed', 'bee', 'beetle',
+                     'bicycle', 'bottle', 'bowl', 'boy', 'bridge', 'bus', 'butterfly', 'camel',
+                     'can', 'castle', 'caterpillar', 'cattle', 'chair', 'chimpanzee', 'clock', 'cloud',
+                     'cockroach', 'couch', 'crab', 'crocodile', 'cup', 'dinosaur', 'dolphin',
+                     'elephant', 'flatfish', 'forest', 'fox', 'girl', 'hamster', 'house',
+                     'kangaroo', 'keyboard', 'lamp', 'lawn_mower', 'leopard', 'lion', 'lizard', 'lobster',
+                     'man', 'maple_tree', 'motorcycle', 'mountain', 'mouse', 'mushroom', 'oak_tree', 'orange',
+                     'orchid', 'otter', 'palm_tree', 'pear', 'pickup_truck', 'pine_tree', 'plain', 'plate',
+                     'poppy', 'porcupine', 'possum', 'rabbit', 'raccoon', 'ray', 'road', 'rocket',
+                     'rose', 'sea', 'seal', 'shark', 'shrew', 'skunk', 'skyscraper', 'snail',
+                     'snake', 'spider', 'squirrel', 'streetcar', 'sunflower', 'sweet_pepper', 'table', 'tank',
+                     'telephone', 'television', 'tiger', 'tractor', 'train', 'trout', 'tulip', 'turtle', 'wardrobe',
+                     'whale', 'willow_tree', 'wolf', 'woman', 'worm'],
+    "svhn_CRL": [f"{i}" for i in range(10)],
+    "imagenet_CRL": [f"{i}" for i in range(200)],
+    "chexpert" : [f"{i}" for i in range(5)],
 }
 
 dataset_transform_dict = {
-    "cifar10" : cifar10transforms,
-    "cifar100" : cifar100transforms,
-    "svhn" : svhntransforms,
-    "mendley" : mendleytransforms,
-    "pacs" : pacs_corruptedtransforms,
-    "mnist" : mnisttransforms,
-    "imagenet" : imagenettransforms,
+    "cifar10": cifar10transforms,
+    "cifar100": cifar100transforms,
+    "svhn": svhntransforms,
+    "mendley": mendleytransforms,
+    "pacs": pacs_corruptedtransforms,
+    "mnist": mnisttransforms,
+    "imagenet": imagenettransforms,
 }

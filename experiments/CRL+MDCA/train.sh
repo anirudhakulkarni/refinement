@@ -47,3 +47,6 @@ python train.py --dataset imagenet_CRL --model resnet50_imagenet --epochs 160 --
 python train.py --dataset imagenet_CRL --model resnet50_imagenet --epochs 160 --schedule-steps 80 120 --loss FL+CRL+MDCAcubic --theta 1.0 --beta 10.0 --gamma 3.0
 python train.py --dataset imagenet_CRL --model resnet50_imagenet --epochs 160 --schedule-steps 80 120 --loss FL+CRL+MDCAsquare --theta 1.0 --beta 10.0 --gamma 3.0
 python train.py --dataset imagenet_CRL --model resnet50_imagenet --epochs 160 --schedule-steps 80 120 --loss FL+CRL+MDCAsmooth --theta 1.0 --beta 10.0 --gamma 3.0
+
+
+python test.py --dataset imagenet_CRL --model resnet50_imagenet --epochs 160 --schedule-steps 80 120 --loss FL+MDCA+CRLscale --theta 0.67 --beta 5.0 --gamma 3.0 

@@ -23,7 +23,7 @@ def save_checkpoint(state, is_best, checkpoint='checkpoint', filename='checkpoin
 def create_save_path(args):
 
     ans_str = f"_{args.model}_{args.loss}"
-
+    ans_str+= f"_{args.pairing}"
     if args.loss == "FLSD":
         ans_str += f"_gamma={args.gamma}"
         return ans_str
@@ -33,10 +33,11 @@ def create_save_path(args):
     
     if "CRL" in args.loss:
         ans_str += f"_theta={args.theta}"
-
+    if "scale" in args.loss:
+        ans_str += f"_scale={args.scalefactor}"
     if "LS" in args.loss:
         ans_str += f"_alpha={args.alpha}"
-
+    
     if "MDCA" in args.loss:
         ans_str += f"_beta={args.beta}"
         return ans_str

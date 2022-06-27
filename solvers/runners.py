@@ -1,6 +1,6 @@
 import torch
 from tqdm import tqdm
-from utils import AverageMeter, accuracy, auroc, crl_accuracy
+from utils import AverageMeter, accuracy, get_all_metrics, crl_accuracy
 import numpy as np
 from calibration_library.metrics import ECELoss, SCELoss
 from sklearn.metrics import roc_auc_score
@@ -17,7 +17,10 @@ def train(trainloader, model, optimizer, criterion):
     bar = tqdm(enumerate(trainloader), total=len(trainloader))
     # print("bar",len(trainloader))
     for batch_idx, (inputs, targets) in bar:
-        
+        # print(inputs)
+        # print(inputs.shape)
+        # print(targets)
+        # print(targets.shape)
         inputs, targets = inputs.cuda(), targets.cuda()
 
         # compute output
@@ -137,7 +140,7 @@ def test(testloader, model, criterion):
                     top3=top3.avg,
                     top5=top5.avg,
                     ))
-    auroc_dict = auroc(all_targets,all_outputs)
+    auroc_dict = get_all_metrics(all_targets,all_outputs)
     eces = ECELoss().loss(all_outputs, all_targets, n_bins=15)
     cces = SCELoss().loss(all_outputs, all_targets, n_bins=15)
     return (losses.avg, top1.avg, top3.avg, top5.avg, cces, eces, auroc_dict)
@@ -191,8 +194,11 @@ def test_CRL(testloader, model, criterion):
 
         # compute output
         outputs = model(inputs)
-        loss = criterion(outputs, targets)
-        
+        # print(criterion)
+        if "CRL" in str(criterion):
+            loss = criterion(outputs, targets, idx)
+        else:
+            loss = criterion(outputs, targets)
         prec1, prec3, prec5  = accuracy(outputs.data, targets.data, topk=(1, 3, 5))
         losses.update(loss.item(), inputs.size(0))
         top1.update(prec1.item(), inputs.size(0))
@@ -218,7 +224,7 @@ def test_CRL(testloader, model, criterion):
                     top3=top3.avg,
                     top5=top5.avg,
                     ))
-    auroc_dict = auroc(all_targets,all_outputs)
+    auroc_dict = get_all_metrics(all_targets,all_outputs)
     eces = ECELoss().loss(all_outputs, all_targets, n_bins=15)
     cces = SCELoss().loss(all_outputs, all_targets, n_bins=15)
     return (losses.avg, top1.avg, top3.avg, top5.avg, cces, eces, auroc_dict)

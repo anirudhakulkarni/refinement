@@ -52,6 +52,7 @@ class History(object):
 
     # get target & margin
     def get_target_margin(self, data_idx1, data_idx2):
+        # print("getting target margin")
         data_idx1 = data_idx1.cpu().numpy()
         cum_correctness1 = self.correctness[data_idx1]
         cum_correctness2 = self.correctness[data_idx2]
@@ -77,7 +78,7 @@ class History(object):
         margin = abs(target1 - target2)
         # margin = target1 - target2
         margin = torch.from_numpy(margin).float().cuda()
-
+        # print("Got target margin")
         return target, margin
 
 

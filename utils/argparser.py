@@ -64,4 +64,6 @@ def parse_args():
     parser.add_argument('--rank-target', default='softmax', type=str, help='Rank_target name to use [softmax, margin, entropy]')
     parser.add_argument('--theta', default=1, type=float,
                         metavar='THETA', help='theta to train Correctness Ranking Loss with')
+    parser.add_argument('--pairing', default='adjacent', type=str, help='pairing to use [adjacent, complete]')
+    parser.add_argument('--scalefactor', default='1.25', type=float, help='scaling to use in scaled CRL [1.25, 2.0]')
     return parser.parse_args()

@@ -77,3 +77,46 @@ python train.py --dataset svhn_CRL --model resnet56 --epochs 160 --schedule-step
 python train.py --dataset svhn_CRL --model resnet56 --epochs 160 --schedule-steps 80 120 --loss NLL+CRL --theta 1.0 && \
 python train.py --dataset svhn_CRL --model resnet56 --epochs 160 --schedule-steps 80 120 --loss NLL+CRL --theta 1.0
 "
+
+export CUDA_VISIBLE_DEVICES='4,5,6'
+screen bash -c \
+"python3 train.py --dataset imagenet --model resnet50_imagenet --epochs 160 --schedule-steps 80 120 --loss LogitNorm 
+python3 train.py --dataset imagenet --model resnet50_imagenet --epochs 160 --schedule-steps 80 120 --loss LogitNorm 
+python3 train.py --dataset imagenet --model resnet50_imagenet --epochs 160 --schedule-steps 80 120 --loss LogitNorm 
+python3 train.py --dataset imagenet --model resnet50_imagenet --epochs 160 --schedule-steps 80 120 --loss LogitNorm 
+"
+
+export CUDA_VISIBLE_DEVICES='3'
+screen bash -c \
+"python3 train.py --dataset cifar10 --model wrn --epochs 200 --schedule-steps 80 140 --loss cross_entropy
+python3 train.py --dataset cifar10 --model wrn --epochs 200 --schedule-steps 80 140 --loss cross_entropy
+python3 train.py --dataset cifar10 --model wrn --epochs 200 --schedule-steps 80 140 --loss cross_entropy
+python3 train.py --dataset cifar10 --model wrn --epochs 200 --schedule-steps 80 140 --loss cross_entropy
+"
+
+export CUDA_VISIBLE_DEVICES='2'
+screen bash -c \
+"python3 train.py --dataset cifar10 --model wrn --epochs 200 --schedule-steps 80 140 --loss LogitNorm
+python3 train.py --dataset cifar10 --model wrn --epochs 200 --schedule-steps 80 140 --loss LogitNorm
+python3 train.py --dataset cifar10 --model wrn --epochs 200 --schedule-steps 80 140 --loss LogitNorm
+python3 train.py --dataset cifar10 --model wrn --epochs 200 --schedule-steps 80 140 --loss LogitNorm
+"
+
+
+export CUDA_VISIBLE_DEVICES='1'
+screen bash -c \
+"python3 train.py --dataset cifar10 --model wrn --epochs 200 --schedule-steps 80 140 --loss LogitNorm+MDCA --beta 5.0
+python3 train.py --dataset cifar10 --model wrn --epochs 200 --schedule-steps 80 140 --loss LogitNorm+MDCA --beta 5.0
+python3 train.py --dataset cifar10 --model wrn --epochs 200 --schedule-steps 80 140 --loss LogitNorm+MDCA --beta 5.0
+python3 train.py --dataset cifar10 --model wrn --epochs 200 --schedule-steps 80 140 --loss LogitNorm+MDCA --beta 5.0
+"
+
+
+
+export CUDA_VISIBLE_DEVICES='0,7'
+screen bash -c \
+"python3 train.py --dataset imagenet --model resnet50_imagenet --epochs 160 --schedule-steps 80 120 --loss LogitNorm+MDCA --beta 5.0
+python3 train.py --dataset imagenet --model resnet50_imagenet --epochs 160 --schedule-steps 80 120 --loss LogitNorm+MDCA --beta 5.0
+python3 train.py --dataset imagenet --model resnet50_imagenet --epochs 160 --schedule-steps 80 120 --loss LogitNorm+MDCA --beta 5.0
+python3 train.py --dataset imagenet --model resnet50_imagenet --epochs 160 --schedule-steps 80 120 --loss LogitNorm+MDCA --beta 5.0
+"

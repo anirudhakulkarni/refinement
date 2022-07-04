@@ -315,6 +315,8 @@ class ClassficationAndMDCA(nn.Module):
             self.classification_loss = FocalLoss(gamma=self.gamma)
         elif "CRL" in loss:
             self.classification_loss = CRL(gamma=self.gamma)
+        elif "LogitNorm" in loss:
+            self.classification_loss = LogitNormLoss()
         else:
             self.classification_loss = LabelSmoothingLoss(alpha=self.alpha) 
         self.MDCA = MDCA()
@@ -374,6 +376,16 @@ class FLSD(nn.Module):
     def forward(self, logits, targets):
         return self.criterion.forward(logits, targets)
 
+class LogitNormLoss(nn.Module):
+
+    def __init__(self, t=0.01, **kwargs):
+        super(LogitNormLoss, self).__init__()
+        self.t = t
+
+    def forward(self, x, target):
+        norms = torch.norm(x, p=2, dim=-1, keepdim=True) + 1e-7
+        logit_norm = torch.div(x, norms) / self.t
+        return nn.functional.cross_entropy(logit_norm, target)
 
 loss_dict = {
     "focal_loss" : FocalLoss,
@@ -397,6 +409,8 @@ loss_dict = {
     "FL+MDCA+CRLcubic" : ClassficationAndCRLAndMDCA,
     "FL+MDCA+CRLsquare" : ClassficationAndCRLAndMDCA,
     "FL+MDCA+CRLscale" : ClassficationAndCRLAndMDCA,
-    "FL+MDCA+CRLsmooth" : ClassficationAndCRLAndMDCA
+    "FL+MDCA+CRLsmooth" : ClassficationAndCRLAndMDCA,
+    "LogitNorm" : LogitNormLoss,
+    "LogitNorm+MDCA" : ClassficationAndMDCA
     
 }

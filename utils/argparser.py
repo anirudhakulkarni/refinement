@@ -66,4 +66,7 @@ def parse_args():
                         metavar='THETA', help='theta to train Correctness Ranking Loss with')
     parser.add_argument('--pairing', default='adjacent', type=str, help='pairing to use [adjacent, complete]')
     parser.add_argument('--scalefactor', default='1.25', type=float, help='scaling to use in scaled CRL [1.25, 2.0]')
+    parser.add_argument('--layers', default=40, type=int, help='total number of layers')
+    parser.add_argument('--widen-factor', default=2, type=int, help='widen factor')
+    parser.add_argument('--droprate', default=0.3, type=float, help='dropout probability')
     return parser.parse_args()

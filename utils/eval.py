@@ -51,10 +51,10 @@ def get_all_metrics(targets, outputs):
     aupr_success, aupr_err, fpr_at_95 = calc_fpr_aupr(outputs, correct)
     try:
         roc_auc_value = roc_auc_score(correct, outputs_max)
-        np.savetxt("outputs.txt", outputs)
-        np.savetxt("targets.txt", targets)
     except:
         roc_auc_value = 0.0
+        np.savetxt("outputs.txt", outputs)
+        np.savetxt("targets.txt", targets)
     return {'tpr': tpr, 'fpr': fpr, 'auroc': roc_auc_value, 'aupr-success': aupr_success, 'aupr-error': aupr_err, 'aurc': aurc, 'eaurc': eaurc, 'fpr-at-95': fpr_at_95}
 
 

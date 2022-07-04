@@ -208,11 +208,12 @@ class CheXpert(Dataset):
 
 def get_train_valid_test_loader(args):
     root = './data/CheXpert-v1.0-small/'
+    classid=-1
     # change here to use multiclass vs single class. -1 is for multiclass
     traindSet = CheXpert(csv_path=root+'train.csv', image_root_path=root, use_upsampling=True,
-                         use_frontal=True, image_size=320, mode='train', class_index=0, args=args)
+                         use_frontal=True, image_size=320, mode='train', class_index=classid, args=args)
     testSet = CheXpert(csv_path=root+'valid.csv',  image_root_path=root, use_upsampling=False,
-                       use_frontal=True, image_size=320, mode='valid', class_index=0, args=args)
+                       use_frontal=True, image_size=320, mode='valid', class_index=classid, args=args)
 
     idxs = list(range(len(traindSet)))
     random.seed(args.seed)

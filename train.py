@@ -1,3 +1,4 @@
+import argparse
 import os
 
 import torch
@@ -44,7 +45,7 @@ if __name__ == "__main__":
 
     # prepare model
     logging.info(f"Using model : {args.model}")
-    model = model_dict[args.model](num_classes=num_classes)
+    model = model_dict[args.model](num_classes=num_classes,args=args)
     print("Let's use", torch.cuda.device_count(), "GPUs!")
     model = nn.DataParallel(model)
     model.cuda()

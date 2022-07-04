@@ -4,6 +4,7 @@ from .resnet_pacs import resnet18_pacs
 from .resnet_mnist import resnet20_mnist
 from .resnet_imagenet import resnet34, resnet50
 from .densenet import densenet121
+from .wrn import wrn
 model_dict = {
     # resnet models can be used for cifar10/100, svhn
     # mendley models only to be used for mendley datasets
@@ -22,4 +23,5 @@ model_dict = {
     "resnet34_imagenet" : resnet34,
     "resnet50_imagenet" : resnet50,
     "densenet121" : densenet121,
+    "wrn" : wrn
 }

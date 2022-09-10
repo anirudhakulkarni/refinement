@@ -55,7 +55,7 @@ def get_all_metrics(targets, outputs):
         roc_auc_value = 0.0
         np.savetxt("outputs.txt", outputs)
         np.savetxt("targets.txt", targets)
-    return {'tpr': tpr, 'fpr': fpr, 'auroc': roc_auc_value, 'aupr-success': aupr_success, 'aupr-error': aupr_err, 'aurc': aurc, 'eaurc': eaurc, 'fpr-at-95': fpr_at_95}
+    return {'auroc': roc_auc_value, 'aupr-success': aupr_success, 'aupr-error': aupr_err, 'aurc': aurc, 'eaurc': eaurc, 'fpr-at-95': fpr_at_95}
 
 
 # AURC, EAURC

@@ -109,7 +109,7 @@ class DirichletScaling(nn.Module):
         scheduler = EarlyStopping(patience=patience)
 
         # send model to gpu
-        self.cuda(1)
+        self.cuda()
 
         last_loss = 0.0
 

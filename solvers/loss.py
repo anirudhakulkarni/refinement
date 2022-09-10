@@ -290,6 +290,11 @@ class MDCA(torch.nn.Module):
         super(MDCA,self).__init__()
 
     def forward(self , output, target):
+
+        # TODO:  DELETE THIS LINE
+        norms = torch.norm(output, p=2, dim=-1, keepdim=True) + 1e-7
+        output = torch.div(output, norms) / 1.0
+
         output = torch.softmax(output, dim=1)
         # [batch, classes]
         loss = torch.tensor(0.0).cuda()

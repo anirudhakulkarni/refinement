@@ -14,11 +14,11 @@ import torch.nn as nn
 import logging
 import json
 
-np.random.seed(0)
+args = parse_args()
+np.random.seed(args.seed)
 
 if __name__ == "__main__":
     
-    args = parse_args()
     logging.basicConfig(level=logging.INFO, 
                         format="%(levelname)s:  %(message)s",
                         handlers=[

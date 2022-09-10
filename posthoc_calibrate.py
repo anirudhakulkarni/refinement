@@ -11,9 +11,11 @@ from datasets import dataloader_dict, dataset_nclasses_dict, dataset_classname_d
 from calibration_library.calibrators import TemperatureScaling, DirichletScaling
 
 import logging
+import torch.nn as nn 
 
 if __name__ == "__main__":
-    
+    t={"a":"aa","b":"bb","c":"cc"}
+    print(t)
     args = parse_args()
     logging.basicConfig(level=logging.INFO, 
                         format="%(levelname)s:  %(message)s",
@@ -33,9 +35,13 @@ if __name__ == "__main__":
    
     checkpoint_folder = os.path.dirname(args.checkpoint)
     saved_model_dict = torch.load(args.checkpoint)
-
-    model = model_dict[args.model](num_classes=num_classes, alpha=args.alpha)
-    model.load_state_dict(saved_model_dict['state_dict'])
+    model = model_dict[args.model](num_classes=num_classes, alpha=args.alpha, args=args)
+    # model.load_state_dict(saved_model_dict['state_dict'])
+    try:
+        model.load_state_dict(saved_model_dict['state_dict'])
+    except:
+        model=nn.DataParallel(model)
+        model.load_state_dict(saved_model_dict['state_dict'])
     model.cuda()
 
     # set up dataset
@@ -49,10 +55,10 @@ if __name__ == "__main__":
     metric_log_path = os.path.join(checkpoint_folder, 'temperature.txt')
     logger = Logger(metric_log_path, resume=os.path.exists(metric_log_path))
 
-    logger.set_names(['temprature', 'SCE', 'ECE'])
+    logger.set_names(['temprature', 'top1','SCE', 'ECE', 'ALL'])
 
-    test_loss, top1, top3, top5, cce_score, ece_score = test(testloader, model, criterion)
-    logger.append(["1.0", cce_score, ece_score])
+    test_loss, top1, top3, top5, cce_score, ece_score, all_metrics = test(testloader, model, criterion)
+    logger.append(["1.0", top1,cce_score, ece_score,str(all_metrics)])
 
     # Set up temperature scaling
     temperature_model = TemperatureScaling(base_model=model)
@@ -61,8 +67,10 @@ if __name__ == "__main__":
     logging.info("Running temp scaling:")
     temperature_model.calibrate(valloader)
     
-    test_loss, top1, top3, top5, cce_score, ece_score = test(testloader, temperature_model, criterion)
-    logger.append(["{:.2f}".format(temperature_model.T), cce_score, ece_score])
+    test_loss, top1, top3, top5, cce_score, ece_score,all_metrics = test(testloader, temperature_model, criterion)
+    print(["{:.2f}".format(temperature_model.T), cce_score, ece_score,str(all_metrics)])
+    print(len(["{:.2f}".format(temperature_model.T), cce_score, ece_score,str(all_metrics)]))
+    logger.append(["{:.2f}".format(temperature_model.T), top1, cce_score, ece_score,str(all_metrics)])
     logger.close()
 
 
@@ -74,7 +82,7 @@ if __name__ == "__main__":
     # set up loggers
     metric_log_path = os.path.join(checkpoint_folder, 'dirichlet.txt')
     logger = Logger(metric_log_path, resume=os.path.exists(metric_log_path))
-    logger.set_names(['method', 'test_nll', 'top1', 'top3', 'top5', 'SCE', 'ECE'])
+    logger.set_names(['method', 'test_nll', 'top1', 'top3', 'top5', 'SCE', 'ECE','ALL'])
 
     min_stats = {}
     min_error = float('inf')
@@ -87,8 +95,8 @@ if __name__ == "__main__":
 
             # calibrate
             dir_model.calibrate(valloader, lr=args.lr, epochs=args.epochs, patience=args.patience)
-            val_nll, _, _, _, _, _ = test(valloader, dir_model, criterion)
-            test_loss, top1, top3, top5, sce_score, ece_score = test(testloader, dir_model, criterion)
+            val_nll, _, _, _, _, _,_ = test(valloader, dir_model, criterion)
+            test_loss, top1, top3, top5, sce_score, ece_score,all_metrics = test(testloader, dir_model, criterion)
 
             if val_nll < min_error:
                 min_error = val_nll
@@ -99,10 +107,11 @@ if __name__ == "__main__":
                     "top5" : top5,
                     "ece_score" : ece_score,
                     "sce_score" : sce_score,
-                    "pair" : (l, m)
+                    "pair" : (l, m),
+                    "all": all_metrics
                 }
             
-            logger.append(["Dir=({:.2f},{:.2f})".format(l, m), test_loss, top1, top3, top5, sce_score, ece_score])
+            logger.append(["Dir=({:.2f},{:.2f})".format(l, m), test_loss, top1, top3, top5, sce_score, ece_score,str(all_metrics)])
     
     logger.append(["Best_Dir={}".format(min_stats["pair"]), 
                                             min_stats["test_loss"], 
@@ -110,5 +119,6 @@ if __name__ == "__main__":
                                             min_stats["top3"], 
                                             min_stats["top5"], 
                                             min_stats["sce_score"], 
-                                            min_stats["ece_score"]])
+                                            min_stats["ece_score"],
+                                            min_stats["all"]])
 

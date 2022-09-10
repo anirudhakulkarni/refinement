@@ -5,7 +5,7 @@ import torch
 import torch.optim as optim
 import torch.nn as nn
 from utils import mkdir_p, parse_args
-from utils import get_lr, save_checkpoint, create_save_path
+from utils import get_lr, save_checkpoint, create_save_path, savefinal
 from utils import crl_utils
 from solvers.runners import train, test, train_CRL, test_CRL
 from solvers.loss import loss_dict
@@ -16,16 +16,16 @@ from datasets import dataloader_dict, dataset_nclasses_dict, dataset_classname_d
 from time import localtime, strftime
 import json
 import logging
-torch.manual_seed(0)
+args = parse_args()
+torch.manual_seed(args.seed)
 
 if __name__ == "__main__":
 
-    args = parse_args()
 
     current_time = strftime("%d-%b", localtime())
     # prepare save path
     username = os.getlogin()
-    model_save_pth = f"{args.checkpoint}/{args.dataset}/{current_time}{create_save_path(args)}_{username}"
+    model_save_pth = f"{args.checkpoint}/{args.dataset}/{current_time}{create_save_path(args)}_{username}_{str(args.seed)}"
     checkpoint_dir_name = model_save_pth
 
     if not os.path.isdir(model_save_pth):
@@ -139,6 +139,10 @@ if __name__ == "__main__":
                 "metrics": all_metrics,
                 "epoch": epoch
             }
+    try:
+        savefinal(checkpoint=model_save_pth)
+    except:
+        pass
     # save results to train_results.json
     jsonfile = args.trainresultsfile+"_"+username+".json"
     if not os.path.isfile(jsonfile):

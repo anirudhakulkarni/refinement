@@ -19,6 +19,9 @@ def save_checkpoint(state, is_best, checkpoint='checkpoint', filename='checkpoin
     torch.save(state, filepath)
     if is_best:
         shutil.copyfile(filepath, os.path.join(checkpoint, f"model_best.pth"))
+def savefinal(checkpoint='checkpoint', filename='final.pth'):
+    filepath = os.path.join(checkpoint, filename)
+    shutil.copyfile(filepath, os.path.join(checkpoint, f"model_best.pth"))
 
 def create_save_path(args):
 

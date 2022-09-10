@@ -4,8 +4,10 @@ from utils import AverageMeter, accuracy, get_all_metrics, crl_accuracy
 import numpy as np
 from calibration_library.metrics import ECELoss, SCELoss
 from sklearn.metrics import roc_auc_score
-torch.manual_seed(0)
-np.random.seed(0)
+from utils import parse_args
+args=parse_args()
+torch.manual_seed(args.seed)
+np.random.seed(args.seed)
 
 def train(trainloader, model, optimizer, criterion):
     # switch to train mode

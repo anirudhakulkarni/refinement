@@ -37,3 +37,20 @@ python train_imbalanced.py --dataset im_cifar10 --model resnet32 --schedule-step
 python train_imbalanced.py --dataset im_cifar10 --model resnet32 --schedule-steps 80 120 --epochs 160 --imbalance 0.01 --loss LS+MDCA --beta 15 --alpha 0.01
 python train_imbalanced.py --dataset im_cifar10 --model resnet32 --schedule-steps 80 120 --epochs 160 --imbalance 0.01 --loss LS+MDCA --beta 20 --alpha 0.01
 
+export CUDA_VISIBLE_DEVICES=0,1
+screen bash -c \
+"python3 aucm.py >> aucm.txt
+"
+
+export CUDA_VISIBLE_DEVICES=6,7
+screen bash -c \
+"python3 aucm_mdca.py >> aucm_mdca.txt
+"
+export CUDA_VISIBLE_DEVICES=6
+screen bash -c \
+"python pacscheck.py 960 1200
+"
+export CUDA_VISIBLE_DEVICES=7
+screen bash -c \
+"python pacscheck.py 1200 1440
+"

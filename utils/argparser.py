@@ -69,4 +69,5 @@ def parse_args():
     parser.add_argument('--layers', default=40, type=int, help='total number of layers')
     parser.add_argument('--widen-factor', default=2, type=int, help='widen factor')
     parser.add_argument('--droprate', default=0.3, type=float, help='dropout probability')
+    parser.add_argument('--target_type', default="art", type=str, help='target type for pacs dataset')
     return parser.parse_args()

@@ -30,14 +30,16 @@ def get_basic_curves(logfilename):
     auroc = []
     for line in lines:
         if 'INFO:  End of epoch' in line:
-            train_loss.append(float(line.split('train_loss : ')[1].split(" ")[0]))
-            val_loss.append(float(line.split('val_loss : ')[1].split(" ")[0]))
-            top1_train.append(float(line.split('top1_train : ')[1].split(" ")[0]))
-            top1.append(float(line.split('top1 : ')[1].split(" ")[0]))
-            sce.append(float(line.split('SCE : ')[1].split(" ")[0]))
-            ece.append(float(line.split('ECE : ')[1].split(" ")[0]))
+            # print(line)
+            # print(line.split('train_loss : '))
+            train_loss.append(float(line.split('train_loss: ')[1].split(" ")[0]))
+            val_loss.append(float(line.split('val_loss: ')[1].split(" ")[0]))
+            top1_train.append(float(line.split('top1_train: ')[1].split(" ")[0]))
+            top1.append(float(line.split('top1: ')[1].split(" ")[0]))
+            sce.append(float(line.split('SCE: ')[1].split(" ")[0]))
+            ece.append(float(line.split('ECE: ')[1].split(" ")[0]))
             try:
-                auroc.append(float(line.split('AUROC : ')[1].split(" ")[0]))
+                auroc.append(float(line.split('AUROC: ')[1].split(" ")[0]))
             except:
                 pass
     return train_loss, val_loss, top1_train, top1, sce, ece, auroc

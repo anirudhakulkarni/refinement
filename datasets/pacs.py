@@ -24,6 +24,7 @@ path_dict = {
 }
 
 def get_train_valid_test_loader(args, target_type="art"):
+    target_type=args.target_type
     # Prepare Pytorch train/test Datasets
     train_set = datasets.ImageFolder(path_dict["photo"], transform=transf)
     test_set = datasets.ImageFolder(path_dict[target_type], transform=transf)
@@ -34,6 +35,7 @@ def get_train_valid_test_loader(args, target_type="art"):
     return train_loader, test_loader, test_loader
 
 def get_datasets(args, target_type="art"):
+    target_type=args.target_type
     train_set = datasets.ImageFolder(path_dict["photo"])
     test_set = datasets.ImageFolder(path_dict[target_type])
     return train_set, test_set

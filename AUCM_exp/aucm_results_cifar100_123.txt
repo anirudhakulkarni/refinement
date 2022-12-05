@@ -1,0 +1,26 @@
+gamma: 100, margin: 0.1, train_auc: 0.5152807556076515, test_auc: 0.527783gamma: 100, margin: 0.3, train_auc: 0.5491564996452034, test_auc: 0.52878838gamma: 100, margin: 0.5, train_auc: 0.4628483269876877, test_auc: 0.45963564gamma: 100, margin: 0.7, train_auc: 0.4913370491603147, test_auc: 0.49296063999999995gamma: 100, margin: 1.0, train_auc: 0.5298452893812293, test_auc: 0.52119866gamma: 300, margin: 0.1, train_auc: 0.5452747988849975, test_auc: 0.5387744800000001gamma: 300, margin: 0.3, train_auc: 0.5399611949143275, test_auc: 0.5291635gamma: 300, margin: 0.5, train_auc: 0.49929806111025554, test_auc: 0.4936952gamma: 300, margin: 0.7, train_auc: 0.5586215579005196, test_auc: 0.5444179199999999gamma: 300, margin: 1.0, train_auc: 0.5450908562824608, test_auc: 0.53241626gamma: 500, margin: 0.1, train_auc: 0.48799906786407354, test_auc: 0.48164068000000004
+gamma: 100, margin: 0.1, train_auc: 0.44545168852671657, test_auc: 0.49507113999999997
+gamma: 100, margin: 0.3, train_auc: 0.4897573734702688, test_auc: 0.52733704
+gamma: 100, margin: 0.5, train_auc: 0.509310391090154, test_auc: 0.5236444800000001
+gamma: 100, margin: 0.7, train_auc: 0.5197006328606905, test_auc: 0.5237243
+gamma: 100, margin: 1.0, train_auc: 0.5424070184875744, test_auc: 0.5292972
+gamma: 300, margin: 0.1, train_auc: 0.512710207460648, test_auc: 0.53257036
+gamma: 300, margin: 0.3, train_auc: 0.6759347548719602, test_auc: 0.59382734
+gamma: 300, margin: 0.5, train_auc: 0.7212429549344708, test_auc: 0.59599778
+gamma: 300, margin: 0.7, train_auc: 0.7979657373284197, test_auc: 0.59198902
+gamma: 300, margin: 1.0, train_auc: 0.7712564823504577, test_auc: 0.58739166
+gamma: 500, margin: 0.1, train_auc: 0.5924574244054295, test_auc: 0.5480877399999999
+gamma: 500, margin: 0.3, train_auc: 0.7856758176218199, test_auc: 0.58181336
+gamma: 500, margin: 0.5, train_auc: 0.8443405628437581, test_auc: 0.58087774
+gamma: 500, margin: 0.7, train_auc: 0.9040473837882105, test_auc: 0.57512732
+gamma: 500, margin: 1.0, train_auc: 0.8720010405005255, test_auc: 0.5578308
+gamma: 700, margin: 0.1, train_auc: 0.6356214854151883, test_auc: 0.55735316
+gamma: 700, margin: 0.3, train_auc: 0.7631849386926698, test_auc: 0.5860717599999999
+gamma: 700, margin: 0.5, train_auc: 0.8699428602433845, test_auc: 0.57649056
+gamma: 700, margin: 0.7, train_auc: 0.9068237627262624, test_auc: 0.57364282
+gamma: 700, margin: 1.0, train_auc: 0.9399722902566996, test_auc: 0.56934322
+gamma: 1000, margin: 0.1, train_auc: 0.6467668204118693, test_auc: 0.56244926
+gamma: 1000, margin: 0.3, train_auc: 0.7576971106162171, test_auc: 0.58875114
+gamma: 1000, margin: 0.5, train_auc: 0.8638466375708003, test_auc: 0.56904194
+gamma: 1000, margin: 0.7, train_auc: 0.9136824487579576, test_auc: 0.56817984
+gamma: 1000, margin: 1.0, train_auc: 0.9315895640350675, test_auc: 0.57708964

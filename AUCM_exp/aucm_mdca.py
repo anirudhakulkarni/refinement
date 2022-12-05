@@ -27,6 +27,7 @@ def set_all_seeds(SEED):
     # REPRODUCIBILITY
     torch.manual_seed(SEED)
     np.random.seed(SEED)
+    # TODO: check if this is needed
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
 
@@ -50,6 +51,8 @@ print(traindSet.imratio_list)
 
 # model
 set_all_seeds(SEED)
+
+# TODO: check with wresnet vs DenseNet
 model = DenseNet121(pretrained=True, last_activation=None,
                     activations='relu', num_classes=5)
 model = model.cuda()
@@ -111,6 +114,8 @@ for epoch in range(epochs):
                 cces = SCELoss().loss(test_pred, test_true, n_bins=15)
                 print('Epoch=%s, BatchID=%s, Val_AUC=%.4f, Best_Val_AUC=%.4f, ECE=%.4f, SCE=%.4f' %
                         (epoch, idx, val_auc_mean, best_val_auc, eces, cces))
+
+
 
 if True:
     # load the saved model

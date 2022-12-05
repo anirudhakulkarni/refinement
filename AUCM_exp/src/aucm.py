@@ -34,7 +34,7 @@ def set_all_seeds(SEED):
 
 
 # dataloader
-root = '../MDCA-Calibration-main/data/CheXpert-v1.0-small/'
+root = '../../../MDCA-Calibration-main/data/CheXpert-v1.0-small/'
 # Index: -1 denotes multi-label mode including 5 diseases
 traindSet = CheXpert(csv_path=root+'train.csv', image_root_path=root, use_upsampling=False,
                      use_frontal=True, image_size=224, mode='train', class_index=-1, verbose=False)
@@ -77,6 +77,8 @@ for epoch in range(epochs):
     for idx, data in enumerate(trainloader):
         train_data, train_labels = data
         train_data, train_labels = train_data.cuda(), train_labels.cuda()
+        
+        print(train_data.shape)
         y_pred = model(train_data)
         y_pred = torch.sigmoid(y_pred)
         loss = Loss(y_pred, train_labels)

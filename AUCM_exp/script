@@ -1,0 +1,13 @@
+export CUDA_VISIBLE_DEVICES=6
+screen bash -c \
+"python3 combined.py ce cifar10 densenet121
+"
+
+export CUDA_VISIBLE_DEVICES=7
+screen bash -c \
+"python3 combined.py ce cifar100 densenet121
+"
+export CUDA_VISIBLE_DEVICES=0
+screen bash -c \
+"python3 combined.py ce c2 densenet121
+"

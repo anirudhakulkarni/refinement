@@ -1,0 +1,4 @@
+gamma: 300, margin: 1, train_auc: 0.9847219573538413, test_auc: 0.65430012
+gamma: 300, margin: 1, train_auc: 0.9475582139868712, test_auc: 0.7103189999999999
+gamma: 300, margin: 1, train_auc: 0.9981128959028696, test_auc: 0.6405185800000001
+gamma: -1, margin: -1, train_auc: 0.9777396721944587, test_auc: 0.6375164799999999

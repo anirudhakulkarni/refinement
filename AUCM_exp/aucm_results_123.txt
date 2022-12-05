@@ -1,0 +1,12 @@
+gamma: 100, margin: 0.1, train_auc: 0.5395888905822733, test_auc: 0.48909036
+gamma: 100, margin: 0.3, train_auc: 0.4527805754572299, test_auc: 0.44184586
+gamma: 100, margin: 0.5, train_auc: 0.5080408188994473, test_auc: 0.47565068000000005
+gamma: 100, margin: 0.7, train_auc: 0.48827629246432325, test_auc: 0.45750028000000004
+gamma: 100, margin: 1.0, train_auc: 0.5286576956531692, test_auc: 0.48964912
+gamma: 300, margin: 0.1, train_auc: 0.5432798626848058, test_auc: 0.53102098
+gamma: 300, margin: 0.3, train_auc: 0.4943390866735342, test_auc: 0.48784500000000003
+gamma: 300, margin: 0.5, train_auc: 0.5326701402400409, test_auc: 0.55441612
+gamma: 300, margin: 0.7, train_auc: 0.5024996748435858, test_auc: 0.461151
+gamma: 300, margin: 1.0, train_auc: 0.4936350408079698, test_auc: 0.48571790000000004
+gamma: 500, margin: 0.1, train_auc: 0.5380694231439305, test_auc: 0.49288240000000005
+gamma: 500, margin: 0.3, train_auc: 0.4944626611526948, test_auc: 0.45340157999999997

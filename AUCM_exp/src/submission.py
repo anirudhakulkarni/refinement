@@ -1,23 +1,81 @@
+import sys
+
+# import cv2
+import numpy as np
+import pandas as pd
+import torchvision
+from PIL import Image
+from torchvision import transforms
+
+import torch
+import torch.backends.cudnn as cudnn
+import torch.nn as nn
+torch.cuda.set_device(0)
+
+###################### loading data ######################
+
+def load_and_resize_img(path):
+    """
+    Load and convert the full resolution images on CodaLab to
+    low resolution used in the small dataset.
+    """
+    img = cv2.imread(path, 0)
+
+    size = img.shape
+    max_dim = max(size)
+    max_ind = size.index(max_dim)
+
+    if max_ind == 1:
+        # width fixed at 320
+        wpercent = (320 / float(size[0]))
+        hsize = int((size[1] * wpercent))
+        new_size = (hsize, 320)
+
+    else:
+        # height fixed at 320
+        hpercent = (320 / float(size[1]))
+        wsize = int((size[0] * hpercent))
+        new_size = (320, wsize)
+
+    resized_img = cv2.resize(img, new_size)
+
+    return resized_img
+
+
+def ImageTensor(image_name):
+    image = Image.open(image_name).convert('RGB')
+
+    transform = transforms.Compose([
+            transforms.Resize((320, 320)),
+            transforms.ToTensor(),
+            transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
+            ])
+
+    image = transform(image)
+
+    return image_name, image
+
+
+
 from tkinter import image_names
-from libauc.losses import AUCM_MultiLabel, CrossEntropyLoss, AUCM_MultiLabel_MDCA
-from libauc.optimizers import PESG, Adam
 from libauc.models import densenet121 as DenseNet121
-from libauc.datasets import CheXpert
-from libauc.metrics import auc_roc_score  # for multi-task
-from calibration_library.metrics import ECELoss, SCELoss
 
 import torch
 from PIL import Image
 import numpy as np
 import torchvision.transforms as transforms
-from torch.utils.data import Dataset
-from sklearn.metrics import roc_auc_score
-import torch.nn.functional as F
 import torch.nn as nn
 import sys
+import os
+
+cwd = os.getcwd()  # Get the current working directory (cwd)
+files = os.listdir(cwd)  # Get all the files in that directory
+print("Files in %r: %s" % (cwd, files))
+
+
 # paramaters
 SEED = 123
-BATCH_SIZE = 256
+BATCH_SIZE = 1
 lr = 0.1
 gamma = 500
 weight_decay = 1e-5
@@ -31,91 +89,102 @@ def set_all_seeds(SEED):
     np.random.seed(SEED)
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
+import cv2
 
-
+def ImageTensor(image_name):
+    # image = cv2.imread(image_name, 0)
+    image=load_and_resize_img(image_name)
+    # print(image,image.shape)
+    image = Image.fromarray(image)
+    image = np.array(image)
+    image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
+    
+    # resize and normalize; e.g., ToTensor()
+    image = cv2.resize(image, dsize=(320, 320), interpolation=cv2.INTER_LINEAR)  
+    image = image/255.0
+    __mean__ = np.array([[[0.485, 0.456, 0.406]]])
+    __std__ =  np.array([[[0.229, 0.224, 0.225]  ]]) 
+    image = (image-__mean__)/__std__
+    image = image.transpose((2, 0, 1)).astype(np.float32)
+    return image_name, image
 # python src/<path-to-prediction-program> <input-data-csv-filename> <output-prediction-csv-path>
-inputcsv = sys.argv[1]
-outputcsv = sys.argv[2]
+input_csv_filename = sys.argv[1]
+prediction_csv_filename = sys.argv[2]
 
-if True:
+df = pd.read_csv(input_csv_filename)
+image_list = np.asarray(df)
+print(image_list)
+# root='../../data/CheXpert-v1.0-small'
+try:
+    root='./'
+    image_list = [root + i for i in image_list]
+    print(image_list)
+    loader = [ImageTensor(image_name[0]) for image_name in image_list]
+except:
+    # convert ./CheXpert-v1.0/valid/patient00000/study1/view1_frontal.jpg to valid/patient00000/study1/view1_frontal.jpg
+    image_list = [i[0][16:] for i in image_list]
+    print(image_list)
+    loader = [ImageTensor(image_name) for image_name in image_list]
+def test(path):
     # load the saved model
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     model = DenseNet121(last_activation=None,
                         activations='relu', num_classes=5)
-    model = nn.DataParallel(model)
+    model = torch.nn.DataParallel(model, device_ids=[0])
+    # model = model.to(device)
     model.load_state_dict(torch.load(
-        'aucm_multi_label_MDCA_pretrained_model.pth'))
+        path,map_location='cuda:0'))
+        # 'aucm_multi_label_MDCA_pretrained_model.pth'))
     # model = torch.load('aucm_multi_label_pretrained_model.pth')
     # model = model.cuda()
     # test the model
-    model.cuda()
     model.eval()
-
-    testSet = CheXpert(csv_path=inputcsv, image_root_path='../data/CheXpert-v1.0-small/',
-                       use_upsampling=False, use_frontal=True, image_size=224, mode='valid', class_index=-1, verbose=False,shuffle=False)
-    # print the test set size
-    print(len(testSet))
-    print(testSet._images_list)
-    print(len(testSet._images_list))
-    testloader = torch.utils.data.DataLoader(
-        testSet, batch_size=BATCH_SIZE, num_workers=2, shuffle=False)
-    # predict
-    # print(testloader)
-    # print number of images in the test set
-    print(len(testloader.dataset))
+    # model = model.to(device)
+    pred = []
     y_pred = []
-    y_true = []
     with torch.no_grad():
-        for i, (images, labels) in enumerate(testloader):
-            images = images.cuda()
-            labels = labels.cuda()
-            outputs = model(images)
-            y_pred.append(outputs.cpu().numpy())
-            y_true.append(labels.cpu().numpy())
-    
-    y_pred = np.concatenate(y_pred, axis=0)
-    y_true = np.concatenate(y_true, axis=0)
+        for name, data in loader:
+            pred_ = []
+            # add a batch dimension
+            # numpy.ndarray
+            data = np.expand_dims(data, axis=0)
+            print(data.shape)
+            # data = data.unsqueeze(0)
+            data = torch.from_numpy(data)
+            data = data.to(device)
 
-    
-    # calculate AUC
-    auc = roc_auc_score(y_true, y_pred)
-    print('AUC: ', auc)
-    # calculate ECE
-    ece = ECELoss().loss(y_pred, y_true, n_bins=15)
-    print('ECE: ', ece)
-    # calculate SCE
-    sce = SCELoss().loss(y_pred, y_true, n_bins=15)
-    print('SCE: ', sce)
-    # calculate accuracy
-    # y_pred = np.argmax(y_pred, axis=1)
-    # y_true = np.argmax(y_true, axis=1)
-    # acc = np.mean(y_pred == y_true)
-    # print('Accuracy: ', acc)
-    # save predictions
-    # concatenate image names and predictions
-    image_names=np.loadtxt(inputcsv, dtype=str, delimiter=',', skiprows=1, usecols=0)
-    # append image names as first column
-    print(y_pred)
-    print(image_names)
-    print(y_pred.shape)
-    print(image_names.shape)
-    # concatenate testSet._images_list which is 1d array and y_pred
-    y_pred = np.concatenate((np.array(testSet._images_list).reshape(-1,1), y_pred), axis=1)
-    # y_pred = np.concatenate((testSet._images_list, y_pred), axis=1)
-    # save predictions
-    np.savetxt(outputcsv, y_pred, delimiter=',', fmt='%s')
-    
-# eces = ECELoss().loss(test_pred, test_true, n_bins=15)
-# cces = SCELoss().loss(test_pred, test_true, n_bins=15)
-# aucscore = auc_roc_score(test_true, test_pred)
+            out = model(data)
+            out = torch.sigmoid(out).cpu().numpy()
+            # print(out)
+            pred_.append(name)
+            for prob in out[0]:
+                pred_.append(prob)
 
-# print("ECE: ", eces)
-# print("SCE: ", cces)
-# print("AUC: ", aucscore)
+            pred.append(pred_)
 
-# if test_pred.shape != test_true.shape:
-#     # change from one-hot to class index
-#     labels = np.argmax(test_true, axis=1)
-# # print(self.predictions)
-# accuracies = np.equal(test_pred, test_true)
-# # print("Accuracies: ", np.count_nonzero(accuracies,axis=0)/accuracies.size)
-# print("Accuracy: ", np.mean(accuracies))
+        return pred
+path='src/src/aucm_multi_label_MDCA_pretrained_model.pth'
+try:
+    pred=test(path)
+except:
+    path='aucm_multi_label_MDCA_pretrained_model.pth'
+    pred=test(path)
+class_names = ['Study', 'Atelectasis', 'Cardiomegaly', 'Consolidation', 'Edema', 'Pleural Effusion']
+
+pred_df = pd.DataFrame(pred, columns=class_names)
+images_names=pred_df['Study']
+temp = []
+for image_name in images_names:
+    image_name = '/'.join(image_name.split('/')[:-1])
+    temp.append(image_name)
+pred_df['Study'] = temp
+
+def merge_studies(df):
+    dic = {'Atelectasis': 'max', 'Cardiomegaly': 'max', 'Consolidation': 'max', 'Edema': 'max', 'Pleural Effusion': 'max'}
+    df_new = df.groupby(df['Study'], as_index=False).aggregate(dic).reindex(columns=df.columns)
+
+    return df_new
+
+pred_df = merge_studies(pred_df)
+
+pd.DataFrame.to_csv(pred_df, prediction_csv_filename, index=False)

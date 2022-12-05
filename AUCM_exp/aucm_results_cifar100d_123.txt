@@ -1,0 +1,25 @@
+gamma: 100, margin: 0.1, train_auc: 0.4712592482380978, test_auc: 0.51144952gamma: 100, margin: 0.3, train_auc: 0.48514964723805454, test_auc: 0.52254456gamma: 100, margin: 0.5, train_auc: 0.5088711077284622, test_auc: 0.52412304gamma: 100, margin: 0.1, train_auc: 0.505040114908325, test_auc: 0.49095526
+gamma: 100, margin: 0.3, train_auc: 0.5021241699157899, test_auc: 0.50380544
+gamma: 100, margin: 0.5, train_auc: 0.5371125690836074, test_auc: 0.51173082
+gamma: 100, margin: 0.7, train_auc: 0.5968295055308508, test_auc: 0.5307867000000001
+gamma: 100, margin: 1.0, train_auc: 0.6140648088803433, test_auc: 0.5241600200000001
+gamma: 300, margin: 0.1, train_auc: 0.5610145275863911, test_auc: 0.519957
+gamma: 300, margin: 0.3, train_auc: 0.7022331204553605, test_auc: 0.5641430599999999
+gamma: 300, margin: 0.5, train_auc: 0.992340830948188, test_auc: 0.5787207400000001
+gamma: 300, margin: 0.7, train_auc: 0.9983325194629473, test_auc: 0.57841188
+gamma: 300, margin: 1.0, train_auc: 0.9977735399292442, test_auc: 0.57111466
+gamma: 500, margin: 0.1, train_auc: 0.7142230844161624, test_auc: 0.53880956
+gamma: 500, margin: 0.3, train_auc: 0.921648874160877, test_auc: 0.58203378
+gamma: 500, margin: 0.5, train_auc: 0.998273068774591, test_auc: 0.5791010400000001
+gamma: 500, margin: 0.7, train_auc: 0.9984512618806001, test_auc: 0.5721698
+gamma: 500, margin: 1.0, train_auc: 0.9974250221906847, test_auc: 0.56952984
+gamma: 700, margin: 0.1, train_auc: 0.7590251850598807, test_auc: 0.5381853200000001
+gamma: 700, margin: 0.3, train_auc: 0.9617663134763169, test_auc: 0.57843032
+gamma: 700, margin: 0.5, train_auc: 0.9982897594758675, test_auc: 0.56680822
+gamma: 700, margin: 0.7, train_auc: 0.9983854842585917, test_auc: 0.56901812
+gamma: 700, margin: 1.0, train_auc: 0.9974924208320299, test_auc: 0.5781973599999999
+gamma: 1000, margin: 0.1, train_auc: 0.7369584423792485, test_auc: 0.5425850999999999
+gamma: 1000, margin: 0.3, train_auc: 0.9366366933463552, test_auc: 0.58034094
+gamma: 1000, margin: 0.5, train_auc: 0.9980607225827125, test_auc: 0.5697713799999999
+gamma: 1000, margin: 0.7, train_auc: 0.9984807415640862, test_auc: 0.56189416
+gamma: 1000, margin: 1.0, train_auc: 0.9977353897548978, test_auc: 0.56146584

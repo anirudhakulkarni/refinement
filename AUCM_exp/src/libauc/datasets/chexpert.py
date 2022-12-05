@@ -5,6 +5,32 @@ import torchvision.transforms as tfs
 import cv2
 from PIL import Image
 import pandas as pd
+def load_and_resize_img(img):
+    """
+    Load and convert the full resolution images on CodaLab to
+    low resolution used in the small dataset.
+    """
+    # img = cv2.imread(path, 0) 
+
+    size = img.shape
+    max_dim = max(size)
+    max_ind = size.index(max_dim)
+    
+    if max_ind == 1:
+        # width fixed at 320
+        wpercent = (320 / float(size[0]))
+        hsize = int((size[1] * wpercent))
+        new_size = (hsize, 320)
+        
+    else:
+        # height fixed at 320
+        hpercent = (320 / float(size[1]))
+        wsize = int((size[0] * hpercent))
+        new_size = (320, wsize)
+
+    resized_img = cv2.resize(img, new_size)
+
+    return resized_img
 
 class CheXpert(Dataset):
     '''
@@ -34,6 +60,17 @@ class CheXpert(Dataset):
         self.df = pd.read_csv(csv_path)
         self.df['Path'] = self.df['Path'].str.replace('CheXpert-v1.0-small/', '')
         self.df['Path'] = self.df['Path'].str.replace('CheXpert-v1.0/', '')
+
+        if mode == 'predict':
+            self.df = self.df[self.df['Path'].str.contains('frontal')]
+            self.mode = mode
+            self.class_index = class_index
+            self.image_size = image_size
+            self.transforms = transforms
+            self._images_list =  [image_root_path+path for path in self.df['Path'].tolist()]
+            self._num_images = len(self.df)
+
+            return
         if use_frontal:
             self.df = self.df[self.df['Frontal/Lateral'] == 'Frontal']  
             
@@ -169,8 +206,11 @@ class CheXpert(Dataset):
         return self._num_images
     
     def __getitem__(self, idx):
-
+        # print(self._images_list[idx])
         image = cv2.imread(self._images_list[idx], 0)
+        if self.mode=='predict':
+            image=load_and_resize_img(image)
+        # print(image,image.shape)
         image = Image.fromarray(image)
         if self.mode == 'train' :
             if self.transforms is None:
@@ -187,6 +227,9 @@ class CheXpert(Dataset):
         __std__ =  np.array([[[0.229, 0.224, 0.225]  ]]) 
         image = (image-__mean__)/__std__
         image = image.transpose((2, 0, 1)).astype(np.float32)
+        if self.mode=='predict':
+            # return load_and_resize_img(image)
+            return image, self._images_list[idx]
         if self.class_index != -1: # multi-class mode
             label = np.array(self.targets[idx]).reshape(-1).astype(np.float32)
         else:

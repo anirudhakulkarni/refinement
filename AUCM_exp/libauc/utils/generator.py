@@ -83,5 +83,6 @@ class ImbalancedDataGenerator(object):
 
           if self.verbose:
              _check_imbalance_ratio(targets_copy)
-
+                  
           return data_copy, targets_copy
+         #  return data, targets

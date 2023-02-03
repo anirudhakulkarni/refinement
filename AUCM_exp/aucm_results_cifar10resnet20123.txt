@@ -2,3 +2,4 @@ gamma: 300, margin: 1, train_auc: 0.9184869068601644, test_auc: 0.71471348
 gamma: 300, margin: 1.0, train_auc: 0.8988272477446888, test_auc: 0.71402672
 gamma: 300, margin: 1.0, train_auc: 0.8988272477446888, test_auc: 0.71402672
 gamma: 300, margin: 1.0, train_auc: 0.9101585247234574, test_auc: 0.7130106
+gamma: 300, margin: 1.0, train_auc: 0.6589257131782169, test_auc: 0.64649446

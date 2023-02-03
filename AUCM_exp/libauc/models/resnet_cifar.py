@@ -135,6 +135,10 @@ class ResNet(nn.Module):
             out = self.sigmoid(out)
         return out
 
+    def init_weights(self, m):
+        if isinstance(m, nn.Linear):
+            torch.nn.init.xavier_uniform(m.weight)
+            m.bias.data.fill_(0.01)
 
 def resnet20(pretrained=False, activations='relu', last_activation=None, **kwargs):
     global activation_func

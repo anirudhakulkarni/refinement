@@ -1,4 +1,5 @@
-'''Resnet for cifar dataset.
+'''
+Resnet for cifar dataset.
 Ported form
 https://github.com/facebook/fb.resnet.torch
 and

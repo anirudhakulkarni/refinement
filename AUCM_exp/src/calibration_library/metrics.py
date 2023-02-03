@@ -107,7 +107,9 @@ class ECELoss(MaxProbCELoss):
 
     def loss(self, output, labels, n_bins = 15, logits = True):
         super().loss(output, labels, n_bins, logits)
-        return np.dot(self.bin_prop,self.bin_score)
+        # TODO: Read here. The value is in %
+        # return value with 10*^2 multiplied
+        return np.dot(self.bin_prop,self.bin_score)*100
 
 class MCELoss(MaxProbCELoss):
     
@@ -140,8 +142,9 @@ class SCELoss(CELoss):
         for i in range(self.n_class):
             super().compute_bins(i)
             sce += np.dot(self.bin_prop, self.bin_score)
-
-        return sce/self.n_class
+        # TODO: Read here. The value is in notation 10^-3
+        # return value with 10*^3 multiplied
+        return sce/self.n_class*1000
 
 class TACELoss(CELoss):
 

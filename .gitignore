@@ -2,7 +2,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
-
+*.gz
 # C extensions
 *.so
 
@@ -136,3 +136,10 @@ checkpoints/
 *.zip
 aurocs/
 pacscheck/
+
+
+*.pth
+
+data/
+datasets/
+

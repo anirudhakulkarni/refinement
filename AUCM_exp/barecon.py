@@ -1,5 +1,5 @@
 from libauc.losses import AUCMLoss, CrossEntropyLoss, SupConLoss, ContrastiveLossOptimized, ContrastiveLossOptimizedV2 as ContrastiveLossOptimizedV1
-# from pytorch_metric_learning.losses import ContrastiveLoss as ContrastiveLossOptimizedV1
+from pytorch_metric_learning.losses import ContrastiveLoss 
 
 from libauc.optimizers import PESG
 from libauc.models import resnet20 as ResNet20, densenet121
@@ -206,7 +206,7 @@ for gamma in gammas:
         elif lossfunction == 'supcontrast':
             Loss = SupConLoss()
         elif lossfunction == 'contra':
-            Loss = ContrastiveLossOptimizedV1()
+            Loss = ContrastiveLoss(pos_margin=0, neg_margin=1)
         else:
             print("loss function not supported")
             exit()
@@ -247,9 +247,7 @@ for gamma in gammas:
                     f1, f2 = torch.split(y_pred, [bsz, bsz], dim=0)
                     y_pred = torch.cat([f1.unsqueeze(1), f2.unsqueeze(1)], dim=1)
                     loss = Loss(y_pred, targets)
-                    print(y_pred.shape)
                     y_pred = y_pred.contiguous().view(-1, 1)
-                    print(y_pred.shape)
                     # take only first half of the y_pred
                     # print(y_pred)
                     # y_pred=y_pred[:y_pred.shape[0]//2]
@@ -260,7 +258,7 @@ for gamma in gammas:
                     if lossfunction=='aucm' :
                         y_pred = torch.sigmoid(y_pred)
                     if lossfunction=='contra':
-                        loss = Loss(y_pred, targets,epoch,model)
+                        loss = Loss(y_pred, targets.view(-1),0)
                     else:
                         loss = Loss(y_pred, targets)
                     # l2 normalization
@@ -275,8 +273,8 @@ for gamma in gammas:
 
             train_true = np.concatenate(train_true)
             train_pred = np.concatenate(train_pred)
-            print(train_true.shape)
-            print(train_pred.shape)
+            # print(train_true.shape)
+            # print(train_pred.shape)
             # print(train_pred)            
             train_auc = roc_auc_score(train_true, train_pred)
 

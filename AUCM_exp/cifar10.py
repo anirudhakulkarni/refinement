@@ -1,4 +1,4 @@
-from libauc.losses import AUCMLoss, AUCM_MDCALoss, CrossEntropyLoss, SupConLoss
+from libauc.losses import AUCMLoss, AUCM_MDCALoss, CrossEntropyLoss, SupConLoss, ContrastiveLossOptimized
 from libauc.optimizers import PESG
 from libauc.models import resnet20 as ResNet20
 from libauc.datasets import CIFAR10
@@ -55,7 +55,7 @@ class ImageDataset(Dataset):
 # paramaters
 SEED = 123
 BATCH_SIZE = 128
-imratio = 0.01  # for demo
+imratio = 0.1  # for demo
 lr = 0.1
 weight_decay = 1e-4
 
@@ -67,7 +67,7 @@ margins = [ 0.1]
 lossfunction = sys.argv[1]
 set_all_seeds(SEED)
 
-if lossfunction=='ce':
+if lossfunction=='ce' or lossfunction=='contra':
     gammas = [300]
     margins = [ 1.0]
 
@@ -94,6 +94,8 @@ for margin in margins:
 
         # You need to include sigmoid activation in the last layer for any customized models!
         model = ResNet20(pretrained=False, last_activation=None, num_classes=1)
+        # initialize the model with random weights
+        # model.apply(model.init_weights)
         model = model.cuda()
         if lossfunction == 'aucm':
             Loss = AUCMLoss()
@@ -103,6 +105,8 @@ for margin in margins:
             Loss = CrossEntropyLoss()
         elif lossfunction == 'supcontrast':
             Loss = SupConLoss()
+        elif lossfunction == 'contra':
+            Loss = ContrastiveLossOptimized()
         else:
             print("loss function not supported")
             exit()

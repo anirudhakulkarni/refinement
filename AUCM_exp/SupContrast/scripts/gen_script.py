@@ -8,7 +8,9 @@ models=['resnet20','densenet121']
 imratios=[0.01,0.1]
 gpus=[0,1,2,3,4,5,6,7]
 losses = ['focal']
-gammas = [1,2,5]
+gammas = [1,
+          2,5
+          ]
 script='#!/bin/bash\n'
 '''
 sample:

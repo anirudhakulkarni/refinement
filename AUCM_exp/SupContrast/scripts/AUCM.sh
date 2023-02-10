@@ -2,7 +2,7 @@
 ## ResNet20
 ### AUCM
 export CUDA_VISIBLE_DEVICES=0
-python main_aucm.py --batch_size 128 \
+python main_aucm.py --batch_size 256 \
   --learning_rate 0.8 \
   --cosine \
   --imratio 0.01 \
@@ -10,7 +10,7 @@ python main_aucm.py --batch_size 128 \
   --model resnet20 &
 
 export CUDA_VISIBLE_DEVICES=1
-python main_aucm.py --batch_size 128 \
+python main_aucm.py --batch_size 256 \
   --learning_rate 0.8 \
   --cosine \
   --imratio 0.01 \
@@ -37,7 +37,7 @@ python3 main_aucm.py --batch_size 128 \
 ## DenseNet121
 ### AUCM
 export CUDA_VISIBLE_DEVICES=4
-python main_aucm.py --batch_size 128 \
+python main_aucm.py --batch_size 256 \
   --learning_rate 0.8 \
   --cosine \
   --imratio 0.01 \
@@ -45,7 +45,7 @@ python main_aucm.py --batch_size 128 \
   --model densenet121 &
 
 export CUDA_VISIBLE_DEVICES=0
-python main_aucm.py --batch_size 128 \
+python main_aucm.py --batch_size 256 \
   --learning_rate 0.8 \
   --cosine \
   --imratio 0.01 \
@@ -75,7 +75,7 @@ python3 main_aucm.py --batch_size 128 \
 ## ResNet20
 ### AUCM
 export CUDA_VISIBLE_DEVICES=6
-python main_aucm.py --batch_size 128 \
+python main_aucm.py --batch_size 256 \
   --learning_rate 0.8 \
   --cosine \
   --imratio 0.1 \
@@ -83,7 +83,7 @@ python main_aucm.py --batch_size 128 \
   --model resnet20 &
 
 export CUDA_VISIBLE_DEVICES=6
-python main_aucm.py --batch_size 128 \
+python main_aucm.py --batch_size 256 \
   --learning_rate 0.8 \
   --cosine \
   --imratio 0.1 \
@@ -109,7 +109,7 @@ python3 main_aucm.py --batch_size 128 \
 ## DenseNet121
 ### AUCM
 export CUDA_VISIBLE_DEVICES=4
-python main_aucm.py --batch_size 128 \
+python main_aucm.py --batch_size 256 \
     --learning_rate 0.8 \
     --cosine \
     --imratio 0.1 \
@@ -117,7 +117,7 @@ python main_aucm.py --batch_size 128 \
     --model densenet121 &
 
 export CUDA_VISIBLE_DEVICES=5
-python main_aucm.py --batch_size 128 \
+python main_aucm.py --batch_size 256 \
     --learning_rate 0.8 \
     --cosine \
     --imratio 0.1 \

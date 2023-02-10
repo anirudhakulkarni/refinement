@@ -54,7 +54,7 @@ def parse_option():
                         help='momentum')
 
     # model dataset
-    parser.add_argument('--loss', type=str, default='ce', choices=['ce', 'focal'])
+    parser.add_argument('--loss', type=str, default='nll', choices=['nll', 'focal'])
     parser.add_argument('--model', type=str, default='resnet50')
     parser.add_argument('--dataset', type=str, default='cifar10',
                         choices=['cifar10', 'cifar100','c2','stl10','melanoma'], help='dataset')
@@ -83,8 +83,8 @@ def parse_option():
     for it in iterations:
         opt.lr_decay_epochs.append(int(it))
 
-    opt.model_name = 'SupNLL_{}_{}_im_{}_lr_{}_decay_{}_bsz_{}_trial_{}'.\
-        format(opt.dataset, opt.model, opt.imratio, opt.learning_rate, opt.weight_decay,
+    opt.model_name = 'Sup{}_{}_{}_im_{}_lr_{}_decay_{}_bsz_{}_trial_{}'.\
+        format(opt.loss, opt.dataset, opt.model, opt.imratio, opt.learning_rate, opt.weight_decay,
                opt.batch_size, opt.trial)
 
     if opt.cosine:

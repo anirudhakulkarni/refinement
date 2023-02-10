@@ -40,6 +40,21 @@ class SupCEResNet(nn.Module):
         model_fun, dim_in = model_dict[name]
         self.encoder = model_fun()
         self.fc = nn.Linear(dim_in, num_classes)
+        self.sigmoid = torch.nn.LogSoftmax()
+        # TODO: Should we use sigmoid or softmax?
+
+    def forward(self, x):
+        # TODO: softmax needs to be fed before loss
+        return self.sigmoid(self.fc(self.encoder(x)))
+        # return self.fc(self.encoder(x))
+
+class SupAUCMResNet(nn.Module):
+    """encoder + classifier"""
+    def __init__(self, name='resnet50', num_classes=10):
+        super(SupAUCMResNet, self).__init__()
+        model_fun, dim_in = model_dict[name]
+        self.encoder = model_fun()
+        self.fc = nn.Linear(dim_in, num_classes)
         self.sigmoid = torch.nn.Sigmoid()
         # TODO: Should we use sigmoid or softmax?
 

@@ -14,7 +14,7 @@ from torchvision import transforms, datasets
 from util import AverageMeter
 from util import adjust_learning_rate, warmup_learning_rate, accuracy
 from util import set_optimizer, save_model
-from networks.resnet_big import SupCEResNet
+from networks.main import SupCEResNet
 from sklearn.metrics import roc_auc_score
 from calibration_library.metrics import ECELoss, SCELoss
 from datasets import set_loader
@@ -82,7 +82,7 @@ def parse_option():
     for it in iterations:
         opt.lr_decay_epochs.append(int(it))
 
-    opt.model_name = 'SupCE_{}_{}_im_{}_lr_{}_decay_{}_bsz_{}_trial_{}'.\
+    opt.model_name = 'SupNLL_{}_{}_im_{}_lr_{}_decay_{}_bsz_{}_trial_{}'.\
         format(opt.dataset, opt.model, opt.imratio, opt.learning_rate, opt.weight_decay,
                opt.batch_size, opt.trial)
 
@@ -355,13 +355,22 @@ def main():
 
     # save the results in a json file
     jsonfile='results.json'
+    if not os.path.isfile(jsonfile):
+        with open(jsonfile, 'w') as f:
+            json.dump({}, f)
     if os.path.exists(jsonfile):
         with open(jsonfile, 'r') as f:
             results = json.load(f)
-    results[opt.save_folder] = {'best_auc': best_auc, 'best_ece': best_ece, 'best_sce': best_sce}
+    results[opt.save_folder] = {
+        'model': opt.model,
+        'dataset': opt.dataset,
+        'batch_size': opt.batch_size,
+        'imratio': opt.imratio,
+        'best_auc': best_auc, 'best_ece': best_ece, 'best_sce': best_sce,
+                                
+                                }
     with open(jsonfile, 'w') as f:
         json.dump(results, f, indent=4)
-        
 
 if __name__ == '__main__':
     main()

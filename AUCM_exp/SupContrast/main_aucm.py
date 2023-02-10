@@ -14,7 +14,7 @@ from torchvision import transforms, datasets
 from util import AverageMeter
 from util import adjust_learning_rate, warmup_learning_rate, accuracy
 from util import set_optimizer, save_model
-from networks.main import SupCEResNet
+from networks.main import SupAUCMResNet
 from sklearn.metrics import roc_auc_score
 from calibration_library.metrics import ECELoss, SCELoss
 from datasets import set_loader
@@ -140,7 +140,7 @@ torch.backends.cudnn.benchmark = False
 
 
 def set_model(opt):
-    model = SupCEResNet(name=opt.model, num_classes=opt.n_cls)
+    model = SupAUCMResNet(name=opt.model, num_classes=opt.n_cls)
     # criterion = torch.nn.CrossEntropyLoss()
     criterion = AUCMLoss()
 

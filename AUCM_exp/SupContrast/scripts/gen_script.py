@@ -28,13 +28,13 @@ for imratio in imratios:
                 script+='export CUDA_VISIBLE_DEVICES='+str(gpu)+'\n'
                 script+='python3 '+loss
                 if dataset=='cifar10' or dataset=='cifar100':
-                    script+=' --batch_size 256 \ \n'
+                    script+=' --batch_size 512 \\\n'
                 else:
-                    script+=' --batch_size 128 \ \n'
-                script+='  --learning_rate 0.8 \ \n'
-                script+='  --cosine \ \n'
-                script+='  --imratio '+str(imratio)+' \ \n'
-                script+='  --dataset '+dataset+' \ \n'
+                    script+=' --batch_size 512 \\\n'
+                script+='  --learning_rate 0.8 \\\n'
+                script+='  --cosine \\\n'
+                script+='  --imratio '+str(imratio)+' \\\n'
+                script+='  --dataset '+dataset+' \\\n'
                 script+='  --model '+model+' &\n'                
                 script+='\n'
 with open('nll.sh','w') as f:

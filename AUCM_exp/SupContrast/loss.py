@@ -14,18 +14,16 @@ class FocalLoss(nn.Module):
         super(FocalLoss, self).__init__()
 
         self.gamma = gamma
-        logging.info("using gamma={}".format(gamma))
 
     def forward(self, input, target):
 
         target = target.view(-1,1)
 
-        logpt = torch.nn.functional.log_softmax(input, dim=1)
-        logpt = logpt.gather(1,target)
-        logpt = logpt.view(-1)
-        pt = logpt.exp()
+        input = input.gather(1,target)
+        input = input.view(-1)
+        pt = input.exp()
 
-        loss = -1 * (1-pt)**self.gamma * logpt
+        loss = -1 * (1-pt)**self.gamma * input
         
         return loss.mean()
 # from https://openreview.net/pdf?id=NJS8kp15zzH

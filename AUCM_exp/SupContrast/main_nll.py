@@ -19,6 +19,7 @@ from sklearn.metrics import roc_auc_score
 from calibration_library.metrics import ECELoss, SCELoss
 from datasets import set_loader
 import json
+from loss import FocalLoss
 try:
     import apex
     from apex import amp, optimizers
@@ -53,13 +54,13 @@ def parse_option():
                         help='momentum')
 
     # model dataset
-    parser.add_argument('--loss', type=str, default='ce', choices=['ce', 'supcon','linear'])
+    parser.add_argument('--loss', type=str, default='ce', choices=['ce', 'focal'])
     parser.add_argument('--model', type=str, default='resnet50')
     parser.add_argument('--dataset', type=str, default='cifar10',
                         choices=['cifar10', 'cifar100','c2','stl10','melanoma'], help='dataset')
     parser.add_argument('--imratio', type=float, default=0.1,
                         help='imbalance ratio')
-
+    parser.add_argument('--gamma', type=float, default=1, help='gamma in focal loss')
     # other setting
     parser.add_argument('--cosine', action='store_true',
                         help='using cosine annealing')
@@ -138,7 +139,10 @@ torch.backends.cudnn.benchmark = False
 
 def set_model(opt):
     model = SupCEResNet(name=opt.model, num_classes=opt.n_cls)
-    criterion = torch.nn.NLLLoss()
+    if opt.loss == 'nll':
+        criterion = torch.nn.NLLLoss()
+    elif opt.loss == 'focal':
+        criterion = FocalLoss(gamma=opt.gamma)
 
     # enable synchronized Batch Normalization
     if opt.syncBN:

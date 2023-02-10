@@ -138,7 +138,7 @@ torch.backends.cudnn.benchmark = False
 
 def set_model(opt):
     model = SupCEResNet(name=opt.model, num_classes=opt.n_cls)
-    criterion = torch.nn.CrossEntropyLoss()
+    criterion = torch.nn.NLLLoss()
 
     # enable synchronized Batch Normalization
     if opt.syncBN:

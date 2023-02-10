@@ -40,10 +40,13 @@ class SupCEResNet(nn.Module):
         model_fun, dim_in = model_dict[name]
         self.encoder = model_fun()
         self.fc = nn.Linear(dim_in, num_classes)
+        self.sigmoid = torch.nn.Sigmoid()
+        # TODO: Should we use sigmoid or softmax?
 
     def forward(self, x):
-        # print(self.encoder(x).shape)
-        return self.fc(self.encoder(x))
+        # TODO: softmax needs to be fed before loss
+        return self.sigmoid(self.fc(self.encoder(x)))
+        # return self.fc(self.encoder(x))
 
 
 class LinearClassifier(nn.Module):
@@ -52,6 +55,8 @@ class LinearClassifier(nn.Module):
         super(LinearClassifier, self).__init__()
         _, feat_dim = model_dict[name]
         self.fc = nn.Linear(feat_dim, num_classes)
+        # FIXME: WHERE IS SIGMOID?
+        
 
     def forward(self, features):
         return self.fc(features)

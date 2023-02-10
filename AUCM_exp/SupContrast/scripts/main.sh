@@ -5,7 +5,7 @@ python main_linear.py --batch_size 256 \
   --imratio 0.1 \
   --ckpt ./save/SupCon/cifar10_models/SupCon_cifar10_resnet50_im_0.1_lr_0.5_decay_0.0001_bsz_256_temp_0.1_trial_0_cosine/ckpt_epoch_350.pth 
 
-python main_ce.py --batch_size 512 \
+python main_nll.py --batch_size 512 \
   --learning_rate 0.8 \
   --cosine \
   --imratio 0.1
@@ -37,7 +37,7 @@ python main_supcon.py --batch_size 256 \
 # !2: ce, cifar100   2892413.pts-45.user
 # !7: aucm, cifar100 2909642.pts-45.user
 
-python3 main_ce.py --batch_size 512 \
+python3 main_nll.py --batch_size 512 \
   --learning_rate 0.8 \
   --cosine \
   --imratio 0.1 \
@@ -59,7 +59,7 @@ python main_supcon.py --batch_size 128 \
 
 
 
-python3 main_ce.py --batch_size 512 \
+python3 main_nll.py --batch_size 512 \
   --learning_rate 0.8 \
   --cosine \
   --imratio 0.1 \
@@ -74,7 +74,7 @@ python main_aucm.py --batch_size 128 \
 
 
 # ! 3172778.pts-45.user
-python3 main_ce.py --batch_size 512 \
+python3 main_nll.py --batch_size 512 \
   --learning_rate 0.8 \
   --cosine \
   --imratio 0.1 \

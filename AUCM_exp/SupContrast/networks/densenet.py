@@ -205,15 +205,17 @@ class DenseNet(nn.Module):
         out = F.relu(features, inplace=True) #F.relu(features, inplace=True)
         out = F.adaptive_avg_pool2d(out, (1, 1))
         out = torch.flatten(out, 1)
-        out = self.classifier(out)
-        if self.last_activation == 'sigmoid':
-            out = self.sigmoid(out)
-        elif self.last_activation == 'none' or self.last_activation==None:
-            out = out  
-        elif self.last_activation == 'l2':
-            out= F.normalize(out,dim=0,p=2)               
-        else:
-            out = self.sigmoid(out)
+        # print(len(out))
+        # print(out)
+        # out = self.classifier(out)
+        # if self.last_activation == 'sigmoid':
+        #     out = self.sigmoid(out)
+        # elif self.last_activation == 'none' or self.last_activation==None:
+        #     out = out  
+        # elif self.last_activation == 'l2':
+        #     out= F.normalize(out,dim=0,p=2)               
+        # else:
+        #     out = self.sigmoid(out)
         return out
 
 

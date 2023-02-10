@@ -18,7 +18,7 @@ from networks.main import SupCEResNet
 from sklearn.metrics import roc_auc_score
 from calibration_library.metrics import ECELoss, SCELoss
 from datasets import set_loader
-
+import json
 try:
     import apex
     from apex import amp, optimizers
@@ -363,7 +363,16 @@ def main():
     save_model(model, optimizer, opt, opt.epochs, save_file)
 
     print('best AUC: {:.10f}\t best ECE: {:.10f}\t best SCE: {:.10f}'.format(best_auc, best_ece, best_sce))
-
+    
+    # save the results in a json file
+    jsonfile='results.json'
+    if os.path.exists(jsonfile):
+        with open(jsonfile, 'r') as f:
+            results = json.load(f)
+    results[opt.save_folder] = {'best_auc': best_auc, 'best_ece': best_ece, 'best_sce': best_sce}
+    with open(jsonfile, 'w') as f:
+        json.dump(results, f, indent=4)
+        
 
 if __name__ == '__main__':
     main()

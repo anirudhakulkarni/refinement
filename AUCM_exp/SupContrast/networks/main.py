@@ -5,7 +5,8 @@ import torch.nn.functional as F
 from .resnet_cifar import ResNet20
 from .densenet import DenseNet121
 model_dict = {
-    "resnet20":[ResNet20,64]
+    "resnet20":[ResNet20,64],
+    "densenet121": [DenseNet121, 1024]
 }
 
 class SupConResNet(nn.Module):
@@ -41,6 +42,7 @@ class SupCEResNet(nn.Module):
         self.fc = nn.Linear(dim_in, num_classes)
 
     def forward(self, x):
+        # print(self.encoder(x).shape)
         return self.fc(self.encoder(x))
 
 

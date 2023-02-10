@@ -14,7 +14,7 @@ from torchvision import transforms, datasets
 from util import AverageMeter
 from util import adjust_learning_rate, warmup_learning_rate, accuracy
 from util import set_optimizer, save_model
-from networks.resnet_big import SupCEResNet
+from networks.main import SupCEResNet
 from sklearn.metrics import roc_auc_score
 from calibration_library.metrics import ECELoss, SCELoss
 from datasets import set_loader
@@ -37,13 +37,13 @@ def parse_option():
                         help='batch_size')
     parser.add_argument('--num_workers', type=int, default=16,
                         help='num of workers to use')
-    parser.add_argument('--epochs', type=int, default=500,
+    parser.add_argument('--epochs', type=int, default=750,
                         help='number of training epochs')
 
     # optimization
     parser.add_argument('--learning_rate', type=float, default=0.1,
                         help='learning rate')
-    parser.add_argument('--lr_decay_epochs', type=str, default='350,400,450',
+    parser.add_argument('--lr_decay_epochs', type=str, default='350,500,600',
                         help='where to decay lr, can be a list')
     parser.add_argument('--lr_decay_rate', type=float, default=0.1,
                         help='decay rate for learning rate')
@@ -53,7 +53,7 @@ def parse_option():
                         help='momentum')
 
     # model dataset
-    parser.add_argument('--loss', type=str, default='supcon', choices=['ce', 'supcon','linear'])
+    parser.add_argument('--loss', type=str, default='aucm', choices=['ce', 'supcon','linear'])
     parser.add_argument('--model', type=str, default='resnet50')
     parser.add_argument('--dataset', type=str, default='cifar10',
                         choices=['cifar10', 'cifar100','c2','stl10','melanoma'], help='dataset')
@@ -178,7 +178,8 @@ def train(train_loader, model, criterion, optimizer, epoch, opt):
             labels = labels.squeeze(1) # Assert: Shape of labels is reduced to single dimension
         labels=labels.long()
         data_time.update(time.time() - end)
-
+        # print(images)
+        # print(len(images))
         images = images.cuda(non_blocking=True)
         labels = labels.cuda(non_blocking=True)
         bsz = labels.shape[0]
@@ -361,7 +362,7 @@ def main():
         opt.save_folder, 'last.pth')
     save_model(model, optimizer, opt, opt.epochs, save_file)
 
-    print('best AUC: {:.5f}\t best ECE: {:.5f}\t best SCE: {:.5f}'.format(best_auc, best_ece, best_sce))
+    print('best AUC: {:.10f}\t best ECE: {:.10f}\t best SCE: {:.10f}'.format(best_auc, best_ece, best_sce))
 
 
 if __name__ == '__main__':

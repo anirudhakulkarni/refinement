@@ -154,3 +154,61 @@ python main_SLS.py --batch_size 128 \
   --imratio 0.1 \
   --dataset c2 \
   --ckpt ./save/SupCon/c2_models/SupCon_c2_resnet50_im_0.1_lr_0.5_decay_0.0001_bsz_128_temp_0.1_trial_0_cosine/ckpt_epoch_1000.pth
+
+# 2889046.pts-57.user
+python main_aucm.py --batch_size 128 \
+  --learning_rate 0.8 \
+  --cosine \
+  --imratio 0.01 \
+  --dataset cifar10 \
+  --model resnet20
+
+python main_aucm.py --batch_size 128 \
+  --learning_rate 0.8 \
+  --cosine \
+  --imratio 0.1 \
+  --dataset cifar10 \
+  --model resnet20
+
+python main_aucm.py --batch_size 128 \
+  --learning_rate 0.8 \
+  --cosine \
+  --imratio 0.01 \
+  --dataset cifar100 \
+  --model resnet20
+
+python main_aucm.py --batch_size 128 \
+  --learning_rate 0.8 \
+  --cosine \
+  --imratio 0.1 \
+  --dataset cifar100 \
+  --model resnet20
+
+python3 main_aucm.py --batch_size 128 \
+  --learning_rate 0.8 \
+  --cosine \
+  --imratio 0.1 \
+  --dataset c2 \
+  --model resnet20
+
+python3 main_aucm.py --batch_size 128 \
+  --learning_rate 0.8 \
+  --cosine \
+  --imratio 0.01 \
+  --dataset c2 \
+  --model resnet20
+
+python3 main_aucm.py --batch_size 128 \
+  --learning_rate 0.8 \
+  --cosine \
+  --imratio 0.1 \
+  --dataset stl10 \
+  --model resnet20
+
+python3 main_aucm.py --batch_size 128 \
+  --learning_rate 0.8 \
+  --cosine \
+  --imratio 0.01 \
+  --dataset stl10 \
+  --model resnet20
+

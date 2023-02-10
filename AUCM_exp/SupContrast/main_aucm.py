@@ -366,6 +366,9 @@ def main():
     
     # save the results in a json file
     jsonfile='results.json'
+    if not os.path.isfile(jsonfile):
+        with open(jsonfile, 'w') as f:
+            json.dump({}, f)
     if os.path.exists(jsonfile):
         with open(jsonfile, 'r') as f:
             results = json.load(f)

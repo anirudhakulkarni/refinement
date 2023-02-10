@@ -20,7 +20,7 @@ with open('../results.json','r') as f:
 import pandas as pd
 
 # create a dataframe
-df = pd.DataFrame(columns=['Dataset','Model','ImRatio','AUC','ECE','SCE'])
+df = pd.DataFrame(columns=['Dataset','Model','Loss', 'ImRatio','AUC','ECE','SCE'])
 for result in results:
     dataset=result.split('_')[2]
     model=result.split('_')[3]
@@ -28,9 +28,8 @@ for result in results:
     auc = results[result]['best_auc']
     ece = results[result]['best_ece']
     sce = results[result]['best_sce']
-    
-    df = pd.concat([df, pd.DataFrame([[dataset,model,imratio,auc,ece,sce]],columns=['Dataset','Model','ImRatio','AUC','ECE','SCE'])], ignore_index=True)
-
+    loss = result.split('_')[1][10:]
+    df = pd.concat([df,pd.DataFrame([[dataset,model,loss,imratio,auc,ece,sce]],columns=['Dataset','Model','Loss', 'ImRatio','AUC','ECE','SCE'])])
 # sort
 df = df.sort_values(by=['Dataset','Model','ImRatio'])
 df.to_csv('results.csv',index=False)

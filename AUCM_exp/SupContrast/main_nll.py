@@ -83,10 +83,14 @@ def parse_option():
     for it in iterations:
         opt.lr_decay_epochs.append(int(it))
 
-    opt.model_name = 'Sup{}_{}_{}_im_{}_lr_{}_decay_{}_bsz_{}_trial_{}'.\
-        format(opt.loss, opt.dataset, opt.model, opt.imratio, opt.learning_rate, opt.weight_decay,
-               opt.batch_size, opt.trial)
-
+    if opt.loss == 'nll':
+        opt.model_name = 'Sup{}_{}_{}_im_{}_lr_{}_decay_{}_bsz_{}_trial_{}'.\
+            format(opt.loss, opt.dataset, opt.model, opt.imratio, opt.learning_rate, opt.weight_decay,
+                opt.batch_size, opt.trial)
+    else:
+        opt.model_name = 'Sup{}_{}_{}_im_{}_lr_{}_decay_{}_bsz_{}_gamma_{}_trial_{}_gamma_{}'.\
+            format(opt.loss, opt.dataset, opt.model, opt.imratio, opt.learning_rate, opt.weight_decay,
+                   opt.batch_size, opt.trial, opt.gamma)
     if opt.cosine:
         opt.model_name = '{}_cosine'.format(opt.model_name)
 

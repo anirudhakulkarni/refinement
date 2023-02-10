@@ -60,7 +60,7 @@ def parse_option():
     parser.add_argument('--imratio', type=float, default=0.1,
                         help='imbalance ratio')
     parser.add_argument('--size', type=int, default=32, help='parameter for RandomResizedCrop')
-
+    parser.add_argument('--margin', type=float, default=1.0, help='margin for AUCM loss')
     # other setting
     parser.add_argument('--cosine', action='store_true',
                         help='using cosine annealing')
@@ -83,9 +83,9 @@ def parse_option():
     for it in iterations:
         opt.lr_decay_epochs.append(int(it))
 
-    opt.model_name = 'SupAUCM_{}_{}_im_{}_lr_{}_decay_{}_bsz_{}_trial_{}'.\
+    opt.model_name = 'SupAUCM_{}_{}_im_{}_lr_{}_decay_{}_bsz_{}_trial_{}_m_{}'.\
         format(opt.dataset, opt.model, opt.imratio,opt.learning_rate, opt.weight_decay,
-               opt.batch_size, opt.trial)
+               opt.batch_size, opt.trial, opt.margin)
 
     if opt.cosine:
         opt.model_name = '{}_cosine'.format(opt.model_name)
@@ -316,7 +316,7 @@ def main():
                              alpha=criterion.alpha,
                              lr=opt.learning_rate,
                              gamma=1000,
-                             margin=1.0,
+                             margin=opt.margin,
                              weight_decay=opt.weight_decay)
 
     # tensorboard
@@ -369,7 +369,15 @@ def main():
     if os.path.exists(jsonfile):
         with open(jsonfile, 'r') as f:
             results = json.load(f)
-    results[opt.save_folder] = {'best_auc': best_auc, 'best_ece': best_ece, 'best_sce': best_sce}
+    results[opt.save_folder] = {
+        'model': opt.model,
+        'dataset': opt.dataset,
+        'batch_size': opt.batch_size,
+        'margin': opt.margin,
+        'imratio': opt.imratio,
+        'best_auc': best_auc, 'best_ece': best_ece, 'best_sce': best_sce,
+                                
+                                }
     with open(jsonfile, 'w') as f:
         json.dump(results, f, indent=4)
         

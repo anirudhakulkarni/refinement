@@ -17,7 +17,7 @@ from util import set_optimizer, save_model
 from networks.main import SupAUCMResNet
 from sklearn.metrics import roc_auc_score
 from calibration_library.metrics import ECELoss, SCELoss
-from datasets import set_loader
+from datasets.datasets import set_loader
 import json
 try:
     import apex
@@ -83,7 +83,7 @@ def parse_option():
     for it in iterations:
         opt.lr_decay_epochs.append(int(it))
 
-    opt.model_name = 'SupAUCM_{}_{}_im_{}_lr_{}_decay_{}_bsz_{}_trial_{}_m_{}'.\
+    opt.model_name = 'AUCM_{}_{}_im_{}_lr_{}_decay_{}_bsz_{}_trial_{}_m_{}'.\
         format(opt.dataset, opt.model, opt.imratio,opt.learning_rate, opt.weight_decay,
                opt.batch_size, opt.trial, opt.margin)
 
@@ -113,7 +113,7 @@ def parse_option():
         os.makedirs(opt.save_folder)
 
     # if opt.dataset == 'cifar10':
-    opt.n_cls = 2
+    opt.n_cls = 1
     # elif opt.dataset == 'cifar100':
     #     opt.n_cls = 100
     # elif opt.dataset == 'c2':
@@ -188,7 +188,8 @@ def train(train_loader, model, criterion, optimizer, epoch, opt):
         warmup_learning_rate(opt, epoch, idx, len(train_loader), optimizer)
 
         # compute loss
-        output = model(images)
+        logits = model(images)
+        output = torch.sigmoid(logits)
         loss = criterion(output, labels)
 
         # update metric
@@ -196,8 +197,11 @@ def train(train_loader, model, criterion, optimizer, epoch, opt):
         acc1, acc5 = accuracy(output, labels, topk=(1, 1))
         top1.update(acc1[0], bsz)
 
-        if output.dim() == 2:
-            output=output[:, 1]
+        # print(output.shape)
+        # if output.dim() == 2:
+        #     output=output[:, 1]
+        # remove one dimension. Number of classes = 1. Hence sigmoid works instead of softmax
+        output = torch.squeeze(output)
         # output = output.contiguous().view(-1, 1)
         # print(output.shape)
 
@@ -256,7 +260,8 @@ def validate(val_loader, model, criterion, opt):
                 labels = labels.squeeze(1) # Assert: Shape of labels is reduced to single dimension
 
             # forward
-            output = model(images)
+            logits = model(images)
+            output = torch.sigmoid(logits)
             loss = criterion(output, labels)
 
             # update metric
@@ -267,8 +272,10 @@ def validate(val_loader, model, criterion, opt):
             # add to total
             # print(output.shape)
             # use the probability of the positive class only
-            if output.dim() == 2:
-                output=output[:, 1]
+            # if output.dim() == 2:
+            #     output=output[:, 1]
+            output = torch.squeeze(output)
+
             # output = output.contiguous().view(-1, 1)
             # print(output.shape)
             pred_total.append(output.cpu().numpy())

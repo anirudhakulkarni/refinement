@@ -17,8 +17,8 @@ from util import set_optimizer, save_model
 from networks.resnet_big import SupConResNet, LinearClassifier
 from sklearn.metrics import roc_auc_score
 from calibration_library.metrics import ECELoss, SCELoss
-from datasets import set_loader
-from losses import SupConLoss
+from datasets.datasets import set_loader
+from loss import SupConLoss
 import json
 try:
     import apex

@@ -14,10 +14,10 @@ from torchvision import transforms, datasets
 from util import AverageMeter
 from util import adjust_learning_rate, warmup_learning_rate, accuracy
 from util import set_optimizer, save_model
-from networks.main import SupCEResNet
+from networks.main import SupCEResNet, SupAUCMResNet
 from sklearn.metrics import roc_auc_score
 from calibration_library.metrics import ECELoss, SCELoss
-from datasets import set_loader
+from datasets.datasets import set_loader
 import json
 from loss import FocalLoss
 try:
@@ -54,7 +54,7 @@ def parse_option():
                         help='momentum')
 
     # model dataset
-    parser.add_argument('--loss', type=str, default='nll', choices=['nll', 'focal'])
+    parser.add_argument('--loss', type=str, default='ce', choices=['ce', 'focal'])
     parser.add_argument('--model', type=str, default='resnet50')
     parser.add_argument('--dataset', type=str, default='cifar10',
                         choices=['cifar10', 'cifar100','c2','stl10','melanoma'], help='dataset')
@@ -83,13 +83,13 @@ def parse_option():
     for it in iterations:
         opt.lr_decay_epochs.append(int(it))
 
-    if opt.loss == 'nll':
-        opt.model_name = 'Sup{}_{}_{}_im_{}_lr_{}_decay_{}_bsz_{}_trial_{}'.\
-            format(opt.loss, opt.dataset, opt.model, opt.imratio, opt.learning_rate, opt.weight_decay,
+    if opt.loss == 'ce':
+        opt.model_name = 'CE_{}_{}_im_{}_lr_{}_decay_{}_bsz_{}_trial_{}'.\
+            format(opt.dataset, opt.model, opt.imratio, opt.learning_rate, opt.weight_decay,
                 opt.batch_size, opt.trial)
     else:
-        opt.model_name = 'Sup{}_{}_{}_im_{}_lr_{}_decay_{}_bsz_{}_gamma_{}_trial_{}'.\
-            format(opt.loss, opt.dataset, opt.model, opt.imratio, opt.learning_rate, opt.weight_decay,
+        opt.model_name = 'FL_{}_{}_im_{}_lr_{}_decay_{}_bsz_{}_gamma_{}_trial_{}'.\
+            format(opt.dataset, opt.model, opt.imratio, opt.learning_rate, opt.weight_decay,
                    opt.batch_size, opt.gamma, opt.trial)
     if opt.cosine:
         opt.model_name = '{}_cosine'.format(opt.model_name)
@@ -143,8 +143,8 @@ torch.backends.cudnn.benchmark = False
 
 def set_model(opt):
     model = SupCEResNet(name=opt.model, num_classes=opt.n_cls)
-    if opt.loss == 'nll':
-        criterion = torch.nn.NLLLoss()
+    if opt.loss == 'ce':
+        criterion = torch.nn.CrossEntropyLoss()
     elif opt.loss == 'focal':
         criterion = FocalLoss(gamma=opt.gamma)
 
@@ -191,14 +191,16 @@ def train(train_loader, model, criterion, optimizer, epoch, opt):
         warmup_learning_rate(opt, epoch, idx, len(train_loader), optimizer)
 
         # compute loss
-        output = model(images)
-        loss = criterion(output, labels.long())
-
+        logits = model(images)
+        loss = criterion(logits, labels)
+        output = torch.softmax(logits,dim=1)
+        
         # update metric
         losses.update(loss.item(), bsz)
         acc1, acc5 = accuracy(output, labels, topk=(1, 1))
         top1.update(acc1[0], bsz)
 
+        # NOTE: use the output of maximum class is to be given to ECE loss
         if output.dim() == 2:
             output=output[:, 1]
         # output = output.contiguous().view(-1, 1)
@@ -261,8 +263,9 @@ def validate(val_loader, model, criterion, opt):
                 labels = labels.squeeze(1) # Assert: Shape of labels is reduced to single dimension
 
             # forward
-            output = model(images)
-            loss = criterion(output, labels)
+            logits = model(images)
+            loss = criterion(logits, labels)
+            output = torch.softmax(logits, dim=1)
 
             # update metric
             losses.update(loss.item(), bsz)

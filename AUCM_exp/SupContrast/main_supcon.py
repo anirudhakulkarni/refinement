@@ -15,8 +15,8 @@ from util import TwoCropTransform, AverageMeter
 from util import adjust_learning_rate, warmup_learning_rate
 from util import set_optimizer, save_model
 from networks.resnet_big import SupConResNet
-from losses import SupConLoss
-from datasets import set_loader
+from loss import SupConLoss
+from datasets.datasets import set_loader
 
 try:
     import apex

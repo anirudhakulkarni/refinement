@@ -40,13 +40,17 @@ class SupCEResNet(nn.Module):
         model_fun, dim_in = model_dict[name]
         self.encoder = model_fun()
         self.fc = nn.Linear(dim_in, num_classes)
-        self.sigmoid = torch.nn.LogSoftmax()
+        # self.sigmoid = torch.nn.LogSoftmax(dim=1)
+        # self.sigmoid = torch.nn.Sigmoid()
         # TODO: Should we use sigmoid or softmax?
 
     def forward(self, x):
         # TODO: softmax needs to be fed before loss
-        return self.sigmoid(self.fc(self.encoder(x)))
-        # return self.fc(self.encoder(x))
+        # features, num_classes
+        
+        # print(self.sigmoid(self.fc(self.encoder(x))))
+        # return self.sigmoid(self.fc(self.encoder(x)))
+        return self.fc(self.encoder(x))
 
 class SupAUCMResNet(nn.Module):
     """encoder + classifier"""
@@ -55,13 +59,15 @@ class SupAUCMResNet(nn.Module):
         model_fun, dim_in = model_dict[name]
         self.encoder = model_fun()
         self.fc = nn.Linear(dim_in, num_classes)
-        self.sigmoid = torch.nn.Sigmoid()
+        # TODO: Sigmoid transferred to output. model outputs logits
+        # self.sigmoid = torch.nn.Sigmoid()
+        # self.sigmoid = torch.nn.Softmax()
         # TODO: Should we use sigmoid or softmax?
 
     def forward(self, x):
         # TODO: softmax needs to be fed before loss
-        return self.sigmoid(self.fc(self.encoder(x)))
-        # return self.fc(self.encoder(x))
+        # return self.sigmoid(self.fc(self.encoder(x)))
+        return self.fc(self.encoder(x))
 
 
 class LinearClassifier(nn.Module):

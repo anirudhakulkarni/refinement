@@ -1,6 +1,6 @@
 #!/bin/bash
 export CUDA_VISIBLE_DEVICES=0
-python3 main_nll.py --batch_size 256 \
+python3 main_aucm.py --batch_size 256 \
   --learning_rate 0.8 \
   --cosine \
   --imratio 0.01 \
@@ -8,7 +8,7 @@ python3 main_nll.py --batch_size 256 \
   --model resnet20 &
 
 export CUDA_VISIBLE_DEVICES=1
-python3 main_nll.py --batch_size 256 \
+python3 main_aucm.py --batch_size 256 \
   --learning_rate 0.8 \
   --cosine \
   --imratio 0.01 \
@@ -16,7 +16,7 @@ python3 main_nll.py --batch_size 256 \
   --model densenet121 &
 
 export CUDA_VISIBLE_DEVICES=2
-python3 main_nll.py --batch_size 256 \
+python3 main_aucm.py --batch_size 256 \
   --learning_rate 0.8 \
   --cosine \
   --imratio 0.01 \
@@ -24,7 +24,7 @@ python3 main_nll.py --batch_size 256 \
   --model resnet20 &
 
 export CUDA_VISIBLE_DEVICES=3
-python3 main_nll.py --batch_size 256 \
+python3 main_aucm.py --batch_size 256 \
   --learning_rate 0.8 \
   --cosine \
   --imratio 0.01 \
@@ -32,7 +32,7 @@ python3 main_nll.py --batch_size 256 \
   --model densenet121 &
 
 export CUDA_VISIBLE_DEVICES=4
-python3 main_nll.py --batch_size 128 \
+python3 main_aucm.py --batch_size 128 \
   --learning_rate 0.8 \
   --cosine \
   --imratio 0.01 \
@@ -40,7 +40,7 @@ python3 main_nll.py --batch_size 128 \
   --model resnet20 &
 
 export CUDA_VISIBLE_DEVICES=5
-python3 main_nll.py --batch_size 128 \
+python3 main_aucm.py --batch_size 128 \
   --learning_rate 0.8 \
   --cosine \
   --imratio 0.01 \
@@ -48,79 +48,79 @@ python3 main_nll.py --batch_size 128 \
   --model densenet121 &
 
 export CUDA_VISIBLE_DEVICES=6
-python3 main_nll.py --batch_size 32 \
+python3 main_aucm.py --batch_size 128 \
   --learning_rate 0.8 \
   --cosine \
   --imratio 0.01 \
   --dataset stl10 \
   --model resnet20 &
 
-export CUDA_VISIBLE_DEVICES=0
-python3 main_nll.py --batch_size 32 \
+export CUDA_VISIBLE_DEVICES=7
+python3 main_aucm.py --batch_size 128 \
   --learning_rate 0.8 \
   --cosine \
   --imratio 0.01 \
   --dataset stl10 \
   --model densenet121 &
 
-export CUDA_VISIBLE_DEVICES=1
-python3 main_nll.py --batch_size 256 \
+export CUDA_VISIBLE_DEVICES=0
+python3 main_aucm.py --batch_size 256 \
   --learning_rate 0.8 \
   --cosine \
   --imratio 0.1 \
   --dataset cifar10 \
   --model resnet20 &
+
+export CUDA_VISIBLE_DEVICES=1
+python3 main_aucm.py --batch_size 256 \
+  --learning_rate 0.8 \
+  --cosine \
+  --imratio 0.1 \
+  --dataset cifar10 \
+  --model densenet121 &
 
 export CUDA_VISIBLE_DEVICES=2
-python3 main_nll.py --batch_size 256 \
+python3 main_aucm.py --batch_size 256 \
   --learning_rate 0.8 \
   --cosine \
   --imratio 0.1 \
-  --dataset cifar10 \
-  --model densenet121 &
+  --dataset cifar100 \
+  --model resnet20 &
 
 export CUDA_VISIBLE_DEVICES=3
-python3 main_nll.py --batch_size 256 \
+python3 main_aucm.py --batch_size 256 \
   --learning_rate 0.8 \
   --cosine \
   --imratio 0.1 \
   --dataset cifar100 \
-  --model resnet20 &
+  --model densenet121 &
 
 export CUDA_VISIBLE_DEVICES=4
-python3 main_nll.py --batch_size 256 \
-  --learning_rate 0.8 \
-  --cosine \
-  --imratio 0.1 \
-  --dataset cifar100 \
-  --model densenet121 &
-
-export CUDA_VISIBLE_DEVICES=5
-python3 main_nll.py --batch_size 128 \
+python3 main_aucm.py --batch_size 128 \
   --learning_rate 0.8 \
   --cosine \
   --imratio 0.1 \
   --dataset c2 \
   --model resnet20 &
 
-export CUDA_VISIBLE_DEVICES=6
-python3 main_nll.py --batch_size 128 \
+export CUDA_VISIBLE_DEVICES=5
+python3 main_aucm.py --batch_size 128 \
   --learning_rate 0.8 \
   --cosine \
   --imratio 0.1 \
   --dataset c2 \
   --model densenet121 &
 
-export CUDA_VISIBLE_DEVICES=0
-python3 main_nll.py --batch_size 32 \
+export CUDA_VISIBLE_DEVICES=6
+python3 main_aucm.py --batch_size 128 \
   --learning_rate 0.8 \
   --cosine \
   --imratio 0.1 \
   --dataset stl10 \
   --model resnet20 &
 
-export CUDA_VISIBLE_DEVICES=1
-python3 main_nll.py --batch_size 32 \
+export CUDA_VISIBLE_DEVICES=7
+python3 main_aucm.py --batch_size 128 \
   --learning_rate 0.8 \
   --cosine \
   --imratio 0.1 \

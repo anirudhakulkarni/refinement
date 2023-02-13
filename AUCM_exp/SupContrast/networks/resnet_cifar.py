@@ -131,7 +131,7 @@ class ResNet(nn.Module):
         # elif self.last_activation == 'none' or self.last_activation==None:
         #     out = out  
         # elif self.last_activation == 'l2':
-        #     out= F.normalize(out,dim=0,p=2)               
+        #      out= F.normalize(out,dim=0,p=2)               
         # else:
         #     out = self.sigmoid(out)
         return out

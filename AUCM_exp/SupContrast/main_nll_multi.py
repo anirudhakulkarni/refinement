@@ -17,7 +17,7 @@ from util import set_optimizer, save_model
 from networks.main import SupCEResNet, SupAUCMResNet
 from utils.metrics import auc_m
 from calibration_library.metrics import ECELoss, SCELoss
-from dataset.datasets import set_loader
+from dataset.datasets_multiclass import set_loader
 import json
 from loss import FocalLoss
 try:

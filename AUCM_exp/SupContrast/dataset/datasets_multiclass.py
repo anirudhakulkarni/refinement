@@ -22,9 +22,10 @@ from PIL import Image
 from torch.utils.data import Dataset
 import numpy as np
 from torchvision import transforms
-from torchvision.datasets import CIFAR100, INaturalist, ImageNet
+from torchvision.datasets import CIFAR100, INaturalist, ImageFolder
+from imagenet import ImageNetKaggle
 import torch
-
+import os
 class TraditionalDataset(Dataset):
     def __init__(self, data_name, mode):
         self.data_name = data_name
@@ -89,12 +90,38 @@ def get_train_test_val_loader(opt):
                         # , val_loader    
     
     elif data_name == 'imagenet':
-        train_dataset = ImageNet(root= opt.data_folder, split='train', download=True, transform=transforms.ToTensor())
-        test_dataset = ImageNet(root= opt.data_folder, split='val', download=True, transform=transforms.ToTensor())
-        train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=opt.batch_size, shuffle=True, num_workers=opt.num_workers)
-        test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=opt.batch_size, shuffle=False, num_workers=opt.num_workers)
-        return train_loader, test_loader
+        traindir = os.path.join(opt.data_folder, 'train')
+        valdir = os.path.join(opt.data_folder, 'val')
+        normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                     std=[0.229, 0.224, 0.225])
+
+        train_dataset = ImageFolder(
+            traindir,
+            transforms.Compose([
+                transforms.RandomResizedCrop(224),
+                transforms.RandomHorizontalFlip(),
+                transforms.ToTensor(),
+                normalize,
+            ]))
+
+        val_dataset = ImageFolder(
+            valdir,
+            transforms.Compose([
+                transforms.Resize(256),
+                transforms.CenterCrop(224),
+                transforms.ToTensor(),
+                normalize,
+            ]))            
+        train_sampler = torch.utils.data.distributed.DistributedSampler(train_dataset)
+        val_sampler = torch.utils.data.distributed.DistributedSampler(val_dataset, shuffle=False, drop_last=True)
+        train_loader = torch.utils.data.DataLoader(
+            train_dataset, batch_size=opt.batch_size, shuffle=(train_sampler is None),
+            num_workers=opt.num_workers, pin_memory=True, sampler=train_sampler)
+        val_loader = torch.utils.data.DataLoader(
+            val_dataset, batch_size=opt.batch_size, shuffle=False,
+            num_workers=opt.num_workers, pin_memory=True, sampler=val_sampler)
         
+        return train_loader, val_loader
     else:
         raise ValueError('dataset not found')
     

@@ -23,9 +23,10 @@ from torch.utils.data import Dataset
 import numpy as np
 from torchvision import transforms
 from torchvision.datasets import CIFAR100, INaturalist, ImageFolder
-from imagenet import ImageNetKaggle
+from .imagenet import ImageNetKaggle
 import torch
 import os
+from .tinyimagenet import set_loader as set_loader_tiny_imagenet
 class TraditionalDataset(Dataset):
     def __init__(self, data_name, mode):
         self.data_name = data_name
@@ -112,8 +113,10 @@ def set_loader(opt):
                 transforms.ToTensor(),
                 normalize,
             ]))            
-        train_sampler = torch.utils.data.distributed.DistributedSampler(train_dataset)
-        val_sampler = torch.utils.data.distributed.DistributedSampler(val_dataset, shuffle=False, drop_last=True)
+        # train_sampler = torch.utils.data.distributed.DistributedSampler(train_dataset)
+        # val_sampler = torch.utils.data.distributed.DistributedSampler(val_dataset, shuffle=False, drop_last=True)
+        train_sampler = None
+        val_sampler = None
         train_loader = torch.utils.data.DataLoader(
             train_dataset, batch_size=opt.batch_size, shuffle=(train_sampler is None),
             num_workers=opt.num_workers, pin_memory=True, sampler=train_sampler)
@@ -122,6 +125,8 @@ def set_loader(opt):
             num_workers=opt.num_workers, pin_memory=True, sampler=val_sampler)
         
         return train_loader, val_loader
+    elif data_name == 'tinyimagenet':
+        return set_loader_tiny_imagenet(opt)
     else:
         raise ValueError('dataset not found')
     

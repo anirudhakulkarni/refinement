@@ -36,7 +36,7 @@ def parse_option():
                         help='save frequency')
     parser.add_argument('--batch_size', type=int, default=256,
                         help='batch_size')
-    parser.add_argument('--num_workers', type=int, default=16,
+    parser.add_argument('--num_workers', type=int, default=64,
                         help='num of workers to use')
     parser.add_argument('--epochs', type=int, default=500,
                         help='number of training epochs')
@@ -75,7 +75,7 @@ def parse_option():
     # set the path according to the environment
     opt.data_folder = '../../data/'
     if opt.dataset == 'imagenet':
-        opt.data_folder = '../../data/imagenet/'
+        opt.data_folder = '../../data/imagenet/ILSVRC/Data/CLS-LOC/'
     opt.model_path = './save/SupCon/{}_models'.format(opt.dataset)
     opt.tb_path = './save/SupCon/{}_tensorboard'.format(opt.dataset)
 
@@ -124,6 +124,8 @@ def parse_option():
         opt.n_cls = 100
     elif opt.dataset == 'imagenet':
         opt.n_cls = 1000
+    elif opt.dataset == 'tinyimagenet':
+        opt.n_cls = 200
     elif opt.dataset in traditional_datas:
         opt.n_cls = traditional_n_cls[traditional_datas.index(opt.dataset)]
     else:
@@ -320,18 +322,22 @@ def main():
     opt = parse_option()
 
     # build data loader
+    print("Loading data")
     train_loader, val_loader = set_loader(opt)
 
     # build model and criterion
+    print("Setting model")
     model, criterion = set_model(opt)
 
     # build optimizer
+    print("Setting optimizer")
     optimizer = set_optimizer(opt, model)
 
     # tensorboard
     logger = tb_logger.Logger(logdir=opt.tb_folder, flush_secs=2)
 
     # training routine
+    print("Starting training")
     for epoch in range(1, opt.epochs + 1):
         adjust_learning_rate(opt, optimizer, epoch)
 

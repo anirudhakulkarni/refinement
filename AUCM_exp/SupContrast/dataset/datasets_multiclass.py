@@ -22,14 +22,14 @@ from PIL import Image
 from torch.utils.data import Dataset
 import numpy as np
 from torchvision import transforms
-from torchvision.datasets import CIFAR100, iNaturalist, ImageNet
+from torchvision.datasets import CIFAR100, INaturalist, ImageNet
 import torch
 
 class TraditionalDataset(Dataset):
     def __init__(self, data_name, mode):
         self.data_name = data_name
         self.mode = mode
-        self.base_path='data_index/'+data_name+'.npz/'
+        self.base_path='data_multiclass/data_index/'+data_name+'.npz/'
         self.tot_X=self.base_path+'tot_X.npy'
         self.tot_Y=self.base_path+'tot_Y.npy'
         self.train_ids=self.base_path+'shuffle_train.npy'
@@ -66,33 +66,33 @@ class TraditionalDataset(Dataset):
 def get_train_test_val_loader(opt):
     data_name = opt.dataset
     if data_name == 'cifar100':
-        train_dataset = CIFAR100(root=data_folder, train=True, download=True, transform=transforms.ToTensor())
-        test_dataset = CIFAR100(root=data_folder, train=False, download=True, transform=transforms.ToTensor())
-        train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=opt.batch_size, shuffle=True, num_workers=opt.workers)
-        test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=opt.batch_size, shuffle=False, num_workers=opt.workers)
+        train_dataset = CIFAR100(root=opt.data_folder, train=True, download=True, transform=transforms.ToTensor())
+        test_dataset = CIFAR100(root=opt.data_folder, train=False, download=True, transform=transforms.ToTensor())
+        train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=opt.batch_size, shuffle=True, num_workers=opt.num_workers)
+        test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=opt.batch_size, shuffle=False, num_workers=opt.num_workers)
         return train_loader, test_loader
     elif data_name == 'iNaturalist':
-        train_dataset = iNaturalist(root=data_folder, train=True, download=True, transform=transforms.ToTensor())
-        test_dataset = iNaturalist(root=data_folder, train=False, download=True, transform=transforms.ToTensor())
-        train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=opt.batch_size, shuffle=True, num_workers=opt.workers)
-        test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=opt.batch_size, shuffle=False, num_workers=opt.workers)
+        train_dataset = INaturalist(root=opt.data_folder, train=True, download=True, transform=transforms.ToTensor())
+        test_dataset = INaturalist(root=opt.data_folder, train=False, download=True, transform=transforms.ToTensor())
+        train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=opt.batch_size, shuffle=True, num_workers=opt.num_workers)
+        test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=opt.batch_size, shuffle=False, num_workers=opt.num_workers)
         return train_loader, test_loader
             
     elif data_name in datas:
         train_dataset = TraditionalDataset(data_name, 'train')
         test_dataset = TraditionalDataset(data_name, 'test')
         val_dataset = TraditionalDataset(data_name, 'val')
-        train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=opt.batch_size, shuffle=True, num_workers=opt.workers)
-        test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=opt.batch_size, shuffle=False, num_workers=opt.workers)
-        val_loader = torch.utils.data.DataLoader(val_dataset, batch_size=opt.batch_size, shuffle=False, num_workers=opt.workers)
+        train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=opt.batch_size, shuffle=True, num_workers=opt.num_workers)
+        test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=opt.batch_size, shuffle=False, num_workers=opt.num_workers)
+        val_loader = torch.utils.data.DataLoader(val_dataset, batch_size=opt.batch_size, shuffle=False, num_workers=opt.num_workers)
         return train_loader, test_loader
                         # , val_loader    
     
     elif data_name == 'imagenet':
         train_dataset = ImageNet(root= opt.data_folder, split='train', download=True, transform=transforms.ToTensor())
         test_dataset = ImageNet(root= opt.data_folder, split='val', download=True, transform=transforms.ToTensor())
-        train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=opt.batch_size, shuffle=True, num_workers=opt.workers)
-        test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=opt.batch_size, shuffle=False, num_workers=opt.workers)
+        train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=opt.batch_size, shuffle=True, num_workers=opt.num_workers)
+        test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=opt.batch_size, shuffle=False, num_workers=opt.num_workers)
         return train_loader, test_loader
         
     else:

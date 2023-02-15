@@ -74,6 +74,8 @@ def parse_option():
 
     # set the path according to the environment
     opt.data_folder = '../../data/'
+    if opt.dataset == 'imagenet':
+        opt.data_folder = '../../data/imagenet/'
     opt.model_path = './save/SupCon/{}_models'.format(opt.dataset)
     opt.tb_path = './save/SupCon/{}_tensorboard'.format(opt.dataset)
 
@@ -120,6 +122,8 @@ def parse_option():
 
     if opt.dataset == 'cifar100':
         opt.n_cls = 100
+    elif opt.dataset == 'imagenet':
+        opt.n_cls = 1000
     elif opt.dataset in traditional_datas:
         opt.n_cls = traditional_n_cls[traditional_datas.index(opt.dataset)]
     else:

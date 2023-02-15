@@ -64,7 +64,7 @@ class TraditionalDataset(Dataset):
 
 
 
-def get_train_test_val_loader(opt):
+def set_loader(opt):
     data_name = opt.dataset
     if data_name == 'cifar100':
         train_dataset = CIFAR100(root=opt.data_folder, train=True, download=True, transform=transforms.ToTensor())

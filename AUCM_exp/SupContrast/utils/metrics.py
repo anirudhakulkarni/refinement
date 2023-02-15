@@ -4,6 +4,7 @@ from sklearn.preprocessing import OneHotEncoder
 
 
 def auc_m(y_true, y_pred, label1=None, label2=None, freq = False):
+    return roc_auc_score(y_true, y_pred,multi_class='ovo')
     print(y_true)
     print(y_pred)
     print(len(y_true))

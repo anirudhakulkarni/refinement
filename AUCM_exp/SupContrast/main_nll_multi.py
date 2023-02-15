@@ -83,11 +83,11 @@ def parse_option():
         opt.lr_decay_epochs.append(int(it))
 
     if opt.loss == 'ce':
-        opt.model_name = 'CE_{}_{}_im_{}_lr_{}_decay_{}_bsz_{}_trial_{}'.\
+        opt.model_name = 'MultiCE_{}_{}_im_{}_lr_{}_decay_{}_bsz_{}_trial_{}'.\
             format(opt.dataset, opt.model, opt.imratio, opt.learning_rate, opt.weight_decay,
                 opt.batch_size, opt.trial)
     else:
-        opt.model_name = 'FL_{}_{}_im_{}_lr_{}_decay_{}_bsz_{}_gamma_{}_trial_{}'.\
+        opt.model_name = 'MultiFL_{}_{}_im_{}_lr_{}_decay_{}_bsz_{}_gamma_{}_trial_{}'.\
             format(opt.dataset, opt.model, opt.imratio, opt.learning_rate, opt.weight_decay,
                    opt.batch_size, opt.gamma, opt.trial)
     if opt.cosine:
@@ -201,8 +201,8 @@ def train(train_loader, model, criterion, optimizer, epoch, opt):
         top1.update(acc1[0], bsz)
 
         # NOTE: use the output of maximum class is to be given to ECE loss
-        if output.dim() == 2:
-            output=output[:, 1]
+        # if output.dim() == 2:
+        #     output=output[:, 1]
         # output = output.contiguous().view(-1, 1)
         # print(output.shape)
         pred_total.append(output.detach().cpu().numpy())
@@ -233,8 +233,10 @@ def train(train_loader, model, criterion, optimizer, epoch, opt):
 
     # convert probability of class 1 to 2d vector with probability of class 0 and 1
     pred_total = np.stack([1 - pred_total, pred_total], axis=1)
-    eces = ECELoss().loss(pred_total, label_total, n_bins=15, logits=False)
-    sces = SCELoss().loss(pred_total, label_total, n_bins=15, logits=False)
+    # TODO: SOlve this for multi-class
+    # eces = ECELoss().loss(pred_total, label_total, n_bins=15, logits=False)
+    # sces = SCELoss().loss(pred_total, label_total, n_bins=15, logits=False)
+    eces, sces = 0, 0
 
     return losses.avg, auc, eces, sces
     # return losses.avg, auc
@@ -275,8 +277,8 @@ def validate(val_loader, model, criterion, opt):
             # add to total
             # print(output.shape) # ASSERT: output shape has 2 dimensions
             # use the probability of the positive class only
-            if output.dim() == 2:
-                output=output[:, 1]
+            # if output.dim() == 2:
+            #     output=output[:, 1]
             # output = output.contiguous().view(-1, 1)
             # print(output.shape)
             pred_total.append(output.cpu().numpy())
@@ -298,9 +300,10 @@ def validate(val_loader, model, criterion, opt):
     auc = auc_m(label_total, pred_total)
     # convert probability of class 1 to 2d vector with probability of class 0 and 1
     pred_total = np.stack([1 - pred_total, pred_total], axis=1)
-    eces = ECELoss().loss(pred_total, label_total, n_bins=15, logits=False)
-    sces = SCELoss().loss(pred_total, label_total, n_bins=15, logits=False)
-
+    # TODO: SOlve this for multi-class
+    # eces = ECELoss().loss(pred_total, label_total, n_bins=15, logits=False)
+    # sces = SCELoss().loss(pred_total, label_total, n_bins=15, logits=False)
+    eces, sces = 0, 0
     # print stats
     print(' * Acc@1 {top1.avg:.3f} AUC {auc:.3f} ECE {ece:.5f} SCE {sce:.5f}'
             .format(top1=top1, auc=auc, ece=eces, sce=sces))

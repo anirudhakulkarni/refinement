@@ -80,4 +80,45 @@ def train():
         
 
 def grid_search():
-    pass
+    gamma_list = [100,300,500,700,1000]
+    margin_list = [0.1,0.3,0.5,0.7,1.0]
+    best_results = {}    
+    # iterate over the grid
+    for gamma in gamma_list:
+        for margin in margin_list:
+            # set the parameters
+            opt.gamma = gamma
+            opt.margin = margin
+            
+            results = train()
+            if not best_results or results['val_auc'] > best_results['val_auc']:
+                best_results = results
+                best_results['gamma'] = gamma
+                best_results['margin'] = margin
+    print('best AUC: {:.10f}\t best ECE: {:.10f}\t best SCE: {:.10f}\t gamma: {:.10f}\t margin: {:.10f}'.format(
+        best_results['val_auc'], best_results['val_ece'], best_results['val_sce'], best_results['gamma'], best_results['margin']))
+    print(best_results)
+    
+    
+    # save the results in a json file
+    jsonfile='results.json'
+    if not os.path.isfile(jsonfile):
+        with open(jsonfile, 'w') as f:
+            json.dump({}, f)
+    if os.path.exists(jsonfile):
+        with open(jsonfile, 'r') as f:
+            result_file = json.load(f)
+    
+    result_file[opt.save_folder+'_grid'] = {
+        'model': opt.model,
+        'dataset': opt.dataset,
+        'batch_size': opt.batch_size,
+        'margin': opt.margin,
+        'imratio': opt.imratio,
+        'best_results': best_results,
+    }
+    
+    with open(jsonfile, 'w') as f:
+        json.dump(result_file, f, indent=4)
+    
+            

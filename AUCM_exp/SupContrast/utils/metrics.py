@@ -237,5 +237,6 @@ def get_all_metrics(name, output, target, n_bins = 15, logits = False):
     metrics[name+'_ace'] = ACELoss().loss(output, target, n_bins, logits)
     metrics[name+'_tace'] = TACELoss().loss(output, target, n_bins, logits)
     
+    metrics[name+'_auc'] = roc_auc_score(target, output[:,1])
     return metrics
     

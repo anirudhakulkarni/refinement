@@ -36,7 +36,7 @@ class LT_Dataset(Dataset):
         self.transform = transform
         with open(txt) as f:
             for line in f:
-                self.img_path.append(os.path.join(root, line.split()[0]))
+                self.img_path.append(os.path.join(root, line.split()[0])+'.JPEG')
                 self.labels.append(int(line.split()[1]))
         
     def __len__(self):
@@ -58,7 +58,8 @@ class LT_Dataset(Dataset):
 # Load datasets
 def load_data(data_root, dataset, phase, batch_size, sampler_dic=None, num_workers=4, test_open=False, shuffle=True):
     
-    txt = os.path.join(data_root, '%s_%s.txt'%(dataset, (phase if phase != 'train_plain' else 'train')))
+    txt = os.path.join(data_root,"ImageSets/CLS-LOC/", '%s.txt'%((phase if phase != 'train' else 'train_cls')))
+    
     # txt = './data/%s/%s_%s.txt'%(dataset, dataset, (phase if phase != 'train_plain' else 'train'))
 
     print('Loading data from %s' % (txt))
@@ -70,7 +71,8 @@ def load_data(data_root, dataset, phase, batch_size, sampler_dic=None, num_worke
 
     print('Use data transformation:', transform)
 
-    set_ = LT_Dataset(data_root, txt, transform)
+    set_ = LT_Dataset(os.path.join(data_root,"Data/CLS-LOC/",phase)
+        , txt, transform)
 
     if phase == 'test' and test_open:
         open_txt = './data/%s/%s_open.txt'%(dataset, dataset)
@@ -93,6 +95,6 @@ def load_data(data_root, dataset, phase, batch_size, sampler_dic=None, num_worke
     
 def set_loader(opt):
     # Open set is not used to test
-    train_loader = load_data(opt.data_root, opt.dataset, 'train', opt.batch_size, None, opt.num_workers, False)
-    test_loader = load_data(opt.data_root, opt.dataset, 'test', opt.batch_size, None, opt.num_workers, False)
+    train_loader = load_data(opt.data_folder, opt.dataset, 'train', opt.batch_size, None, opt.num_workers, False)
+    test_loader = load_data(opt.data_folder, opt.dataset, 'test', opt.batch_size, None, opt.num_workers, False)
     return train_loader, test_loader

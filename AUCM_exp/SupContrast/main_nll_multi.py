@@ -10,6 +10,14 @@ import tensorboard_logger as tb_logger
 import torch
 import torch.backends.cudnn as cudnn
 from torchvision import transforms, datasets
+import random
+import numpy as np
+SEED=123
+torch.manual_seed(SEED)
+np.random.seed(SEED)
+random.seed(SEED)
+torch.backends.cudnn.deterministic = True
+torch.backends.cudnn.benchmark = False
 
 from util import AverageMeter
 from util import adjust_learning_rate, warmup_learning_rate, accuracy
@@ -17,7 +25,7 @@ from util import set_optimizer, save_model
 from networks.main import SupCEResNet, SupAUCMResNet
 from utils.metrics import auc_m
 from calibration_library.metrics import ECELoss, SCELoss
-from dataset.datasets_multiclass import set_loader
+from dataset.datasets import set_loader
 import json
 from loss import FocalLoss
 try:
@@ -74,8 +82,8 @@ def parse_option():
 
     # set the path according to the environment
     opt.data_folder = '../../data/'
-    if opt.dataset == 'imagenet':
-        opt.data_folder = '../../data/imagenet/ILSVRC/Data/CLS-LOC/'
+    if  'imagenet' in opt.dataset:
+        opt.data_folder = '../../data/imagenet/ILSVRC/'
     opt.model_path = './save/SupCon/{}_models'.format(opt.dataset)
     opt.tb_path = './save/SupCon/{}_tensorboard'.format(opt.dataset)
 
@@ -119,10 +127,12 @@ def parse_option():
 
     traditional_datas=['balance', 'dermatology', 'ecoli', 'new-thyroid', 'pageblocks', 'segmentImb', 'shuttle', 'svmguide2', 'yeast']
     traditional_n_cls = [3,6,8,3,5,7,5,3,10]
-
-    if opt.dataset == 'cifar100':
+    
+    if opt.dataset == 'cifar10_lt':
+        opt.n_cls = 10
+    elif opt.dataset == 'cifar100' or opt.dataset == 'cifar100_lt':
         opt.n_cls = 100
-    elif opt.dataset == 'imagenet':
+    elif opt.dataset == 'imagenet' or opt.dataset == 'imagenet_lt':
         opt.n_cls = 1000
     elif opt.dataset == 'tinyimagenet':
         opt.n_cls = 200
@@ -139,11 +149,6 @@ import numpy as np
 from libauc.datasets import CAT_VS_DOG, CIFAR10, CIFAR100
 from libauc.losses import AUCMLoss
 from libauc.optimizers import PESG
-SEED=123
-torch.manual_seed(SEED)
-np.random.seed(SEED)
-torch.backends.cudnn.deterministic = True
-torch.backends.cudnn.benchmark = False
 
 
 

@@ -8,7 +8,8 @@ import torch.backends.cudnn as cudnn
 from torchvision import transforms, datasets
 from libauc.datasets import CAT_VS_DOG, CIFAR10, CIFAR100, STL10, Melanoma
 from util import TwoCropTransform
-
+from cifar_lt import IMBALANCECIFAR100, IMBALANCECIFAR10
+from imagenet_lt import set_loader as set_loader_imagenet_lt
 def make_deterministic(SEED=123):
     torch.manual_seed(SEED)
     np.random.seed(SEED)
@@ -49,10 +50,10 @@ class ImageDataset(Dataset):
 
 def set_loader(opt):
     # construct data loader
-    if opt.dataset == 'cifar10':
+    if opt.dataset == 'cifar10' or opt.dataset == 'cifar10_lt':
         mean = (0.4914, 0.4822, 0.4465)
         std = (0.2023, 0.1994, 0.2010)
-    elif opt.dataset == 'cifar100':
+    elif opt.dataset == 'cifar100' or opt.dataset == 'cifar100_lt':
         mean = (0.5071, 0.4867, 0.4408)
         std = (0.2675, 0.2565, 0.2761)
     elif opt.dataset == 'c2':
@@ -69,6 +70,7 @@ def set_loader(opt):
     normalize = transforms.Normalize(mean=mean, std=std)
 
     if opt.loss!='supcon':
+        # TODO: supcon name is different
         train_transform = transforms.Compose([
             transforms.RandomResizedCrop(size=32, scale=(0.2, 1.)),
             transforms.RandomHorizontalFlip(),
@@ -116,6 +118,38 @@ def set_loader(opt):
         train_loader = torch.utils.data.DataLoader(train_set, batch_size=opt.batch_size, shuffle=True, num_workers=opt.num_workers, pin_memory=True)
         test_loader = torch.utils.data.DataLoader(test_set, batch_size=opt.batch_size, shuffle=False, num_workers=opt.num_workers, pin_memory=True)
         return train_loader, test_loader
+    elif opt.dataset == 'cifar10_lt':
+        # https://github.com/kaidic/LDAM-DRW/blob/3193f05c1e6e8c4798c5419e97c5a479d991e3e9/cifar_train.py#L153
+        
+        train_dataset = IMBALANCECIFAR10(root= opt.data_folder, imb_factor=args.im_ratio, rand_number=SEED, train=True, download=True, transform=train_transform)
+        val_dataset = datasets.CIFAR10(root=opt.data_folder, train=False, download=True, transform=val_transform)
+        train_sampler = None
+        
+        train_loader = torch.utils.data.DataLoader(
+            train_dataset, batch_size=opt.batch_size, shuffle=(train_sampler is None),
+            num_workers=opt.num_workers, pin_memory=True, sampler=train_sampler)
+
+        val_loader = torch.utils.data.DataLoader(
+            val_dataset, batch_size=opt.batch_size, shuffle=False,
+            num_workers=opt.workers, pin_memory=True)
+        return train_loader, val_loader
+    elif opt.dataset == 'cifar100_lt':
+        # https://github.com/kaidic/LDAM-DRW/blob/3193f05c1e6e8c4798c5419e97c5a479d991e3e9/cifar_train.py#L153
+        train_dataset = IMBALANCECIFAR100(root= opt.data_folder, imb_factor=args.im_ratio, rand_number=SEED, train=True, download=True, transform=train_transform)
+        val_dataset = datasets.CIFAR100(root=opt.data_folder, train=False, download=True, transform=val_transform)
+        train_sampler = None
+
+        train_loader = torch.utils.data.DataLoader(
+            train_dataset, batch_size=opt.batch_size, shuffle=(train_sampler is None),
+            num_workers=opt.num_workers, pin_memory=True, sampler=train_sampler)
+
+        val_loader = torch.utils.data.DataLoader(
+            val_dataset, batch_size=opt.batch_size, shuffle=False,
+            num_workers=opt.workers, pin_memory=True)
+        return train_loader, val_loader
+            
+    elif opt.dataset == 'imagenet_lt':
+        return set_loader_imagenet_lt(opt)
     else:
         raise ValueError(opt.dataset)
 

@@ -142,15 +142,7 @@ def parse_option():
         raise ValueError('dataset not supported: {}'.format(opt.dataset))
 
     return opt
-from PIL import Image
-from torch.utils.data import Dataset
-from libauc.utils import ImbalancedDataGenerator #BUG:  this is using import from conda install
 import numpy as np
-from libauc.datasets import CAT_VS_DOG, CIFAR10, CIFAR100
-from libauc.losses import AUCMLoss
-from libauc.optimizers import PESG
-
-
 
 def set_model(opt):
     model = SupCEResNet(name=opt.model, num_classes=opt.n_cls)
@@ -168,7 +160,6 @@ def set_model(opt):
             model = torch.nn.DataParallel(model)
         model = model.cuda()
         criterion = criterion.cuda()
-        cudnn.benchmark = True
 
     return model, criterion
 

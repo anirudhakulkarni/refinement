@@ -33,26 +33,6 @@ class AverageMeter(object):
         self.avg = self.sum / self.count
 
 
-def accuracy(output, target, topk=(1,)):
-    """Computes the accuracy over the k top predictions for the specified values of k"""
-    with torch.no_grad():
-        maxk = max(topk)
-        batch_size = target.size(0)
-
-        _, pred = output.topk(maxk, 1, True, True)
-        pred = pred.t()
-        correct = pred.eq(target.view(1, -1).expand_as(pred))
-
-        res = []
-        for k in topk:
-            # print(correct[:k].shape)
-            # print(correct)
-            correct=correct.contiguous()
-            correct_k = correct[:k].view(-1).float().sum(0, keepdim=True)
-            res.append(correct_k.mul_(100.0 / batch_size))
-        return res
-
-
 def adjust_learning_rate(args, optimizer, epoch):
     lr = args.learning_rate
     if args.cosine:
@@ -96,3 +76,7 @@ def save_model(model, optimizer, opt, epoch, save_file):
     }
     torch.save(state, save_file)
     del state
+
+def log_results(logger, results, epoch):
+    for key, value in results.items():
+        logger.add_scalar(key, value, epoch)

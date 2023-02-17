@@ -1,11 +1,11 @@
 from networks.main import SupCEResNet, SupAUCMResNet
 import torch
-from losses import SupConLoss, FocalLoss, AUCMLoss
+from .losses import SupConLoss, FocalLoss, AUCMLoss
 model_dict = {
     # TODO: Fill these networks
     'ce' : SupCEResNet,
     'supcon' : SupAUCMResNet,
-    'AUCM' : SupAUCMResNet,
+    'aucm' : SupAUCMResNet,
 }
 
 loss_dict = {
@@ -13,18 +13,21 @@ loss_dict = {
     'ce' : torch.nn.CrossEntropyLoss,
     'supcon' : SupConLoss,
     'focal' : FocalLoss,
-    'AUCM' : AUCMLoss,
+    'aucm' : AUCMLoss,
+    'aucs' : AUCMLoss,
 }
 def set_model(opt):
-    model = model_dict[opt.loss](name=opt.model, num_classes=opt.num_classes)
+    model = model_dict[opt.loss](name=opt.model, num_classes=opt.n_cls)
     if opt.loss == 'ce':
         criterion = loss_dict[opt.loss]
     elif opt.loss == 'supcon':
-        criterion = loss_dict[opt.loss](temperature=opt.temperature)
+        criterion = loss_dict[opt.loss]()
     elif opt.loss == 'focal':
-        criterion = loss_dict[opt.loss](gamma=opt.gamma)
-    elif opt.loss == 'AUCM':
-        criterion = loss_dict[opt.loss](temperature=opt.temperature)
+        criterion = loss_dict[opt.loss](gamma=opt.gamma,alpha=opt.alpha)
+    elif opt.loss == 'aucm':
+        criterion = loss_dict[opt.loss](margin=opt.margin)
+    elif opt.loss == 'aucs':
+        criterion = loss_dict[opt.loss](margin=1.0)
     else:
         raise ValueError('Loss not supported: {}'.format(opt.loss))
     

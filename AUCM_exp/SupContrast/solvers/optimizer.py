@@ -5,7 +5,7 @@ from libauc.optimizers import PESG
 def set_optimizer(opt, model, criterion):
 
     # AUCM requires a different optimizer
-    if opt.loss == 'AUCM':
+    if opt.loss == 'aucm':
         optimizer = PESG(model,
                                 a=criterion.a,
                                 b=criterion.b,
@@ -17,9 +17,13 @@ def set_optimizer(opt, model, criterion):
 
 
     else:
-        optimizer = optim.SGD(model.parameters(),
+        optimizer = optim.Adam(model.parameters(),
                             lr=opt.learning_rate,
-                            momentum=opt.momentum,
                             weight_decay=opt.weight_decay)
+        
+        # optimizer = optim.SGD(model.parameters(),
+        #                     lr=opt.learning_rate,
+        #                     momentum=opt.momentum,
+        #                     weight_decay=opt.weight_decay)
     return optimizer
 

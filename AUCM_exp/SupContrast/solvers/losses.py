@@ -11,12 +11,13 @@ sys.path.append("..")
 
 # from https://github.com/torrvision/focal_calibration/blob/main/Losses/focal_loss.py
 class FocalLoss(nn.Module):
-    def __init__(self, gamma=0, **kwargs):
+    def __init__(self, gamma=1, alpha=0.5, **kwargs):
         super(FocalLoss, self).__init__()
 
         self.gamma = gamma
-        logging.info("using gamma={}".format(gamma))
-
+        self.alpha = alpha
+        logging.info("using gamma={}, alpha={}".format(gamma, alpha))
+        
     def forward(self, input, target):
 
         target = target.view(-1,1)
@@ -26,7 +27,7 @@ class FocalLoss(nn.Module):
         logpt = logpt.view(-1)
         pt = logpt.exp()
 
-        loss = -1 * (1-pt)**self.gamma * logpt
+        loss = -self.alpha * (1-pt)**self.gamma * logpt
         
         return loss.mean()
 
@@ -489,9 +490,8 @@ class SupConLoss(nn.Module):
 
         return loss
 
-
-
-
+from libauc.losses import AUCMLoss
+AUCMLoss = AUCMLoss
 
 
 

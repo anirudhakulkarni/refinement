@@ -226,16 +226,25 @@ def accuracy(output, target, topk=(1,)):
 
 def get_all_metrics(name, output, target, n_bins = 15, logits = False):
     metrics = {}
-    metrics[name+'_top1'], metrics[name+'_top5'] = accuracy(output, target, topk=(1,5))
+    
     # convert probability of class 1 to 2d vector with probability of class 0 and 1
     output = np.stack([1 - output, output], axis=1)
+    # target=
+    # print(output)
+    # print(target)
     assert output.shape[1] == 2
     metrics[name+'_ece'] = ECELoss().loss(output, target, n_bins, logits)
     metrics[name+'_mce'] = MCELoss().loss(output, target, n_bins, logits)
     metrics[name+'_oel'] = OELoss().loss(output, target, n_bins, logits)
     metrics[name+'_sce'] = SCELoss().loss(output, target, n_bins, logits)
     metrics[name+'_ace'] = ACELoss().loss(output, target, n_bins, logits)
-    metrics[name+'_tace'] = TACELoss().loss(output, target, n_bins, logits)
+    # metrics[name+'_tace'] = TACELoss().loss(output, target, n_bins, logits)
     
+    target = torch.tensor(target)
+    output = torch.tensor(output)
+    output=output[:, 1]
+    output = torch.unsqueeze(output,1 )
+    metrics[name+'_top1'] = float(accuracy(output, target, topk=(1,))[0][0])
+    metrics[name+'_auc'] = roc_auc_score(target, output)
     return metrics
     

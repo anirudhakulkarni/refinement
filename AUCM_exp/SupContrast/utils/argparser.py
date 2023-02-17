@@ -3,9 +3,9 @@ import argparse
 import math
 
 def get_model_name(opt):
-    model_name = '{}_{}_{}_{}_im_{}_lr_{}_decay_{}_bsz_{}_trial_{}_m_{}'.\
-    format(opt.cls_type, opt.loss, opt.dataset, opt.model, opt.imratio, opt.learning_rate, opt.weight_decay,
-            opt.batch_size, opt.trial, opt.margin)
+    model_name = '{}_{}_{}_{}_im_{}_lr_{}_bsz_{}_g_{}_m_{}'.\
+    format(opt.cls_type, opt.loss, opt.dataset, opt.model, opt.imratio, opt.learning_rate,
+            opt.batch_size, opt.gamma, opt.margin)
      
     return model_name
 
@@ -28,7 +28,7 @@ def parse_option():
                         help='print frequency')
     parser.add_argument('--save_freq', type=int, default=200,
                         help='save frequency')
-    parser.add_argument('--batch_size', type=int, default=256,
+    parser.add_argument('--batch_size', type=int, default=128,
                         help='batch_size')
     parser.add_argument('--num_workers', type=int, default=16,
                         help='num of workers to use')
@@ -57,7 +57,7 @@ def parse_option():
                         help='imbalance ratio for binary classification, Imbalance factor for Long tail dataset')
     parser.add_argument('--size', type=int, default=32, help='parameter for RandomResizedCrop')
     parser.add_argument('--margin', type=float, default=1.0, help='margin for AUCM loss')
-    parser.add_argument('--gamma', type=float, default=2.0, help='gamma for focal loss and AUCM loss')
+    parser.add_argument('--gamma', type=float, default=1000, help='gamma for focal loss and AUCM loss')
     # other setting
     parser.add_argument('--cosine', action='store_true',
                         help='using cosine annealing')

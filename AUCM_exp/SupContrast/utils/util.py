@@ -79,4 +79,29 @@ def save_model(model, optimizer, opt, epoch, save_file):
 
 def log_results(logger, results, epoch):
     for key, value in results.items():
-        logger.add_scalar(key, value, epoch)
+        logger.log_value(key, value, epoch)
+        
+    
+def save_results(opt,best_results):
+    # save the results in a json file
+    jsonfile='results.json'
+    if not os.path.isfile(jsonfile):
+        with open(jsonfile, 'w') as f:
+            json.dump({}, f)
+    if os.path.exists(jsonfile):
+        with open(jsonfile, 'r') as f:
+            result_file = json.load(f)
+    
+    result_file[opt.save_folder+'_grid'] = {
+        'model': opt.model,
+        'dataset': opt.dataset,
+        'batch_size': opt.batch_size,
+        'margin': best_results['margin'],
+        'gamma': best_results['gamma'],
+        'imratio': opt.imratio,
+        'best_results': best_results,
+    }
+    
+    with open(jsonfile, 'w') as f:
+        json.dump(result_file, f, indent=4)
+    

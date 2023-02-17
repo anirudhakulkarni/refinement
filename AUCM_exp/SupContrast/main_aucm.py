@@ -11,9 +11,10 @@ import torch
 import torch.backends.cudnn as cudnn
 from torchvision import transforms, datasets
 
-from util import AverageMeter
-from util import adjust_learning_rate, warmup_learning_rate, accuracy
-from util import set_optimizer, save_model
+from utils.util import AverageMeter
+from utils.util import adjust_learning_rate, warmup_learning_rate
+from utils.metrics import accuracy
+from utils.util import set_optimizer, save_model
 from networks.main import SupAUCMResNet
 from sklearn.metrics import roc_auc_score
 from calibration_library.metrics import ECELoss, SCELoss
@@ -194,6 +195,7 @@ def train(train_loader, model, criterion, optimizer, epoch, opt):
 
         # update metric
         losses.update(loss.item(), bsz)
+
         acc1, acc5 = accuracy(output, labels, topk=(1, 1))
         top1.update(acc1[0], bsz)
 
@@ -232,6 +234,8 @@ def train(train_loader, model, criterion, optimizer, epoch, opt):
 
     # convert probability of class 1 to 2d vector with probability of class 0 and 1
     pred_total = np.stack([1 - pred_total, pred_total], axis=1)
+    print(pred_total)
+    print(label_total)
     eces = ECELoss().loss(pred_total, label_total, n_bins=15, logits=False)
     sces = SCELoss().loss(pred_total, label_total, n_bins=15, logits=False)
 
@@ -266,6 +270,7 @@ def validate(val_loader, model, criterion, opt):
 
             # update metric
             losses.update(loss.item(), bsz)
+
             acc1, acc5 = accuracy(output, labels, topk=(1, 1))
             top1.update(acc1[0], bsz)
 
@@ -294,6 +299,8 @@ def validate(val_loader, model, criterion, opt):
                        loss=losses, top1=top1))
     pred_total = np.concatenate(pred_total)
     label_total = np.concatenate(label_total)
+    print(pred_total)
+    print(label_total)
     auc = roc_auc_score(label_total, pred_total)
     # convert probability of class 1 to 2d vector with probability of class 0 and 1
     pred_total = np.stack([1 - pred_total, pred_total], axis=1)

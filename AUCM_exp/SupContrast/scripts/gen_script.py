@@ -1,8 +1,7 @@
 # generate bash script for training and testing
 def gen_aucm():
     files=[ 
-        #    'main_nll.py',
-            'main_aucm.py'
+            'train.py'
             ]
     datasets=['cifar10','cifar100','c2','stl10']
     models=['resnet20','densenet121']

@@ -1,180 +1,91 @@
-from PIL import Image
-from torch.utils.data import Dataset
-from libauc.utils import ImbalancedDataGenerator #BUG:  this is using import from conda install
-import numpy as np
-import tensorboard_logger as tb_logger
+'''
+Imported from: https://github.com/kaidic/LDAM-DRW/blob/master/imbalance_cifar.py
+'''
 import torch
-import torch.backends.cudnn as cudnn
-from torchvision import transforms, datasets
-from libauc.datasets import CAT_VS_DOG, CIFAR10, CIFAR100, STL10, Melanoma
-from util import TwoCropTransform
-from .cifar_lt import IMBALANCECIFAR100, IMBALANCECIFAR10
-from .imagenet_lt import set_loader as set_loader_imagenet_lt
-def make_deterministic(SEED=123):
-    torch.manual_seed(SEED)
-    np.random.seed(SEED)
-    torch.backends.cudnn.deterministic = True
-    torch.backends.cudnn.benchmark = False
-
+import torchvision
+import torchvision.transforms as transforms
+import numpy as np
 SEED=123
-torch.manual_seed(SEED)
-np.random.seed(SEED)
-torch.backends.cudnn.deterministic = True
-torch.backends.cudnn.benchmark = False
+class IMBALANCECIFAR10(torchvision.datasets.CIFAR10):
+    cls_num = 10
 
+    def __init__(self, root, imb_type='exp', imb_factor=0.01, rand_number=SEED, train=True,
+                 transform=None, target_transform=None,
+                 download=False):
+        super(IMBALANCECIFAR10, self).__init__(root, train, transform, target_transform, download)
+        np.random.seed(rand_number)
+        img_num_list = self.get_img_num_per_cls(self.cls_num, imb_type, imb_factor)
+        self.gen_imbalanced_data(img_num_list)
 
+    def get_img_num_per_cls(self, cls_num, imb_type, imb_factor):
+        img_max = len(self.data) / cls_num
+        img_num_per_cls = []
+        if imb_type == 'exp':
+            for cls_idx in range(cls_num):
+                num = img_max * (imb_factor**(cls_idx / (cls_num - 1.0)))
+                img_num_per_cls.append(int(num))
+        elif imb_type == 'step':
+            for cls_idx in range(cls_num // 2):
+                img_num_per_cls.append(int(img_max))
+            for cls_idx in range(cls_num // 2):
+                img_num_per_cls.append(int(img_max * imb_factor))
+        else:
+            img_num_per_cls.extend([int(img_max)] * cls_num)
+        return img_num_per_cls
 
-
-class ImageDataset(Dataset):
-    def __init__(self, images, targets,transform_train, transform_val, image_size=32, crop_size=30, mode='train'):
-        self.images = images.astype(np.uint8)
-        self.targets = targets
-        self.mode = mode
-        self.transform_train = transform_train
-        self.transform_val = transform_val
-
-    def __len__(self):
-        return len(self.images)
-
-    def __getitem__(self, idx):
-        image = self.images[idx]
-        target = self.targets[idx]
-        image = Image.fromarray(image.astype('uint8'))
-        if self.mode == 'train':
-            image = self.transform_train(image)
-        elif self.mode == 'val':
-            image = self.transform_val(image)
-        return image, target
-
-
-
-def set_loader(opt):
-    # construct data loader
-    if opt.dataset == 'cifar10' or opt.dataset == 'cifar10_lt':
-        mean = (0.4914, 0.4822, 0.4465)
-        std = (0.2023, 0.1994, 0.2010)
-    elif opt.dataset == 'cifar100' or opt.dataset == 'cifar100_lt':
-        mean = (0.5071, 0.4867, 0.4408)
-        std = (0.2675, 0.2565, 0.2761)
-    elif opt.dataset == 'imagenet_lt':
-        # NOTE: Will not  be used. Values present in imagenet_lt.py
-        mean = (0.5071, 0.4867, 0.4408)
-        std = (0.2675, 0.2565, 0.2761)
-    elif opt.dataset == 'c2':
-        mean = (0.33554432, 0.33554432, 0.33554432)
-        std = (0.28430098, 0.2612929,  0.24912025)
-    elif opt.dataset == 'stl10':
-        mean = (0.4467, 0.4398, 0.4066)
-        std = (0.2603, 0.2564, 0.2762)
-    elif opt.dataset == 'melanoma':
-        mean = (0.485, 0.456, 0.406)
-        std = (0.229, 0.224, 0.225)
-    else:
-        raise ValueError('dataset not supported: {}'.format(opt.dataset))
-    normalize = transforms.Normalize(mean=mean, std=std)
-
-    if opt.loss!='supcon':
-        # TODO: supcon name is different
-        train_transform = transforms.Compose([
-            transforms.RandomResizedCrop(size=32, scale=(0.2, 1.)),
-            transforms.RandomHorizontalFlip(),
-            transforms.ToTensor(),
-            normalize,
-        ])
-
-    else:
-        # only for supcon
-        train_transform = transforms.Compose([
-            transforms.RandomResizedCrop(size=opt.size, scale=(0.2, 1.)),
-            transforms.RandomHorizontalFlip(),
-            transforms.RandomApply([
-                transforms.ColorJitter(0.4, 0.4, 0.4, 0.1)
-            ], p=0.8),
-            transforms.RandomGrayscale(p=0.2),
-            transforms.ToTensor(),
-            normalize,
-        ])
-
-
-    val_transform = transforms.Compose([
-        transforms.ToTensor(),
-        normalize,
-    ])    
-    if opt.dataset == 'cifar10':
-        train_data, train_targets = CIFAR10(root=opt.data_folder)
-        val_data, val_targets = CIFAR10(root=opt.data_folder, train=False)
-    elif opt.dataset == 'cifar100':
-        train_data, train_targets = CIFAR100(root=opt.data_folder)
-        val_data, val_targets = CIFAR100(root=opt.data_folder, train=False)
-    elif opt.dataset == 'c2':
-        train_data, train_targets = CAT_VS_DOG(root=opt.data_folder)
-        val_data, val_targets = CAT_VS_DOG(root=opt.data_folder, train=False)
-    elif opt.dataset == 'stl10':
-        train_data, train_targets = STL10(root=opt.data_folder)
-        val_data, val_targets = STL10(root=opt.data_folder, split='test')
-        train_data = train_data.transpose(0, 2, 3, 1)
-        val_data = val_data.transpose(0, 2, 3, 1)
-    elif opt.dataset == 'melanoma':
-        train_set = Melanoma(root=opt.data_folder+'/melanoma/', is_test=False, test_size=0.2)
-        test_set = Melanoma(root=opt.data_folder+'/melanoma/', is_test=True, test_size=0.2)
-        train_set.transforms = TwoCropTransform(train_set.transforms) if opt.loss=='supcon' else train_set.transforms
-        test_set.transforms = TwoCropTransform(test_set.transforms) if opt.loss=='supcon' else test_set.transforms
-        train_loader = torch.utils.data.DataLoader(train_set, batch_size=opt.batch_size, shuffle=True, num_workers=opt.num_workers, pin_memory=True)
-        test_loader = torch.utils.data.DataLoader(test_set, batch_size=opt.batch_size, shuffle=False, num_workers=opt.num_workers, pin_memory=True)
-        return train_loader, test_loader
-    elif opt.dataset == 'cifar10_lt':
-        # https://github.com/kaidic/LDAM-DRW/blob/3193f05c1e6e8c4798c5419e97c5a479d991e3e9/cifar_train.py#L153
+    def gen_imbalanced_data(self, img_num_per_cls):
+        new_data = []
+        new_targets = []
+        targets_np = np.array(self.targets, dtype=np.int64)
+        classes = np.unique(targets_np)
+        # np.random.shuffle(classes)
+        self.num_per_cls_dict = dict()
+        for the_class, the_img_num in zip(classes, img_num_per_cls):
+            self.num_per_cls_dict[the_class] = the_img_num
+            idx = np.where(targets_np == the_class)[0]
+            np.random.shuffle(idx)
+            selec_idx = idx[:the_img_num]
+            new_data.append(self.data[selec_idx, ...])
+            new_targets.extend([the_class, ] * the_img_num)
+        new_data = np.vstack(new_data)
+        self.data = new_data
+        self.targets = new_targets
         
-        train_dataset = IMBALANCECIFAR10(root= opt.data_folder, imb_factor=opt.imratio, rand_number=SEED, train=True, download=True, transform=train_transform)
-        val_dataset = datasets.CIFAR10(root=opt.data_folder, train=False, download=True, transform=val_transform)
-        train_sampler = None
-        
-        train_loader = torch.utils.data.DataLoader(
-            train_dataset, batch_size=opt.batch_size, shuffle=(train_sampler is None),
-            num_workers=opt.num_workers, pin_memory=True, sampler=train_sampler)
+    def get_cls_num_list(self):
+        cls_num_list = []
+        for i in range(self.cls_num):
+            cls_num_list.append(self.num_per_cls_dict[i])
+        return cls_num_list
 
-        val_loader = torch.utils.data.DataLoader(
-            val_dataset, batch_size=opt.batch_size, shuffle=False,
-            num_workers=opt.workers, pin_memory=True)
-        return train_loader, val_loader
-    elif opt.dataset == 'cifar100_lt':
-        # https://github.com/kaidic/LDAM-DRW/blob/3193f05c1e6e8c4798c5419e97c5a479d991e3e9/cifar_train.py#L153
-        train_dataset = IMBALANCECIFAR100(root= opt.data_folder, imb_factor=opt.imratio, rand_number=SEED, train=True, download=True, transform=train_transform)
-        val_dataset = datasets.CIFAR100(root=opt.data_folder, train=False, download=True, transform=val_transform)
-        train_sampler = None
+class IMBALANCECIFAR100(IMBALANCECIFAR10):
+    """`CIFAR100 <https://www.cs.toronto.edu/~kriz/cifar.html>`_ Dataset.
+    This is a subclass of the `CIFAR10` Dataset.
+    """
+    base_folder = 'cifar-100-python'
+    url = "https://www.cs.toronto.edu/~kriz/cifar-100-python.tar.gz"
+    filename = "cifar-100-python.tar.gz"
+    tgz_md5 = 'eb9058c3a382ffc7106e4002c42a8d85'
+    train_list = [
+        ['train', '16019d7e3df5f24257cddd939b257f8d'],
+    ]
 
-        train_loader = torch.utils.data.DataLoader(
-            train_dataset, batch_size=opt.batch_size, shuffle=(train_sampler is None),
-            num_workers=opt.num_workers, pin_memory=True, sampler=train_sampler)
+    test_list = [
+        ['test', 'f0ef6b0ae62326f3e7ffdfab6717acfc'],
+    ]
+    meta = {
+        'filename': 'meta',
+        'key': 'fine_label_names',
+        'md5': '7973b15100ade9c7d40fb424638fde48',
+    }
+    cls_num = 100
 
-        val_loader = torch.utils.data.DataLoader(
-            val_dataset, batch_size=opt.batch_size, shuffle=False,
-            num_workers=opt.num_workers, pin_memory=True)
-        return train_loader, val_loader
-            
-    elif opt.dataset == 'imagenet_lt':
-        return set_loader_imagenet_lt(opt)
-    else:
-        raise ValueError(opt.dataset)
-
-    train_sampler = None
     
-    train_transform = TwoCropTransform(train_transform) if opt.loss=='supcon' else train_transform
-    val_transform = TwoCropTransform(val_transform) if opt.loss=='supcon' else val_transform
-
-    generator = ImbalancedDataGenerator(verbose=True, random_seed=SEED)
-    (train_images, train_labels) = generator.transform(
-        train_data, train_targets, imratio=opt.imratio)
-    train_loader = torch.utils.data.DataLoader(ImageDataset(
-        train_images, train_labels,train_transform,val_transform,mode='train'), 
-        batch_size=opt.batch_size, shuffle=(train_sampler is None), num_workers=opt.num_workers, pin_memory=True, sampler=train_sampler)
-
-    (val_images, val_labels) = generator.transform(
-        val_data, val_targets, imratio=0.5) #NOTE: Default testing is at 0.5
-    val_loader = torch.utils.data.DataLoader(ImageDataset(
-        val_images, val_labels,train_transform,val_transform,mode='val'), 
-        batch_size=256, shuffle=False, num_workers=8, pin_memory=True)
-
-    del train_data, train_targets, val_data, val_targets, train_images, train_labels, val_images, val_labels
-    return train_loader, val_loader
-
+if __name__ == '__main__':
+    transform = transforms.Compose(
+        [transforms.ToTensor(),
+        transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
+    trainset = IMBALANCECIFAR100(root='./data', train=True,
+                    download=True, transform=transform)
+    trainloader = iter(trainset)
+    data, label = next(trainloader)
+    import pdb; pdb.set_trace()

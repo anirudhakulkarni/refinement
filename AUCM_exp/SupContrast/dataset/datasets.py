@@ -7,9 +7,9 @@ import torch
 import torch.backends.cudnn as cudnn
 from torchvision import transforms, datasets
 from libauc.datasets import CAT_VS_DOG, CIFAR10, CIFAR100, STL10, Melanoma
-from util import TwoCropTransform
-from cifar_lt import IMBALANCECIFAR100, IMBALANCECIFAR10
-from imagenet_lt import set_loader as set_loader_imagenet_lt
+from utils.util import TwoCropTransform
+from .cifar_lt import IMBALANCECIFAR100, IMBALANCECIFAR10
+from .imagenet_lt import set_loader as set_loader_imagenet_lt
 def make_deterministic(SEED=123):
     torch.manual_seed(SEED)
     np.random.seed(SEED)

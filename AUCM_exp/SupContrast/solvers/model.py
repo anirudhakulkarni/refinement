@@ -4,8 +4,10 @@ from .losses import SupConLoss, FocalLoss, AUCMLoss
 model_dict = {
     # TODO: Fill these networks
     'ce' : SupCEResNet,
+    'focal' : SupCEResNet,
     'supcon' : SupAUCMResNet,
     'aucm' : SupAUCMResNet,
+    'aucs' : SupAUCMResNet,
 }
 
 loss_dict = {
@@ -19,7 +21,7 @@ loss_dict = {
 def set_model(opt):
     model = model_dict[opt.loss](name=opt.model, num_classes=opt.n_cls)
     if opt.loss == 'ce':
-        criterion = loss_dict[opt.loss]
+        criterion = loss_dict[opt.loss]()
     elif opt.loss == 'supcon':
         criterion = loss_dict[opt.loss]()
     elif opt.loss == 'focal':

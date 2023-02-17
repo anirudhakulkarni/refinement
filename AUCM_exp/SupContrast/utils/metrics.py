@@ -4,13 +4,7 @@ from sklearn.preprocessing import OneHotEncoder
 import torch
 
 def auc_m(y_true, y_pred, label1=None, label2=None, freq = False):
-    return roc_auc_score(y_true, y_pred,multi_class='ovo')
-    print(y_true)
-    print(y_pred)
-    print(len(y_true))
-    print(len(y_pred))
-    print(y_true.shape)
-    print(y_pred.shape)
+    # return roc_auc_score(y_true, y_pred,multi_class='ovo')
     # If y_pred is of format (n_samples,) then we need to reshape it to (n_samples, 1)
     if len(y_true.shape) == 1:
         y_true = np.reshape(y_true, [-1, 1])
@@ -224,15 +218,15 @@ def accuracy(output, target, topk=(1,)):
 
 
 
-def get_all_metrics(name, output, target, n_bins = 15, logits = False):
+def get_all_metrics(name, output, target, opt,n_bins = 15, logits = False):
     metrics = {}
     
     # convert probability of class 1 to 2d vector with probability of class 0 and 1
-    output = np.stack([1 - output, output], axis=1)
+    # output = np.stack([1 - output, output], axis=1)
     # target=
     # print(output)
     # print(target)
-    assert output.shape[1] == 2
+    # assert output.shape[1] == num classes
     metrics[name+'_ece'] = ECELoss().loss(output, target, n_bins, logits)
     metrics[name+'_mce'] = MCELoss().loss(output, target, n_bins, logits)
     metrics[name+'_oel'] = OELoss().loss(output, target, n_bins, logits)
@@ -242,9 +236,20 @@ def get_all_metrics(name, output, target, n_bins = 15, logits = False):
     
     target = torch.tensor(target)
     output = torch.tensor(output)
-    output=output[:, 1]
-    output = torch.unsqueeze(output,1 )
-    metrics[name+'_top1'] = float(accuracy(output, target, topk=(1,))[0][0])
-    metrics[name+'_auc'] = roc_auc_score(target, output)
+    # print(output)
+    # print(output.shape)
+    # print(target)
+    # print(target.shape)
+    if opt.n_cls==2:
+        # metrics[name+'_auc'] = auc_m(target, output)
+        output=output[:, 1]
+        output = torch.unsqueeze(output,1 )
+        metrics[name+'_top1'] = float(accuracy(output, target, topk=(1,))[0][0])
+        metrics[name+'_auc'] = roc_auc_score(target, output)
+    else:
+        # TODO: 
+        metrics[name+'_top1'] = float(accuracy(output, target, topk=(1,))[0][0])
+        metrics[name+'_auc'] = auc_m(target, output)
+        
     return metrics
     

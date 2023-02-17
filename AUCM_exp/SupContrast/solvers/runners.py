@@ -72,7 +72,7 @@ def train_epoch_AUCM(train_loader, model, criterion, optimizer, epoch, opt):
             sys.stdout.flush()
     pred_total = np.concatenate(pred_total)
     label_total = np.concatenate(label_total)
-    results = get_all_metrics('train', pred_total, label_total)
+    results = get_all_metrics('train', pred_total, label_total, opt)
     # print(results)
     print(' * Acc@1 {top1:.3f} AUC {auc:.3f} ECE {ece:.5f} SCE {sce:.5f} '
             .format(top1=results['train_top1'], auc=results['train_auc'], ece=results['train_ece'], sce=results['train_sce']))
@@ -131,7 +131,7 @@ def test_epoch_AUCM(test_loader, model, criterion, opt, val=False):
     pred_total = np.concatenate(pred_total)
     label_total = np.concatenate(label_total)
     name = 'test' if not val else 'val'
-    results = get_all_metrics(name, pred_total, label_total)
+    results = get_all_metrics(name, pred_total, label_total,opt)
 
     print(' * Acc@1 {top1:.3f} AUC {auc:.3f} ECE {ece:.5f} SCE {sce:.5f} '
             .format(top1=results[name+'_top1'], auc=results[name+'_auc'], ece=results[name+'_ece'], sce=results[name+'_sce']))
@@ -148,7 +148,7 @@ def train_epoch_CE(train_loader, model, criterion, optimizer, epoch, opt):
     end = time.time()
     pred_total = []
     label_total = []
-    scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=opt.lr_decay_epochs.split(','), gamma=opt.lr_decay_rate)
+    scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=opt.lr_decay_epochs, gamma=opt.lr_decay_rate)
     for idx, (images, labels) in enumerate(train_loader):
         if labels.dim() == 2:
             labels = labels.squeeze(1) 
@@ -165,8 +165,9 @@ def train_epoch_CE(train_loader, model, criterion, optimizer, epoch, opt):
 
         # compute loss
         logits = model(images)
-        output = torch.softmax(logits)
-        loss = criterion(output, labels)
+        loss = criterion(logits, labels)
+        output = torch.softmax(logits,dim=1) #will not work for 1d
+        # output = torch.sigmoid(logits)
         # print(output)
         # output = torch.nn.functional.normalize(output, p=2, dim=1)
         # print(output)
@@ -177,7 +178,7 @@ def train_epoch_CE(train_loader, model, criterion, optimizer, epoch, opt):
         top1.update(acc1[0], bsz)
 
         # remove one dimension. Number of classes = 1. Hence sigmoid works instead of softmax
-        output = torch.squeeze(output)
+        # output = torch.squeeze(output)
 
         # SGD
         optimizer.zero_grad()
@@ -204,9 +205,17 @@ def train_epoch_CE(train_loader, model, criterion, optimizer, epoch, opt):
     scheduler.step()
     pred_total = np.concatenate(pred_total)
     label_total = np.concatenate(label_total)
-    results = get_all_metrics('train', pred_total, label_total)
+    results = get_all_metrics('train', pred_total, label_total,opt)
     print(' * Acc@1 {top1:.3f} AUC {auc:.3f} ECE {ece:.5f} SCE {sce:.5f} '
             .format(top1=results['train_top1'], auc=results['train_auc'], ece=results['train_ece'], sce=results['train_sce']))
 
     return results
 
+def get_train_test(opt):
+    if opt.loss == 'ce' or opt.loss == 'focal':
+        train_epoch = train_epoch_CE
+    elif opt.loss == 'aucm' or opt.loss == 'aucs':
+        train_epoch = train_epoch_AUCM
+    else:
+        raise ValueError('Unknown loss function: {}'.format(opt.loss))
+    return train_epoch, test_epoch_AUCM

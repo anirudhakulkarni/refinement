@@ -10,13 +10,15 @@ def get_model_name(opt):
     return model_name
 
 def get_num_classes(opt):
-    if opt.cls_type == 'binary':
+    if opt.cls_type == 'binary' and 'auc' in opt.loss :
         return 1
-    if opt.dataset == 'cifar10_lt':
-        return 10
-    elif opt.dataset == 'cifar100_lt':
+    if opt.cls_type == 'binary':
+        return 2
+    elif 'cifar100' in opt.dataset :
         return 100
-    elif opt.dataset == 'imagenet_lt':
+    if 'cifar10' in opt.dataset :
+        return 10
+    elif 'imagenet' in opt.dataset:
         return 1000
     else:
         raise ValueError('Unknown dataset: {}'.format(opt.dataset))
@@ -48,7 +50,7 @@ def parse_option():
                         help='momentum')
 
     # model dataset
-    parser.add_argument('--loss', type=str, default='aucm', choices=['ce', 'supcon','focal','aucm'])
+    parser.add_argument('--loss', type=str, default='aucm', choices=['ce', 'supcon','focal','aucm','aucs'])
     # TODO: List supported models here
     parser.add_argument('--model', type=str, default='resnet50')
     # TODO: List supported datasets here

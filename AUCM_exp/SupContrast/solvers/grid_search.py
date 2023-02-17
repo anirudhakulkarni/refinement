@@ -2,10 +2,14 @@ import os
 import json
 from utils.util import save_results
 def grid_search(opt,train):
-    if opt.loss == 'AUCM':
+    if opt.loss == 'aucm':
         grid_search_AUCM(opt,train)
     elif opt.loss == 'focal':
         grid_search_focal(opt,train)
+    elif opt.loss == 'aucs':
+        grid_search_AUCS(opt,train)
+    elif opt.loss == 'ce':
+        train(opt)
     else:
         raise ValueError('Unknown loss: {}'.format(opt.loss))
     
@@ -17,7 +21,7 @@ def grid_search_focal(opt,train):
         for alpha in alpha_list:
             opt.gamma = gamma
             opt.alpha = alpha
-            results = train()
+            results = train(opt)
             if not best_results or results['val_auc'] > best_results['val_auc']:
                 best_results = results
                 best_results['gamma'] = gamma
@@ -39,11 +43,29 @@ def grid_search_AUCM(opt,train):
             opt.gamma = gamma
             opt.margin = margin
             
-            results = train()
+            results = train(opt)
             if not best_results or results['val_auc'] > best_results['val_auc']:
                 best_results = results
                 best_results['gamma'] = gamma
                 best_results['margin'] = margin
+    print('best AUC: {:.10f}\t best ECE: {:.10f}\t best SCE: {:.10f}\t gamma: {:.10f}\t margin: {:.10f}'.format(
+        best_results['val_auc'], best_results['val_ece'], best_results['val_sce'], best_results['gamma'], best_results['margin']))
+    print(best_results)
+
+    save_results(opt,best_results)
+
+def grid_search_AUCS(opt,train):
+    gamma_list = [100,300,500,700,1000]
+    best_results = {}    
+    # iterate over the grid
+    for gamma in gamma_list:
+        # set the parameters
+        opt.gamma = gamma
+        
+        results = train(opt)
+        if not best_results or results['val_auc'] > best_results['val_auc']:
+            best_results = results
+            best_results['gamma'] = gamma
     print('best AUC: {:.10f}\t best ECE: {:.10f}\t best SCE: {:.10f}\t gamma: {:.10f}\t margin: {:.10f}'.format(
         best_results['val_auc'], best_results['val_ece'], best_results['val_sce'], best_results['gamma'], best_results['margin']))
     print(best_results)

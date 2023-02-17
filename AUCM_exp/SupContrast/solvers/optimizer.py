@@ -17,13 +17,13 @@ def set_optimizer(opt, model, criterion):
 
 
     else:
-        optimizer = optim.Adam(model.parameters(),
-                            lr=opt.learning_rate,
-                            weight_decay=opt.weight_decay)
-        
-        # optimizer = optim.SGD(model.parameters(),
+        # optimizer = optim.Adam(model.parameters(),
         #                     lr=opt.learning_rate,
-        #                     momentum=opt.momentum,
         #                     weight_decay=opt.weight_decay)
+        
+        optimizer = optim.SGD(model.parameters(),
+                            lr=opt.learning_rate,
+                            momentum=opt.momentum,
+                            weight_decay=opt.weight_decay)
     return optimizer
 

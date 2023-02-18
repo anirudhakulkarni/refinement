@@ -11,11 +11,11 @@ model_dict = {
 
 class SupConResNet(nn.Module):
     """backbone + projection head"""
-    def __init__(self, name='resnet50', head='mlp', feat_dim=128):
+    def __init__(self, name='resnet50', head='mlp', feat_dim=128, num_classes=10):
         super(SupConResNet, self).__init__()
         model_fun, dim_in = model_dict[name]
         self.encoder = model_fun()
-        self.fc = nn.Linear(dim_in, feat_dim)
+        # self.fc = nn.Linear(dim_in, num_classes)
         
         if head == 'linear':
             self.head = nn.Linear(dim_in, feat_dim)
@@ -31,6 +31,7 @@ class SupConResNet(nn.Module):
 
     def forward(self, x):
         feat = self.encoder(x)
+        # feat = self.fc(feat)
         feat = F.normalize(self.head(feat), dim=1)
         return feat
 
@@ -78,7 +79,6 @@ class LinearClassifier(nn.Module):
         super(LinearClassifier, self).__init__()
         _, feat_dim = model_dict[name]
         self.fc = nn.Linear(feat_dim, num_classes)
-        # FIXME: WHERE IS SIGMOID?
         
 
     def forward(self, features):

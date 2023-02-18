@@ -14,16 +14,21 @@ def set_optimizer(opt, model, criterion):
                                 gamma=opt.gamma,
                                 margin=opt.margin,
                                 weight_decay=opt.weight_decay)
-
+        return optimizer, None
 
     else:
-        optimizer = optim.Adam(model.parameters(),
-                            lr=opt.learning_rate,
+        # optimizer1 = optim.Adam(model.parameters(),
+        #                     lr=opt.learning_rate,
+        #                     weight_decay=opt.weight_decay)
+        optimizer1 = optim.Adam(model.parameters(),
+                            lr=opt.learning_rate2,
                             weight_decay=opt.weight_decay)
         
-        # optimizer = optim.SGD(model.parameters(),
-        #                     lr=opt.learning_rate,
-        #                     momentum=opt.momentum,
-        #                     weight_decay=opt.weight_decay)
-    return optimizer
+        optimizer2 = optim.SGD(model.parameters(),
+                            lr=opt.learning_rate,
+                            momentum=opt.momentum,
+                            weight_decay=opt.weight_decay)
+    # TODO: remove this to optimizer1, optimizer2
+    # return optimizer1, optimizer1
+    return optimizer1, optimizer2
 

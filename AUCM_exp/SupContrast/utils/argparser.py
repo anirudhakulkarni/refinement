@@ -3,9 +3,9 @@ import argparse
 import math
 
 def get_model_name(opt):
-    model_name = '{}_{}_{}_{}_im_{}_lr_{}_bsz_{}_g_{}_m_{}'.\
+    model_name = '{}_{}_{}_{}_im_{}_lr_{}_bsz_{}_g_{}_m_{}_stages_{}'.\
     format(opt.cls_type, opt.loss, opt.dataset, opt.model, opt.imratio, opt.learning_rate,
-            opt.batch_size, opt.gamma, opt.margin)
+            opt.batch_size, opt.gamma, opt.margin, opt.stages)
      
     return model_name
 
@@ -40,6 +40,8 @@ def parse_option():
     # optimization
     parser.add_argument('--learning_rate', type=float, default=0.1,
                         help='learning rate')
+    parser.add_argument('--learning_rate2', type=float, default=0.0003,
+                        help='learning rate')
     parser.add_argument('--lr_decay_epochs', type=str, default='50,75',
                         help='where to decay lr, can be a list')
     parser.add_argument('--lr_decay_rate', type=float, default=0.1,
@@ -50,7 +52,7 @@ def parse_option():
                         help='momentum')
 
     # model dataset
-    parser.add_argument('--loss', type=str, default='aucm', choices=['ce', 'supcon','focal','aucm','aucs'])
+    parser.add_argument('--loss', type=str, default='aucm', choices=['ce', 'sls','focal','aucm','aucs'])
     # TODO: List supported models here
     parser.add_argument('--model', type=str, default='resnet50')
     # TODO: List supported datasets here

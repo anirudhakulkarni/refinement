@@ -1,9 +1,10 @@
 import time
 import torch
-from utils.util import AverageMeter, warmup_learning_rate
+from utils.util import AverageMeter, adjust_learning_rate, warmup_learning_rate
 from utils.metrics import get_all_metrics, accuracy
 import numpy as np
 import sys
+
 def train_epoch_AUCM(train_loader, model, criterion, optimizer, epoch, opt):
     """one epoch training"""
     model.train()
@@ -211,11 +212,139 @@ def train_epoch_CE(train_loader, model, criterion, optimizer, epoch, opt):
 
     return results
 
+def train_epoch_SupConCE(loaders, model, criterion, optimizer, epoch, opt):
+    (train_loader1, train_loader2) = loaders
+    shift_freq = opt.stages.split(',')[1]
+    if (epoch//shift_freq)%2 == 0:
+        return train_epoch_SupCE(train_loader2, model, criterion, optimizer, epoch, opt)    
+    else:
+        return train_epoch_SupCon(train_loader1, model, criterion, optimizer, epoch, opt)
+def train_epoch_SupCon(train_loader, model, criterion, optimizer, epoch, opt):
+    '''
+    Train first 100 epochs with contrastive loss.
+    Then alternate between contrastive loss and cross entropy loss.
+    '''    
+    model.train()
+    
+    batch_time = AverageMeter()
+    data_time = AverageMeter()
+    losses = AverageMeter()
+    top1 = AverageMeter()
+
+    end = time.time()
+    pred_total = []
+    label_total = []
+
+    adjust_learning_rate(opt, optimizer, epoch)
+    for idx, (images, labels) in enumerate(train_loader):
+        data_time.update(time.time() - end)
+        if labels.dim() == 2:
+            labels = labels.squeeze(1) # Assert: Shape of labels is reduced to single dimension
+        labels=labels.long()
+
+        images = images.cuda(non_blocking=True)
+        labels = labels.cuda(non_blocking=True)
+        bsz = labels.shape[0]
+
+        features = model.encoder(images)
+        output = model.fc(features.detach())
+        loss = criterion(output, labels.long())
+
+        # update metric
+        losses.update(loss.item(), bsz)
+        acc1, acc5 = accuracy(output, labels, topk=(1,1))
+        top1.update(acc1[0], bsz)
+
+        if output.dim() == 2:
+            output=output[:, 1]
+
+        # SGD
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+        pred_total.append(output.detach().cpu().numpy())
+        label_total.append(labels.detach().cpu().numpy())
+        # measure elapsed time
+        batch_time.update(time.time() - end)
+        end = time.time()
+
+        # print info
+        if (idx + 1) % opt.print_freq == 0:
+            print('Train: [{0}][{1}/{2}]\t'
+                  'BT {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
+                  'DT {data_time.val:.3f} ({data_time.avg:.3f})\t'
+                  'loss {loss.val:.3f} ({loss.avg:.3f})\t'
+                  'Acc@1 {top1.val:.3f} ({top1.avg:.3f})'.format(
+                   epoch, idx + 1, len(train_loader), batch_time=batch_time,
+                   data_time=data_time, loss=losses, top1=top1))
+            sys.stdout.flush()
+    pred_total = np.concatenate(pred_total)
+    label_total = np.concatenate(label_total)
+    results = get_all_metrics('train', pred_total, label_total,opt)
+    print(' * Acc@1 {top1:.3f} AUC {auc:.3f} ECE {ece:.5f} SCE {sce:.5f} '
+            .format(top1=results['train_top1'], auc=results['train_auc'], ece=results['train_ece'], sce=results['train_sce']))
+
+    return results
+
+def train_epoch_SupCE(train_loader, model, criterion, optimizer, epoch, opt):
+    model.train()
+
+    batch_time = AverageMeter()
+    data_time = AverageMeter()
+    losses = AverageMeter()
+
+    end = time.time()
+    # TODO: optimizer, learning rate
+    for idx, (images, labels) in enumerate(train_loader):
+        data_time.update(time.time() - end)
+        # print(labels)
+        images = torch.cat([images[0], images[1]], dim=0)
+        if torch.cuda.is_available():
+            images = images.cuda(non_blocking=True)
+            labels = labels.cuda(non_blocking=True)
+        bsz = labels.shape[0]
+
+
+        # compute loss
+        features = model(images)
+        f1, f2 = torch.split(features, [bsz, bsz], dim=0)
+        features = torch.cat([f1.unsqueeze(1), f2.unsqueeze(1)], dim=1)
+        loss = criterion(features, labels)
+
+        # update metric
+        losses.update(loss.item(), bsz)
+
+        # SGD
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+        # measure elapsed time
+        batch_time.update(time.time() - end)
+        end = time.time()
+
+        # print info
+        if (idx + 1) % opt.print_freq == 0:
+            print('Train: [{0}][{1}/{2}]\t'
+                  'BT {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
+                  'DT {data_time.val:.3f} ({data_time.avg:.3f})\t'
+                  'loss {loss.val:.3f} ({loss.avg:.3f})'.format(
+                   epoch, idx + 1, len(train_loader), batch_time=batch_time,
+                   data_time=data_time, loss=losses))
+            sys.stdout.flush()
+
+    return losses.avg
+
+
+
 def get_train_test(opt):
     if opt.loss == 'ce' or opt.loss == 'focal':
         train_epoch = train_epoch_CE
     elif opt.loss == 'aucm' or opt.loss == 'aucs':
         train_epoch = train_epoch_AUCM
+    elif 'supcon' in opt.loss:
+        train_epoch = train_epoch_SupConCE
     else:
         raise ValueError('Unknown loss function: {}'.format(opt.loss))
     return train_epoch, test_epoch_AUCM

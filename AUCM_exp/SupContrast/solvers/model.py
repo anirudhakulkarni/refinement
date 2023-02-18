@@ -22,7 +22,7 @@ def set_model(opt):
     model = model_dict[opt.loss](name=opt.model, num_classes=opt.n_cls)
     if opt.loss == 'ce':
         criterion = loss_dict[opt.loss]()
-    elif opt.loss == 'supcon':
+    elif opt.loss == 'sls':
         criterion = loss_dict[opt.loss]()
     elif opt.loss == 'focal':
         criterion = loss_dict[opt.loss](gamma=opt.gamma,alpha=opt.alpha)
@@ -32,12 +32,15 @@ def set_model(opt):
         criterion = loss_dict[opt.loss](margin=1.0)
     else:
         raise ValueError('Loss not supported: {}'.format(opt.loss))
-    
+    criterion2 = torch.nn.CrossEntropyLoss()
+
     if torch.cuda.is_available():
         if torch.cuda.device_count() > 1:
             model = torch.nn.DataParallel(model)
         model = model.cuda()
         criterion = criterion.cuda()
-    
-    return model, criterion    
+        criterion2 = criterion2.cuda()
+    if 'sls' in opt.method:
+        return model, criterion, criterion2
+    return model, criterion, None    
     

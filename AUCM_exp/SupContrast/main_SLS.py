@@ -148,7 +148,7 @@ def set_model(opt):
     criterion1 = SupConLoss(temperature=opt.temp)
     criterion2 = torch.nn.CrossEntropyLoss()
     # criterion2 = loss_dict['LogitNorm']()
-    criterion2 = LogitNormLoss()
+    # criterion2 = LogitNormLoss()
     # criterion2 = ClassficationAndMDCA()
     classifier = LinearClassifier(name=opt.model, num_classes=opt.n_cls)
 

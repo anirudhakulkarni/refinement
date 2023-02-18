@@ -26,30 +26,50 @@ from solvers.grid_search import grid_search
 
 def train(opt):
     best_results = {}
-    train_loader, val_loader = set_loader(opt)
-    model, criterion = set_model(opt)
+    if 'sls' in opt.loss:
+        lossname=opt.loss
+        opt.loss='supcon'
+        train_loader1, val_loader = set_loader(opt)
+        opt.loss=lossname
+        train_loader2, val_loader = set_loader(opt)
+    else:
+        train_loader1, val_loader = set_loader(opt)
+    model, criterion, criterion2 = set_model(opt)
     optimizer = set_optimizer(opt, model, criterion)
     logger = tb_logger.Logger(logdir=opt.tb_folder, flush_secs=2)
-    print(opt.tb_folder)
     train_one_epoch, test_one_epoch = get_train_test(opt) 
+
     for epoch in range(1, opt.epochs + 1):
+        try:
+            time1 = time.time()
+            if 'sls' in opt.loss:
+                results = train_one_epoch((train_loader1, train_loader2), model, criterion, optimizer, epoch, opt)
+            else:
+                results = train_one_epoch(train_loader1, model, criterion, optimizer, epoch, opt)
+            time2 = time.time()
+            print('epoch {}, total time {:.2f}'.format(epoch, time2 - time1))
+            if opt.loss != 'sls':
+                log_results(logger, results, epoch)
 
-        time1 = time.time()
-        results = train_one_epoch(train_loader, model, criterion, optimizer, epoch, opt)
-        time2 = time.time()
-        print('epoch {}, total time {:.2f}'.format(epoch, time2 - time1))
+            results = test_one_epoch(val_loader, model, criterion, opt, val=True)
+            log_results(logger, results, epoch)
 
-        log_results(logger, results, epoch)
-
-        results = test_one_epoch(val_loader, model, criterion, opt, val=True)
-        log_results(logger, results, epoch)
-
-        if not best_results or results['val_auc'] > best_results['val_auc']:
-            best_results = results
-            save_file = os.path.join(opt.save_folder, 'best.pth')
+            if not best_results or results['val_auc'] > best_results['val_auc']:
+                best_results = results
+                save_file = os.path.join(opt.save_folder, 'best.pth')
+                save_model(model, optimizer, opt, epoch, save_file)
+        except KeyboardInterrupt:
+            print('KeyboardInterrupt')
+            inp_exit = input('Exit? [y/n]')
+            save_file = os.path.join(opt.save_folder, 'last.pth')
             save_model(model, optimizer, opt, epoch, save_file)
-
-
+            if inp_exit == 'y':
+                break
+            else:
+                continue
+                
+    best_results['margin']=opt.margin                                                                                 
+    best_results['gamma']=opt.gamma 
 
     print('best AUC: {:.10f}\t best ECE: {:.10f}\t best SCE: {:.10f}'.format(
         best_results['val_auc'], best_results['val_ece'], best_results['val_sce']))

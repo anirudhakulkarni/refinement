@@ -222,7 +222,8 @@ def get_all_metrics(name, output, target, opt,n_bins = 15, logits = False):
     metrics = {}
     
     # convert probability of class 1 to 2d vector with probability of class 0 and 1
-    # output = np.stack([1 - output, output], axis=1)
+    if output.ndim ==1:
+        output = np.stack([1 - output, output], axis=1)     # output = np.stack([1 - output, output], axis=1)
     # target=
     # print(output)
     # print(target)

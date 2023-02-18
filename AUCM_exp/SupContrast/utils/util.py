@@ -4,8 +4,8 @@ import math
 import numpy as np
 import torch
 import torch.optim as optim
-
-
+import os
+import json
 class TwoCropTransform:
     """Create two crops of the same image"""
     def __init__(self, transform):
@@ -82,7 +82,7 @@ def log_results(logger, results, epoch):
         logger.log_value(key, value, epoch)
         
     
-def save_results(opt,best_results):
+def save_results(opt,best_results,name=''):  
     # save the results in a json file
     jsonfile='results.json'
     if not os.path.isfile(jsonfile):
@@ -91,13 +91,17 @@ def save_results(opt,best_results):
     if os.path.exists(jsonfile):
         with open(jsonfile, 'r') as f:
             result_file = json.load(f)
-    
-    result_file[opt.save_folder+'_grid'] = {
+    print(best_results)
+    if 'margin' not in best_results:
+        best_results['margin']=-1
+    if 'gamma' not in best_results:
+        best_results['gamma']=-1
+    if 'alpha' not in best_results:
+        best_results['alpha']=-1
+    result_file[opt.save_folder+name] = {
         'model': opt.model,
         'dataset': opt.dataset,
         'batch_size': opt.batch_size,
-        'margin': best_results['margin'],
-        'gamma': best_results['gamma'],
         'imratio': opt.imratio,
         'best_results': best_results,
     }

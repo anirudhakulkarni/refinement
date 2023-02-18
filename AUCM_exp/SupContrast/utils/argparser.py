@@ -78,6 +78,12 @@ def parse_option():
                         help='2 stage training. parse initial large epochs and then frequency of small epochs')
     opt = parser.parse_args()
 
+
+    opt = update_option(opt)
+    return opt
+
+
+def update_option(opt):
     # set the path according to the environment
     opt.data_folder = '../../data/'
     opt.model_path = './save/SupCon/{}_models'.format(opt.dataset)

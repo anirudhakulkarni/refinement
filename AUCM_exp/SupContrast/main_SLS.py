@@ -11,14 +11,16 @@ import torch
 import torch.backends.cudnn as cudnn
 
 # from main_ce import set_loader
-from util import AverageMeter
-from util import adjust_learning_rate, warmup_learning_rate, accuracy
-from util import set_optimizer, save_model
-from networks.resnet_big import SupConResNet, LinearClassifier
+from utils.util import AverageMeter, log_results, save_results
+from utils.util import adjust_learning_rate, warmup_learning_rate
+from utils.metrics import accuracy, get_all_metrics
+from utils.util import set_optimizer, save_model
+# from networks.resnet_big import SupConResNet, LinearClassifier
+from networks.main import SupConResNet, LinearClassifier
 from sklearn.metrics import roc_auc_score
 from calibration_library.metrics import ECELoss, SCELoss
 from dataset.datasets import set_loader
-from loss import SupConLoss
+from solvers.losses import SupConLoss
 import json
 try:
     import apex
@@ -140,9 +142,9 @@ np.random.seed(SEED)
 torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
 
-from loss import loss_dict
-from loss import LogitNormLoss
-from loss import ClassficationAndMDCA
+# from solvers.losses import loss_dict
+# from loss import LogitNormLoss
+# from loss import ClassficationAndMDCA
 def set_model(opt):
     model = SupConResNet(name=opt.model)
     criterion1 = SupConLoss(temperature=opt.temp)
@@ -212,6 +214,7 @@ def train(train_loader, model, classifier, criterion, optimizer, epoch, opt):
         output = classifier(features.detach())
         loss = criterion(output, labels.long())
 
+        output = torch.nn.functional.softmax(output, dim=1)
         # update metric
         losses.update(loss.item(), bsz)
         acc1, acc5 = accuracy(output, labels, topk=(1,1))
@@ -243,14 +246,19 @@ def train(train_loader, model, classifier, criterion, optimizer, epoch, opt):
             sys.stdout.flush()
     pred_total = np.concatenate(pred_total)
     label_total = np.concatenate(label_total)
-    auc = roc_auc_score(label_total, pred_total)
+    name='train'
+    results = get_all_metrics('train', pred_total, label_total,opt)
+    print(' * Acc@1 {top1:.3f} AUC {auc:.3f} ECE {ece:.5f} SCE {sce:.5f} '
+            .format(top1=results[name+'_top1'], auc=results[name+'_auc'], ece=results[name+'_ece'], sce=results[name+'_sce']))
+    return results
+    # auc = roc_auc_score(label_total, pred_total)
 
-    # convert probability of class 1 to 2d vector with probability of class 0 and 1
-    pred_total = np.stack([1 - pred_total, pred_total], axis=1)
-    eces = ECELoss().loss(pred_total, label_total, n_bins=15, logits=False)
-    sces = SCELoss().loss(pred_total, label_total, n_bins=15, logits=False)
+    # # convert probability of class 1 to 2d vector with probability of class 0 and 1
+    # pred_total = np.stack([1 - pred_total, pred_total], axis=1)
+    # eces = ECELoss().loss(pred_total, label_total, n_bins=15, logits=False)
+    # sces = SCELoss().loss(pred_total, label_total, n_bins=15, logits=False)
 
-    return losses.avg, auc, eces, sces
+    # return losses.avg, auc, eces, sces
 
 def validate(val_loader, model, classifier, criterion, opt):
     """validation"""
@@ -277,6 +285,7 @@ def validate(val_loader, model, classifier, criterion, opt):
             # forward
             output = classifier(model.encoder(images))
             loss = criterion(output, labels.long())
+            output = torch.nn.functional.softmax(output, dim=1)
 
             # update metric
             losses.update(loss.item(), bsz)
@@ -286,8 +295,8 @@ def validate(val_loader, model, classifier, criterion, opt):
             # add to total
             # print(output.shape)
             # use the probability of the positive class only
-            if output.dim() == 2:
-                output=output[:, 1]
+            # if output.dim() == 2:
+            #     output=output[:, 1]
             # output = output.contiguous().view(-1, 1)
             # print(output.shape)
             pred_total.append(output.cpu().numpy())
@@ -308,20 +317,26 @@ def validate(val_loader, model, classifier, criterion, opt):
     # print(len(pred_total), len(label_total))
     pred_total = np.concatenate(pred_total)
     label_total = np.concatenate(label_total)
-    auc = roc_auc_score(label_total, pred_total)
-    # convert probability of class 1 to 2d vector with probability of class 0 and 1
-    pred_total = np.stack([1 - pred_total, pred_total], axis=1)
-    eces = ECELoss().loss(pred_total, label_total, n_bins=15, logits=False)
-    sces = SCELoss().loss(pred_total, label_total, n_bins=15, logits=False)
+    name='val'
+    results = get_all_metrics('val', pred_total, label_total,opt)
+    print(' * Acc@1 {top1:.3f} AUC {auc:.3f} ECE {ece:.5f} SCE {sce:.5f} '
+            .format(top1=results[name+'_top1'], auc=results[name+'_auc'], ece=results[name+'_ece'], sce=results[name+'_sce']))
+    return results
 
-    # print stats
-    print(' * Acc@1 {top1.avg:.3f} AUC {auc:.3f} ECE {ece:.5f} SCE {sce:.5f}'
-            .format(top1=top1, auc=auc, ece=eces, sce=sces))
-    return losses.avg, auc, eces, sces
+    # auc = roc_auc_score(label_total, pred_total)
+    # # convert probability of class 1 to 2d vector with probability of class 0 and 1
+    # pred_total = np.stack([1 - pred_total, pred_total], axis=1)
+    # eces = ECELoss().loss(pred_total, label_total, n_bins=15, logits=False)
+    # sces = SCELoss().loss(pred_total, label_total, n_bins=15, logits=False)
+
+    # # print stats
+    # print(' * Acc@1 {top1.avg:.3f} AUC {auc:.3f} ECE {ece:.5f} SCE {sce:.5f}'
+    #         .format(top1=top1, auc=auc, ece=eces, sce=sces))
+    # return losses.avg, auc, eces, sces
 
 
 def main():
-    best_auc, best_ece, best_sce = 0, 0, 0
+    best_results ={}
     opt = parse_option()
 
     # build data loader
@@ -345,29 +360,22 @@ def main():
         # train for one epoch
         time1 = time.time()
         if (epoch//opt.shift_freq)%2==0: # linear mode
-            loss, train_auc,eces,sces = train(train_loader2, model, classifier, criterion2, optimizer, epoch, opt)
+            results = train(train_loader2, model, classifier, criterion2, optimizer, epoch, opt)
             time2 = time.time()
-            print('Train epoch {}, total time {:.2f}, AUC:{:.2f}'.format(
-            epoch, time2 - time1, train_auc))
+            print('Train epoch {}, total time {:.2f}, AUC:{:.2f}'.format( epoch, time2 - time1, results['train_auc']))
 
-            # tensorboard logger
-            logger.log_value('train_loss', loss, epoch)
-            logger.log_value('train_auc', train_auc, epoch)
-            logger.log_value('learning_rate', optimizer.param_groups[0]['lr'], epoch)
-            logger.log_value('train_ece', eces, epoch)
-            logger.log_value('train_sce', sces, epoch)
+            log_results(logger, results, epoch)
 
             # eval for one epoch
-            loss, val_auc, eces, sces = validate(val_loader, model, classifier, criterion2, opt)
-            logger.log_value('val_loss', loss, epoch)
-            logger.log_value('val_auc', val_auc, epoch)
-            logger.log_value('val_ece', eces, epoch)
-            logger.log_value('val_sce', sces, epoch)
+            results = validate(val_loader, model, classifier, criterion2, opt)
+            log_results(logger, results, epoch)
 
-            if val_auc > best_auc:
-                best_auc = val_auc
-                best_ece = eces
-                best_sce = sces
+            if not best_results or results['val_auc'] > best_results['val_auc']:
+                best_results = results
+                save_file = os.path.join(
+                    opt.save_folder, 'ckpt_best.pth')
+                save_model(model, optimizer, opt, epoch, save_file)
+                
 
             if epoch % opt.save_freq == 0:
                 save_file = os.path.join(
@@ -380,18 +388,14 @@ def main():
             print('epoch {}, total time {:.2f}'.format(epoch, time2 - time1))
             logger.log_value('train_loss', loss, epoch)
             
-        
-    print('best AUC: {:.10f}\t best ECE: {:.10f}\t best SCE: {:.10f}'.format(best_auc, best_ece, best_sce))
+    print(best_results)
+    print('best AUC: {:.10f}\t best ECE: {:.10f}\t best SCE: {:.10f}'.format(
+        best_results['val_auc'], best_results['val_ece'], best_results['val_sce']))
+    
+    save_results(opt, best_results)
 
-    # save the results in a json file
-    jsonfile='results.json'
-    if os.path.exists(jsonfile):
-        with open(jsonfile, 'r') as f:
-            results = json.load(f)
-    results[opt.save_folder] = {'best_auc': best_auc, 'best_ece': best_ece, 'best_sce': best_sce}
-    with open(jsonfile, 'w') as f:
-        json.dump(results, f, indent=4)
-        
+
+    return best_results
 
 
 if __name__ == '__main__':

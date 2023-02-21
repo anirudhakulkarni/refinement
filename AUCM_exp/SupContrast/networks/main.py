@@ -4,19 +4,25 @@ import torch.nn.functional as F
 
 from .resnet_cifar import ResNet20
 from .densenet import DenseNet121
+from .resnet_big import resnet18, resnet34, resnet50, resnet101
 model_dict = {
-    "resnet20":[ResNet20,64],
-    "densenet121": [DenseNet121, 1024]
+    "resnet20": [ResNet20, 64],
+    "resnet50": [resnet50, 2048],
+    "densenet121": [DenseNet121, 1024],
+    'resnet18': [resnet18, 512],
+    'resnet34': [resnet34, 512],
+    'resnet50': [resnet50, 2048],
+    'resnet101': [resnet101, 2048],
 }
+
 
 class SupConResNet(nn.Module):
     """backbone + projection head"""
-    def __init__(self, name='resnet50', head='mlp', feat_dim=128, num_classes=10):
+
+    def __init__(self, name='resnet50', head='mlp', feat_dim=128):
         super(SupConResNet, self).__init__()
         model_fun, dim_in = model_dict[name]
         self.encoder = model_fun()
-        # self.fc = nn.Linear(dim_in, num_classes)
-        
         if head == 'linear':
             self.head = nn.Linear(dim_in, feat_dim)
         elif head == 'mlp':
@@ -31,13 +37,13 @@ class SupConResNet(nn.Module):
 
     def forward(self, x):
         feat = self.encoder(x)
-        # feat = self.fc(feat)
         feat = F.normalize(self.head(feat), dim=1)
         return feat
 
 
 class SupCEResNet(nn.Module):
     """encoder + classifier"""
+
     def __init__(self, name='resnet50', num_classes=10):
         super(SupCEResNet, self).__init__()
         model_fun, dim_in = model_dict[name]
@@ -50,13 +56,15 @@ class SupCEResNet(nn.Module):
     def forward(self, x):
         # TODO: softmax needs to be fed before loss
         # features, num_classes
-        
+
         # print(self.sigmoid(self.fc(self.encoder(x))))
         # return self.sigmoid(self.fc(self.encoder(x)))
         return self.fc(self.encoder(x))
 
+
 class SupAUCMResNet(nn.Module):
     """encoder + classifier"""
+
     def __init__(self, name='resnet50', num_classes=10):
         super(SupAUCMResNet, self).__init__()
         model_fun, dim_in = model_dict[name]
@@ -75,13 +83,11 @@ class SupAUCMResNet(nn.Module):
 
 class LinearClassifier(nn.Module):
     """Linear classifier"""
+
     def __init__(self, name='resnet50', num_classes=10):
         super(LinearClassifier, self).__init__()
         _, feat_dim = model_dict[name]
         self.fc = nn.Linear(feat_dim, num_classes)
-        
 
     def forward(self, features):
         return self.fc(features)
-
-

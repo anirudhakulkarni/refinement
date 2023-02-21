@@ -3,9 +3,9 @@ import argparse
 import math
 
 def get_model_name(opt):
-    model_name = '{}_{}_{}_{}_im_{}_lr_{}_bsz_{}_g_{}_m_{}_stages_{}'.\
+    model_name = '{}_{}_{}_{}_im_{}_lr_{}_bsz_{}_g_{}_m_{}_epochs_{}'.\
     format(opt.cls_type, opt.loss, opt.dataset, opt.model, opt.imratio, opt.learning_rate,
-            opt.batch_size, opt.gamma, opt.margin, opt.stages)
+            opt.batch_size, opt.gamma, opt.margin, opt.epochs)
      
     return model_name
 
@@ -52,7 +52,7 @@ def parse_option():
                         help='momentum')
 
     # model dataset
-    parser.add_argument('--loss', type=str, default='aucm', choices=['ce', 'sls','focal','aucm','aucs'])
+    parser.add_argument('--loss', type=str, default='aucm', choices=['ce', 'supcon','focal','aucm','aucs','ce_linear'])
     # TODO: List supported models here
     parser.add_argument('--model', type=str, default='resnet50')
     # TODO: List supported datasets here
@@ -62,6 +62,9 @@ def parse_option():
     parser.add_argument('--size', type=int, default=32, help='parameter for RandomResizedCrop')
     parser.add_argument('--margin', type=float, default=1.0, help='margin for AUCM loss')
     parser.add_argument('--gamma', type=float, default=1000, help='gamma for focal loss and AUCM loss')
+    parser.add_argument('--temp', type=float, default=0.07, help='temperature')
+    parser.add_argument('--shift_freq', type=int, default=5,
+                        help='shift frequency')
     # other setting
     parser.add_argument('--cosine', action='store_true',
                         help='using cosine annealing')
@@ -78,6 +81,8 @@ def parse_option():
     # 2 stage training. parse initial large epochs and then frequency of small epochs
     parser.add_argument('--stages', type=str, default='1000, 20',
                         help='2 stage training. parse initial large epochs and then frequency of small epochs')
+    parser.add_argument('--ckpt', type=str, default='',
+                        help='path to pre-trained model')
     opt = parser.parse_args()
 
 
@@ -91,10 +96,11 @@ def update_option(opt):
     opt.model_path = './save/SupCon/{}_models'.format(opt.dataset)
     opt.tb_path = './save/SupCon/{}_tensorboard'.format(opt.dataset)
 
-    iterations = opt.lr_decay_epochs.split(',')
-    opt.lr_decay_epochs = list([])
-    for it in iterations:
-        opt.lr_decay_epochs.append(int(it))
+    if type(opt.lr_decay_epochs) is str:
+        iterations = opt.lr_decay_epochs.split(',')    
+        opt.lr_decay_epochs = list([])
+        for it in iterations:
+            opt.lr_decay_epochs.append(int(it))
 
     opt.model_name = get_model_name(opt)
 

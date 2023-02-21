@@ -67,7 +67,7 @@ def set_optimizer(opt, model):
 
 
 def save_model(model, optimizer, opt, epoch, save_file):
-    print('==> Saving...')
+    print('==> Saving at {}...'.format(save_file))
     state = {
         'opt': opt,
         'model': model.state_dict(),

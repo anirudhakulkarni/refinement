@@ -156,7 +156,7 @@ def set_loader(opt):
     train_sampler = None
     
     train_transform = TwoCropTransform(train_transform) if opt.loss=='supcon' else train_transform
-    val_transform = TwoCropTransform(val_transform) if opt.loss=='supcon' else val_transform
+    # val_transform = TwoCropTransform(val_transform) if opt.loss=='supcon' else val_transform
 
     generator = ImbalancedDataGenerator(verbose=True, random_seed=SEED)
     (train_images, train_labels) = generator.transform(

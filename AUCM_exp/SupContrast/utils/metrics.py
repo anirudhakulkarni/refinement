@@ -219,6 +219,11 @@ def accuracy(output, target, topk=(1,)):
 
 
 def get_all_metrics(name, output, target, opt,n_bins = 15, logits = False):
+    '''
+    Accepts:    
+    1. 1d vector of probabilities of class 1
+    2. 2d vector with each row being a probability vector
+    '''
     metrics = {}
     
     # convert probability of class 1 to 2d vector with probability of class 0 and 1

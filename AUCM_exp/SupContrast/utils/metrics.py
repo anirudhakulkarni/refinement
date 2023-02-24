@@ -239,7 +239,11 @@ def get_all_metrics(name, output, target, opt,n_bins = 15, logits = False):
     metrics[name+'_sce'] = SCELoss().loss(output, target, n_bins, logits)
     metrics[name+'_ace'] = ACELoss().loss(output, target, n_bins, logits)
     # metrics[name+'_tace'] = TACELoss().loss(output, target, n_bins, logits)
-    
+    # import utils.visualization as visualization
+    # conf_hist = visualization.ReliabilityDiagram()
+    # plt_test = conf_hist.plot(output,target,title="ReliabilityDiagram",logits=False)
+    # plt_test.savefig('plots/conf_histogram_test.png',bbox_inches='tight')
+        
     target = torch.tensor(target)
     output = torch.tensor(output)
     # print(output)
@@ -256,6 +260,6 @@ def get_all_metrics(name, output, target, opt,n_bins = 15, logits = False):
         # TODO: 
         metrics[name+'_top1'] = float(accuracy(output, target, topk=(1,))[0][0])
         metrics[name+'_auc'] = auc_m(target, output)
-        
+
     return metrics
     

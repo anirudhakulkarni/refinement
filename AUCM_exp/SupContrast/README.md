@@ -9,7 +9,10 @@
 8. aucm with augmentation
 9. training procedure as an algo
 10. training procedure in paper
-11. adam vs sgd result difference
+11. ~~adam vs sgd result difference~~ Use SGD without momentum. Momentum harmed
+12. tsne plot
+13. find the error example
+
 
 
 

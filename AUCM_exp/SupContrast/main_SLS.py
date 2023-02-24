@@ -56,7 +56,7 @@ def parse_option():
                         help='momentum')
 
     # model dataset
-    parser.add_argument('--loss', type=str, default='ce', choices=['ce', 'supcon','linear'])
+    parser.add_argument('--loss', type=str, default='ce', choices=['ce', 'supcon','linear','focal'])
     parser.add_argument('--model', type=str, default='resnet50')
     parser.add_argument('--dataset', type=str, default='cifar10',
                         choices=['cifar10', 'cifar100','c2','stl10','melanoma'], help='dataset')
@@ -92,8 +92,8 @@ def parse_option():
         opt.lr_decay_epochs.append(int(it))
 
     # opt.model_name = 'SupSLSMDCA_{}_{}_im_{}_lr_{}_decay_{}_bsz_{}'.\
-    opt.model_name = 'SupSLSLogit_{}_{}_im_{}_lr_{}_decay_{}_bsz_{}'.\
-        format(opt.dataset, opt.model, opt.imratio, opt.learning_rate, opt.weight_decay,
+    opt.model_name = 'SupSLS_{}_{}_{}_im_{}_lr_{}_decay_{}_bsz_{}'.\
+        format(opt.loss, opt.dataset, opt.model, opt.imratio, opt.learning_rate, opt.weight_decay,
                opt.batch_size)
 
     if opt.cosine:
@@ -135,7 +135,7 @@ from libauc.utils import ImbalancedDataGenerator #BUG:  this is using import fro
 import numpy as np
 from libauc.datasets import CAT_VS_DOG, CIFAR10, CIFAR100
 from main_supcon import train as train_supcon
-
+from solvers.losses import ClassficationAndMDCA, FocalLoss
 SEED=123
 torch.manual_seed(SEED)
 np.random.seed(SEED)
@@ -148,10 +148,14 @@ torch.backends.cudnn.benchmark = False
 def set_model(opt):
     model = SupConResNet(name=opt.model)
     criterion1 = SupConLoss(temperature=opt.temp)
-    criterion2 = torch.nn.CrossEntropyLoss()
+    if opt.loss == 'ce':
+        criterion2 = torch.nn.CrossEntropyLoss()
+    elif opt.loss == 'focal':
+        criterion2 = FocalLoss(gamma=opt.gamma,alpha=opt.alpha)
+    else:
+        criterion2 = torch.nn.CrossEntropyLoss()
     # criterion2 = loss_dict['LogitNorm']()
-    # criterion2 = LogitNormLoss()
-    # criterion2 = ClassficationAndMDCA()
+    # criterion2 = ClassficationAndMDCA(beta=0.1)
     classifier = LinearClassifier(name=opt.model, num_classes=opt.n_cls)
 
     ckpt = torch.load(opt.ckpt, map_location='cpu')

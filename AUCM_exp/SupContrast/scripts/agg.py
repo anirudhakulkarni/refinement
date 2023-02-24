@@ -39,13 +39,14 @@ def aggregator_function(jsonfile):
     # "binary_aucm_c2_resnet18_im_0.01_lr_0.1_bsz_128" in te
     results = []
     for te in jsonfile:
-        if "binary_aucm" in te and "_resnet18_im_0.01_lr_0.1_bsz" in te and "grid" in te:
+        if "SupSLSLogit" in te and "_resnet18_im_0.01_lr" in te and "SupSLSLogit" in te :
             results.append(filter(jsonfile[te]))
     return results
 
+
 import json
 
-with open('../results.json','r') as f:
+with open('./results.json','r') as f:
     results=json.load(f)
 
 import pandas as pd

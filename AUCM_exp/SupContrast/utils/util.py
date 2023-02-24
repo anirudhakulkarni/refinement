@@ -1,6 +1,7 @@
 from __future__ import print_function
 
 import math
+import time
 import numpy as np
 import torch
 import torch.optim as optim
@@ -98,7 +99,9 @@ def save_results(opt,best_results,name=''):
         best_results['gamma']=-1
     if 'alpha' not in best_results:
         best_results['alpha']=-1
+    current_time = time.strftime("%Y-%m-%d-%H_%M_%S", time.localtime())
     result_file[opt.save_folder+name] = {
+        'time': current_time,
         'model': opt.model,
         'dataset': opt.dataset,
         'batch_size': opt.batch_size,

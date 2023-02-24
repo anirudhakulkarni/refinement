@@ -56,7 +56,7 @@ def parse_option():
                         help='momentum')
 
     # model dataset
-    parser.add_argument('--loss', type=str, default='ce', choices=['ce', 'supcon','linear','focal'])
+    parser.add_argument('--loss', type=str, default='ce', choices=['ce', 'supcon','mdca','focal'])
     parser.add_argument('--model', type=str, default='resnet50')
     parser.add_argument('--dataset', type=str, default='cifar10',
                         choices=['cifar10', 'cifar100','c2','stl10','melanoma'], help='dataset')
@@ -152,6 +152,8 @@ def set_model(opt):
         criterion2 = torch.nn.CrossEntropyLoss()
     elif opt.loss == 'focal':
         criterion2 = FocalLoss(gamma=opt.gamma,alpha=opt.alpha)
+    elif opt.loss == 'mdca':
+        criterion2 = ClassficationAndMDCA(beta=opt.beta)
     else:
         criterion2 = torch.nn.CrossEntropyLoss()
     # criterion2 = loss_dict['LogitNorm']()
@@ -339,9 +341,8 @@ def validate(val_loader, model, classifier, criterion, opt):
     # return losses.avg, auc, eces, sces
 
 
-def main():
+def main(opt):
     best_results ={}
-    opt = parse_option()
 
     # build data loader
     lossname=opt.loss
@@ -401,6 +402,61 @@ def main():
 
     return best_results
 
+# def grid_search():
+#     opt = parse_option()
+#     if opt.loss ==
+from utils.argparser import update_option
+from utils.util import save_results
+
+
+def grid_search_focal(opt,train):
+    gamma_list = [1,2,5]
+    alpha_list = [0.25, 0.5, 0.75]
+    best_results = {}
+    for gamma in gamma_list:
+        for alpha in alpha_list:
+            opt.gamma = gamma
+            opt.alpha = alpha
+            opt = update_option(opt)
+            results = train(opt)
+            if not best_results or results['val_auc'] > best_results['val_auc']:
+                best_results = results
+                best_results['gamma'] = gamma
+                best_results['alpha'] = alpha
+    print('best AUC: {:.10f}\t best ECE: {:.10f}\t best SCE: {:.10f}\t gamma: {:.10f}\t alpha: {:.10f}'.format(
+        best_results['val_auc'], best_results['val_ece'], best_results['val_sce'], best_results['gamma'], best_results['alpha']))
+    print(best_results)
+
+    save_results(opt,best_results,name='_grid') 
+    
+
+def grid_search_mdca(opt,train):
+    beta_list = [0.1,0.3,0.5,0.7,1.0]
+    best_results = {}
+    for beta in beta_list:
+        opt.beta = beta
+        opt = update_option(opt)
+        results = train(opt)
+        if not best_results or results['val_auc'] > best_results['val_auc']:
+            best_results = results
+            best_results['beta'] = beta
+    print('best AUC: {:.10f}\t best ECE: {:.10f}\t best SCE: {:.10f}\t gamma: {:.10f}\t alpha: {:.10f}'.format(
+        best_results['val_auc'], best_results['val_ece'], best_results['val_sce'], best_results['gamma'], best_results['alpha']))
+    print(best_results)
+
+    save_results(opt,best_results,name='_grid') 
+    
+
+def grid_search():
+    opt = parse_option()
+    if opt.loss == 'ce':
+        main(opt)
+    elif opt.loss == 'focal':
+        grid_search_focal(opt,main)
+    elif opt.loss == 'mdca':
+        grid_search_mdca(opt,main)
 
 if __name__ == '__main__':
-    main()
+    opt = parse_option()
+    
+    main(opt)

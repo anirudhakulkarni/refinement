@@ -324,8 +324,10 @@ class ClassficationAndMDCA(nn.Module):
             self.classification_loss = CRL(gamma=self.gamma)
         elif "LogitNorm" in loss:
             self.classification_loss = LogitNormLoss()
-        else:
+        elif "LabelSmoothing" in loss:
             self.classification_loss = LabelSmoothingLoss(alpha=self.alpha) 
+        else:
+            self.classification_loss = nn.CrossEntropyLoss()
         self.MDCA = MDCA()
 
     def forward(self, logits, targets):

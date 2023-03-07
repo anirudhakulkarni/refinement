@@ -17,10 +17,19 @@
             "alpha": -1
         }
 '''
-def filter(content):
+def filter(jf,te):
     # this json object to filtered json object
     # filter out those which have "best_results" key
     result={}
+    content = jf[te]
+    if 'aucm' in te:
+        result['loss'] = 'aucm'
+    if 'ce' in te:
+        result['loss'] = 'ce'
+    if 'focal' in te:
+        result['loss'] = 'focal'
+    if 'sls' in te:
+        result['loss'] = 'sls'
     result['model']=content['model']
     result['dataset']=content['dataset']
     result['imratio']=content['imratio']
@@ -39,8 +48,9 @@ def aggregator_function(jsonfile):
     # "binary_aucm_c2_resnet18_im_0.01_lr_0.1_bsz_128" in te
     results = []
     for te in jsonfile:
-        if "SupSLSLogit" in te and "_resnet18_im_0.01_lr" in te and "SupSLSLogit" in te :
-            results.append(filter(jsonfile[te]))
+        if "resnet18" in te  and "focal" in te and "grid" in te:
+            
+            results.append(filter(jsonfile,te))
     return results
 
 

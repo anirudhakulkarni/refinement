@@ -91,3 +91,45 @@ class LinearClassifier(nn.Module):
 
     def forward(self, features):
         return self.fc(features)
+
+
+class Cifar100IMBModel(nn.Module):
+    def __init__(self, name, input_dim=2048, num_classes=100, bias=True):
+        super(Cifar100IMBModel, self).__init__()
+        self.model = torch.nn.Sequential(
+            torch.nn.BatchNorm1d(input_dim),
+            torch.nn.Linear(input_dim, 1024, bias=bias),
+            torch.nn.ReLU(),
+            torch.nn.BatchNorm1d(1024),
+            torch.nn.Linear(1024, 256),
+            torch.nn.ReLU(),
+            torch.nn.BatchNorm1d(256),
+            torch.nn.Linear(256, num_classes),
+            # torch.nn.Linear(64, 12),
+            # torch.nn.Softmax(dim=1)
+            ).cuda()
+
+    def forward(self, x):
+        x = x.float()
+        return self.model(x)
+
+class Cifar100IMBModelSupcon(nn.Module):
+    def __init__(self, name, input_dim=2048, outdim=128, bias=True):
+        super(Cifar100IMBModelSupcon, self).__init__()
+        self.model = torch.nn.Sequential(
+            torch.nn.BatchNorm1d(input_dim),
+            torch.nn.Linear(input_dim, 1024, bias=bias),
+            torch.nn.ReLU(),
+            torch.nn.BatchNorm1d(1024),
+            torch.nn.Linear(1024, 256),
+            torch.nn.ReLU(),
+            torch.nn.BatchNorm1d(256),
+            torch.nn.Linear(256, outdim),
+            # torch.nn.Linear(64, 12),
+            # torch.nn.Softmax(dim=1)
+            ).cuda()
+
+    def forward(self, x):
+        x = x.float()
+        return self.model(x)
+

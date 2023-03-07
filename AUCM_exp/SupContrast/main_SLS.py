@@ -54,19 +54,25 @@ def parse_option():
                         help='weight decay')
     parser.add_argument('--momentum', type=float, default=0.9,
                         help='momentum')
+    parser.add_argument('--cls_type', type=str, default='binary', choices=['binary', 'multi'],
+                        help='classification type: binary or multi-class')
 
     # model dataset
     parser.add_argument('--loss', type=str, default='ce', choices=['ce', 'supcon','mdca','focal'])
     parser.add_argument('--model', type=str, default='resnet50')
     parser.add_argument('--dataset', type=str, default='cifar10',
-                        choices=['cifar10', 'cifar100','c2','stl10','melanoma'], help='dataset')
+                        choices=['cifar10', 'cifar100','c2','stl10','melanoma','imagenet_lt'], help='dataset')
     parser.add_argument('--imratio', type=float, default=0.1,
                         help='imbalance ratio')
+    parser.add_argument('--gamma', type=float, default=1000, help='gamma for focal loss and AUCM loss')
+    parser.add_argument('--alpha', type=float, default=0.75, help='alpha for focal loss')
+    parser.add_argument('--margin', type=float, default=1.0, help='margin for AUCM loss')
     parser.add_argument('--shift_freq', type=int, default=5,
                         help='shift frequency')
     parser.add_argument('--temp', type=float, default=0.07,
                         help='temperature for loss function')
     parser.add_argument('--size', type=int, default=32, help='parameter for RandomResizedCrop')
+    parser.add_argument('--delta', type=float, default=0, help='delta for corruptions. Vary from 0 to 1')
 
     # other setting
     parser.add_argument('--cosine', action='store_true',
@@ -83,8 +89,8 @@ def parse_option():
 
     # set the path according to the environment
     opt.data_folder = '../../data/'
-    opt.model_path = './save/SupCon/{}_models'.format(opt.dataset)
-    opt.tb_path = './save/SupCon/{}_tensorboard'.format(opt.dataset)
+    opt.model_path = './main_save/SupCon/{}_models'.format(opt.dataset)
+    opt.tb_path = './main_save/SupCon/{}_tensorboard'.format(opt.dataset)
 
     iterations = opt.lr_decay_epochs.split(',')
     opt.lr_decay_epochs = list([])
@@ -119,7 +125,7 @@ def parse_option():
         os.makedirs(opt.save_folder)
 
     # if opt.dataset == 'cifar10':
-    opt.n_cls = 2
+    opt.n_cls = get_num_classes(opt)
     # elif opt.dataset == 'cifar100':
     #     opt.n_cls = 2
     # elif opt.dataset == 'c2':
@@ -167,6 +173,7 @@ def set_model(opt):
         if torch.cuda.device_count() > 1:
             model.encoder = torch.nn.DataParallel(model.encoder)
         else:
+            # print(state_dict)
             new_state_dict = {}
             for k, v in state_dict.items():
                 k = k.replace("module.", "")
@@ -219,15 +226,18 @@ def train(train_loader, model, classifier, criterion, optimizer, epoch, opt):
         features = model.encoder(images)
         output = classifier(features.detach())
         loss = criterion(output, labels.long())
-
+        # print(output)
         output = torch.nn.functional.softmax(output, dim=1)
+        # print(output)
         # update metric
         losses.update(loss.item(), bsz)
         acc1, acc5 = accuracy(output, labels, topk=(1,1))
         top1.update(acc1[0], bsz)
-
-        if output.dim() == 2:
-            output=output[:, 1]
+        # print(output)
+        # print(output.shape)
+        # if output.dim() == 2:
+        #     print("reducing dimensions as its one dimensional")
+        #     output=output[:, 1]
 
         # SGD
         optimizer.zero_grad()
@@ -252,6 +262,8 @@ def train(train_loader, model, classifier, criterion, optimizer, epoch, opt):
             sys.stdout.flush()
     pred_total = np.concatenate(pred_total)
     label_total = np.concatenate(label_total)
+    print(pred_total.shape)
+    print(label_total.shape)
     name='train'
     results = get_all_metrics('train', pred_total, label_total,opt)
     print(' * Acc@1 {top1:.3f} AUC {auc:.3f} ECE {ece:.5f} SCE {sce:.5f} '
@@ -323,6 +335,8 @@ def validate(val_loader, model, classifier, criterion, opt):
     # print(len(pred_total), len(label_total))
     pred_total = np.concatenate(pred_total)
     label_total = np.concatenate(label_total)
+    print(pred_total.shape)
+    print(label_total.shape)
     name='val'
     results = get_all_metrics('val', pred_total, label_total,opt)
     print(' * Acc@1 {top1:.3f} AUC {auc:.3f} ECE {ece:.5f} SCE {sce:.5f} '
@@ -405,7 +419,7 @@ def main(opt):
 # def grid_search():
 #     opt = parse_option()
 #     if opt.loss ==
-from utils.argparser import update_option
+from utils.argparser import get_num_classes, update_option
 from utils.util import save_results
 
 
@@ -431,7 +445,7 @@ def grid_search_focal(opt,train):
     
 
 def grid_search_mdca(opt,train):
-    beta_list = [0.1,0.3,0.5,0.7,1.0]
+    beta_list = [1,10]
     best_results = {}
     for beta in beta_list:
         opt.beta = beta
@@ -458,5 +472,5 @@ def grid_search():
 
 if __name__ == '__main__':
     opt = parse_option()
-    
-    main(opt)
+    grid_search()
+    # main(opt)

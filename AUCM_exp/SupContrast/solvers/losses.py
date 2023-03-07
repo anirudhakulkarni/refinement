@@ -271,7 +271,7 @@ class ClassficationAndCRLAndMDCA(nn.Module):
         return loss_ref + self.args.beta * loss_cal
 
 class LabelSmoothingLoss(nn.Module):
-    def __init__(self, alpha=0.0, dim=-1, **kwargs):
+    def __init__(self, alpha=0.1, dim=-1, **kwargs):
         super(LabelSmoothingLoss, self).__init__()
         self.confidence = 1.0 - alpha
         self.alpha = alpha

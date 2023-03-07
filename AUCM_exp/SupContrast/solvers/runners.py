@@ -1,7 +1,7 @@
 import os
 import time
 import torch
-from utils.util import AverageMeter, adjust_learning_rate, save_model, warmup_learning_rate
+from utils.util import AverageMeter, adjust_learning_rate, is_CE_like, save_model, warmup_learning_rate
 from utils.metrics import get_all_metrics, accuracy
 import numpy as np
 import sys
@@ -112,9 +112,67 @@ def test_epoch_AUCM(test_loader, model, criterion, opt, val=False):
             acc1, acc5 = accuracy(output, labels, topk=(1, 1))
             top1.update(acc1[0], bsz)
 
-            # remove one dimension. Number of classes = 1. Hence sigmoid works instead of softmax
+            # remove one dimension. 
             output = torch.squeeze(output)
+            # print(output)
+            # output = output.contiguous().view(-1, 1)
+            # print(output.shape)
+            pred_total.append(output.cpu().numpy())
+            label_total.append(labels.cpu().numpy())
 
+            # measure elapsed time
+            batch_time.update(time.time() - end)
+            end = time.time()
+
+            if idx % opt.print_freq == 0:
+                print('Test: [{0}/{1}]\t'
+                      'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
+                      'Loss {loss.val:.4f} ({loss.avg:.4f})\t'
+                      'Acc@1 {top1.val:.3f} ({top1.avg:.3f})'.format(
+                       idx, len(test_loader), batch_time=batch_time,
+                       loss=losses, top1=top1))
+    pred_total = np.concatenate(pred_total)
+    label_total = np.concatenate(label_total)
+    name = 'test' if not val else 'val'
+    results = get_all_metrics(name, pred_total, label_total,opt)
+
+    print(' * Acc@1 {top1:.3f} AUC {auc:.3f} ECE {ece:.5f} SCE {sce:.5f} '
+            .format(top1=results[name+'_top1'], auc=results[name+'_auc'], ece=results[name+'_ece'], sce=results[name+'_sce']))
+    return results
+
+def test_epoch_CE(test_loader, model, criterion, opt, val=False):
+    model.eval()
+
+    batch_time = AverageMeter()
+    losses = AverageMeter()
+    top1 = AverageMeter()
+
+    with torch.no_grad():
+        end = time.time()
+        pred_total = []
+        label_total = []
+        for idx, (images, labels) in enumerate(test_loader):
+            labels=labels.long()
+            images = images.float().cuda()
+            labels = labels.cuda()
+            bsz = labels.shape[0]
+            if labels.dim() == 2:
+                labels = labels.squeeze(1) 
+                # Assert: Shape of labels is reduced to single dimension
+
+            # forward
+            logits = model(images)
+            output = torch.softmax(logits, dim=1)
+            loss = criterion(output, labels)
+
+            # update metric
+            losses.update(loss.item(), bsz)
+            acc1, acc5 = accuracy(output, labels, topk=(1, 1))
+            top1.update(acc1[0], bsz)
+
+            # remove one dimension. 
+            output = torch.squeeze(output)
+            # print(output)
             # output = output.contiguous().view(-1, 1)
             # print(output.shape)
             pred_total.append(output.cpu().numpy())
@@ -153,6 +211,10 @@ def train_epoch_CE(train_loader, model, criterion, optimizer, epoch, opt):
     label_total = []
     scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=opt.lr_decay_epochs, gamma=opt.lr_decay_rate)
     for idx, (images, labels) in enumerate(train_loader):
+        # print(images.shape)
+        # print(labels.shape)
+        # print(images)
+        # print(labels)
         if labels.dim() == 2:
             labels = labels.squeeze(1) 
             # Assert: Shape of labels is reduced to single dimension
@@ -165,9 +227,14 @@ def train_epoch_CE(train_loader, model, criterion, optimizer, epoch, opt):
 
 
         # compute loss
+        # print(type(images))
+        # images.to(torch.double)
         logits = model(images)
+        # print(logits)
+        # print(logits.shape)
         loss = criterion(logits, labels)
         output = torch.softmax(logits,dim=1) #will not work for 1d
+        # print(output)
         # output = torch.sigmoid(logits)
         # print(output)
         # output = torch.nn.functional.normalize(output, p=2, dim=1)
@@ -491,20 +558,27 @@ def train_epoch_Linear(train_loader, model,classifier, criterion, optimizer, epo
     return results
 
 def get_train_test(opt):
-    if opt.loss == 'ce' or opt.loss == 'focal':
-        train_epoch = train_epoch_CE
-        test_epoch = test_epoch_AUCM
-    elif opt.loss == 'aucm' or opt.loss == 'aucs':
-        train_epoch = train_epoch_AUCM
-        test_epoch = test_epoch_AUCM
-    elif 'sls' in opt.loss:
-        train_epoch = train_epoch_SupConCE
-        test_epoch = test_epoch_Sup
-    elif 'supcon' in opt.loss:
-        train_epoch = train_epoch_SupCon
-        test_epoch = test_epoch_Sup        
+    if opt.cls_type == 'multi':
+        if opt.loss == 'ce' or opt.loss == 'focal':
+            train_epoch = train_epoch_CE
+            test_epoch = test_epoch_CE
+        
     else:
-        raise ValueError('Unknown loss function: {}'.format(opt.loss))
+        if is_CE_like(opt.loss):
+        # if opt.loss == 'ce' or opt.loss == 'focal' or opt.loss == 'ifl':
+            train_epoch = train_epoch_CE
+            test_epoch = test_epoch_CE
+        elif opt.loss == 'aucm' or opt.loss == 'aucs':
+            train_epoch = train_epoch_AUCM
+            test_epoch = test_epoch_AUCM
+        elif 'sls' in opt.loss:
+            train_epoch = train_epoch_SupConCE
+            test_epoch = test_epoch_Sup
+        elif 'supcon' in opt.loss:
+            train_epoch = train_epoch_SupCon
+            test_epoch = test_epoch_Sup        
+        else:
+            raise ValueError('Unknown loss function: {}'.format(opt.loss))
     return train_epoch, test_epoch
 
 def get_train_test_linear(opt):

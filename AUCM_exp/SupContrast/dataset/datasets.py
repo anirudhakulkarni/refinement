@@ -7,9 +7,11 @@ import torch
 import torch.backends.cudnn as cudnn
 from torchvision import transforms, datasets
 from libauc.datasets import CAT_VS_DOG, CIFAR10, CIFAR100, STL10, Melanoma
-from utils.util import TwoCropTransform
+from utils.util import TwoCropTransform, NoiseTransform
 from .cifar_lt import IMBALANCECIFAR100, IMBALANCECIFAR10
 from .imagenet_lt import set_loader as set_loader_imagenet_lt
+from .cifar100_imb import get_data_loaders as set_loader_cifar100_imb
+
 def make_deterministic(SEED=123):
     torch.manual_seed(SEED)
     np.random.seed(SEED)
@@ -50,7 +52,7 @@ class ImageDataset(Dataset):
 
 def set_loader(opt):
     # construct data loader
-    if opt.dataset == 'cifar10' or opt.dataset == 'cifar10_lt':
+    if opt.dataset == 'cifar10' or opt.dataset == 'cifar10_lt' or opt.dataset == 'cifar100_imb':
         mean = (0.4914, 0.4822, 0.4465)
         std = (0.2023, 0.1994, 0.2010)
     elif opt.dataset == 'cifar100' or opt.dataset == 'cifar100_lt':
@@ -65,9 +67,26 @@ def set_loader(opt):
     elif opt.dataset == 'melanoma':
         mean = (0.485, 0.456, 0.406)
         std = (0.229, 0.224, 0.225)
+    elif opt.dataset == 'imagenet_lt':
+        return set_loader_imagenet_lt(opt)
     else:
         raise ValueError('dataset not supported: {}'.format(opt.dataset))
+        # pass
+    if opt.dataset == 'cifar100_imb':
+        
+        if opt.loss == 'supcon':
+            train_transform = transforms.Compose([
+            ])
+            train_transform = TwoCropTransform(train_transform)
+            train_loader, val_loader, _ = set_loader_cifar100_imb(opt.data_folder+'/cifar-100-imb/', opt.batch_size, opt.batch_size, transform=train_transform)
+        else:            
+            train_loader, val_loader, _ = set_loader_cifar100_imb(opt.data_folder+'/cifar-100-imb/', opt.batch_size, opt.batch_size)
+        return train_loader, val_loader
+    
+       
+    
     normalize = transforms.Normalize(mean=mean, std=std)
+    normalize = NoiseTransform(normalize,opt.delta)
 
     if opt.loss!='supcon':
         # TODO: supcon name is different
@@ -148,8 +167,6 @@ def set_loader(opt):
             num_workers=opt.workers, pin_memory=True)
         return train_loader, val_loader
             
-    elif opt.dataset == 'imagenet_lt':
-        return set_loader_imagenet_lt(opt)
     else:
         raise ValueError(opt.dataset)
 

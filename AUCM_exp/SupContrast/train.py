@@ -69,6 +69,7 @@ def train(opt):
     return best_results
         
 
-
-# train(opt)
-grid_search(opt,train)
+if opt.no_grid:
+    train(opt)
+else:
+    grid_search(opt,train)

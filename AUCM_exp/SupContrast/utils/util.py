@@ -15,6 +15,14 @@ class TwoCropTransform:
     def __call__(self, x):
         return [self.transform(x), self.transform(x)]
 
+class NoiseTransform:
+    """Create two crops of the same image"""
+    def __init__(self, transform, delta=1.0):
+        self.transform = transform
+        self.delta=delta
+
+    def __call__(self, x):
+        return self.transform(x)+self.delta*torch.rand_like(x)
 
 class AverageMeter(object):
     """Computes and stores the average and current value"""
@@ -112,3 +120,9 @@ def save_results(opt,best_results,name=''):
     with open(jsonfile, 'w') as f:
         json.dump(result_file, f, indent=4)
     
+
+def is_CE_like(loss):
+    CE_like = ['ifl','focal','ce','brier','dca','logitnorm']
+    if loss in CE_like:
+        return True
+    return False

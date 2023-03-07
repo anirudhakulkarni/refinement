@@ -156,6 +156,28 @@ class AUCM_MultiLabel_V1(torch.nn.Module):
             total_loss += loss
         return total_loss
            
+class AUCMMultiClass(torch.nn.Module):
+     def __init__(self, margin=1.0, imratio=None, num_classes=10, device=None):
+        super(AUCMMultiClass, self).__init__()
+        if not device:
+            self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        else:
+            self.device = device   
+        self.margin = margin
+        self.p =  imratio 
+        self.num_classes = num_classes
+        if self.p:
+           assert len(imratio)==num_classes, 'Length of imratio needs to be same as num_classes!'
+        else:
+            self.p = [0.0]*num_classes
+        self.a = torch.zeros(num_classes, dtype=torch.float32, device=self.device, requires_grad=True).to(self.device)
+        self.b = torch.zeros(num_classes, dtype=torch.float32, device=self.device, requires_grad=True).to(self.device)
+        self.alpha = torch.zeros(num_classes, dtype=torch.float32, device=self.device, requires_grad=True).to(self.device)
+        
+    # def forward(self, y_pred, y_true, auto=True):
+    #     total_loss = 0
+        
+           
 class CompositionalAUCLoss_V1(torch.nn.Module):
     """  
         Compositional AUC Loss: a novel loss function to directly optimize AUROC

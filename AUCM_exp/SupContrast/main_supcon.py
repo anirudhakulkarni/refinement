@@ -17,7 +17,7 @@ from utils.util import set_optimizer, save_model
 from networks.main import SupConResNet, Cifar100IMBModel
 from solvers.losses import SupConLoss
 from dataset.datasets import set_loader
-
+from utils.deterministic import seed_everything
 try:
     import apex
     from apex import amp, optimizers
@@ -97,6 +97,7 @@ def parse_option():
                         help='warm-up for large batch training')
     parser.add_argument('--trial', type=str, default='0',
                         help='id for recording multiple runs')
+    parser.add_argument('--seed', type=int, default=123, help='seed for random number')
     
     opt = parser.parse_args()
 
@@ -156,11 +157,15 @@ import numpy as np
 from libauc.datasets import CAT_VS_DOG, CIFAR10, CIFAR100
 
 
-SEED=123
-torch.manual_seed(SEED)
-np.random.seed(SEED)
-torch.backends.cudnn.deterministic = True
-torch.backends.cudnn.benchmark = False
+# SEED=123
+# torch.manual_seed(SEED)
+# np.random.seed(SEED)
+# torch.backends.cudnn.deterministic = True
+# torch.backends.cudnn.benchmark = False
+# opt = parse_option()
+# print(opt)
+# TODO: seed is to be set different. Its done as imports issue
+seed_everything(123)
 
 
 def set_model(opt):

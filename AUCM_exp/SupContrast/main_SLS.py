@@ -79,11 +79,12 @@ def parse_option():
                         help='using cosine annealing')
     parser.add_argument('--warm', action='store_true',
                         help='warm-up for large batch training')
-
+    print("ckpt is there")
     parser.add_argument('--ckpt', type=str, default='',
                         help='path to pre-trained model')
     parser.add_argument('--method', type=str, default='SupCon',
                         choices=['SupCon', 'SimCLR'], help='choose method')
+    parser.add_argument('--seed', type=int, default=123, help='seed for random number')
 
     opt = parser.parse_args()
 
@@ -134,20 +135,23 @@ def parse_option():
     #     raise ValueError('dataset not supported: {}'.format(opt.dataset))
 
     return opt
-
 from PIL import Image
 from torch.utils.data import Dataset
 from libauc.utils import ImbalancedDataGenerator #BUG:  this is using import from conda install
 import numpy as np
 from libauc.datasets import CAT_VS_DOG, CIFAR10, CIFAR100
 from main_supcon import train as train_supcon
-from solvers.losses import ClassficationAndMDCA, FocalLoss
-SEED=123
-torch.manual_seed(SEED)
-np.random.seed(SEED)
-torch.backends.cudnn.deterministic = True
-torch.backends.cudnn.benchmark = False
 
+from solvers.losses import ClassficationAndMDCA, FocalLoss
+
+from utils.deterministic import seed_everything
+# SEED=123
+# torch.manual_seed(SEED)
+# np.random.seed(SEED)
+# torch.backends.cudnn.deterministic = True
+# torch.backends.cudnn.benchmark = False
+# opt = parse_option()
+# seed_everything(opt.seed)
 # from solvers.losses import loss_dict
 # from loss import LogitNormLoss
 # from loss import ClassficationAndMDCA
@@ -463,6 +467,7 @@ def grid_search_mdca(opt,train):
 
 def grid_search():
     opt = parse_option()
+    seed_everything(opt.seed)
     if opt.loss == 'ce':
         main(opt)
     elif opt.loss == 'focal':
@@ -471,6 +476,6 @@ def grid_search():
         grid_search_mdca(opt,main)
 
 if __name__ == '__main__':
-    opt = parse_option()
+    
     grid_search()
     # main(opt)

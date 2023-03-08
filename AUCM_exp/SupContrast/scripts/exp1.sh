@@ -209,14 +209,27 @@ screen -dm bash -c  \
 
 
 # Corrupted
-export CUDA_VISIBLE_DEVICES='5'
+export CUDA_VISIBLE_DEVICES='0'
 screen -dm bash -c  \
-"python train.py --cls_type binary --loss ce --dataset c2 --model resnet18 --imratio 0.01 --batch_size 128 --learning_rate 0.8 --cosine --epochs 500 --lr_decay_epochs 250,350,450 --delta 10.0"
+"python train.py --cls_type binary --loss ce --dataset c2 --model resnet18 --imratio 0.01 --batch_size 128 --learning_rate 0.8 --cosine --epochs 500 --lr_decay_epochs 250,350,450 --delta 1"
 
-export CUDA_VISIBLE_DEVICES='5'
+export CUDA_VISIBLE_DEVICES='1'
 screen -dm bash -c  \
-"python train.py --cls_type binary --loss aucm --dataset c2 --model resnet18 --imratio 0.01 --batch_size 128 --learning_rate 0.8 --cosine --epochs 500 --lr_decay_epochs 250,350,450 --delta 10.0 --no_grid --gamma 500 --margin 0.7"
+"python train.py --cls_type binary --loss aucm --dataset c2 --model resnet18 --imratio 0.01 --batch_size 128 --learning_rate 0.8 --cosine --epochs 500 --lr_decay_epochs 250,350,450 --delta 1 --no_grid --gamma 500 --margin 0.7"
+
+export CUDA_VISIBLE_DEVICES='3'
+screen -dm bash -c  \
+"python main_supcon.py --batch_size 1024   --learning_rate 0.5   --temp 0.1 --dataset c2 --imratio 0.01 --model resnet18 --cosine --warm --epochs 1000 --delta 10"
 
 export CUDA_VISIBLE_DEVICES='4'
 screen -dm bash -c  \
-"python main_supcon.py --batch_size 1024   --learning_rate 0.5   --temp 0.1 --dataset c2 --imratio 0.01 --model resnet18 --cosine --epochs 1000"
+"python main_supcon.py --batch_size 1024   --learning_rate 0.5   --temp 0.1 --dataset c2 --imratio 0.01 --model resnet18 --cosine --warm --epochs 1000 --delta 5"
+
+export CUDA_VISIBLE_DEVICES='5'
+screen -dm bash -c  \
+"python main_supcon.py --batch_size 1024   --learning_rate 0.5   --temp 0.1 --dataset c2 --imratio 0.01 --model resnet18 --cosine --warm --epochs 1000 --delta 1"
+
+
+export CUDA_VISIBLE_DEVICES='6'
+screen -dm bash -c  \
+"python main_supcon.py --batch_size 1024   --learning_rate 0.5   --temp 0.07 --dataset c2 --imratio 0.01 --model resnet18 --cosine --warm --epochs 1000 --delta 0"

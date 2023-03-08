@@ -86,7 +86,8 @@ def set_loader(opt):
        
     
     normalize = transforms.Normalize(mean=mean, std=std)
-    normalize = NoiseTransform(normalize,opt.delta)
+    print("Using delta = ",opt.delta)
+    normalize = NoiseTransform(normalize,delta=opt.delta)
 
     if opt.loss!='supcon':
         # TODO: supcon name is different

@@ -449,7 +449,7 @@ def grid_search_focal(opt,train):
     
 
 def grid_search_mdca(opt,train):
-    beta_list = [1,10]
+    beta_list = [1,5, 10]
     best_results = {}
     for beta in beta_list:
         opt.beta = beta

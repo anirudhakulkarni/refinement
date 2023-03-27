@@ -23,11 +23,16 @@ def set_optimizer(opt, model, criterion):
         # optimizer1 = optim.Adam(model.parameters(),
         #                     lr=opt.learning_rate2,
         #                     weight_decay=opt.weight_decay)
-        
-        optimizer = optim.SGD(model.parameters(),
-                            lr=opt.learning_rate,
-                            # momentum=opt.momentum, # this line caused significant performance drop for auc in ce
-                            weight_decay=opt.weight_decay)
+        if opt.loss == 'ce':
+            optimizer = optim.SGD(model.parameters(),
+                                lr=opt.learning_rate,
+                                # momentum=opt.momentum, # this line caused significant performance drop for auc in ce
+                                weight_decay=opt.weight_decay)
+        else:
+            optimizer = optim.SGD(model.parameters(),
+                                lr=opt.learning_rate,
+                                momentum=opt.momentum, # this line caused significant performance drop for auc in ce
+                                weight_decay=opt.weight_decay)
     # TODO: remove this to optimizer1, optimizer2
     # return optimizer1, optimizer1
     return optimizer

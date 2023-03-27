@@ -44,7 +44,7 @@ def aggregator_function(jsonfile):
     # "binary_aucm_c2_resnet18_im_0.01_lr_0.1_bsz_128" in te
     results = []
     for te in jsonfile:
-        if "resnet18" in te  and "_d_" in te and "_" in te:
+        if "resnet18" in te  and "c2" in te and "im_0.1" in te:
             
             results.append(filter(jsonfile,te))
     return results

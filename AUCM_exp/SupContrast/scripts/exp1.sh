@@ -79,18 +79,22 @@ screen -dm bash -c  \
 # # SLS
 # # running on vision01
 
-export CUDA_VISIBLE_DEVICES='0'
+export CUDA_VISIBLE_DEVICES='5'
 screen -dm bash -c  \
 "python main_SLS.py --batch_size 512 --epochs 50  --learning_rate 0.1   --imratio 0.01   --dataset cifar10  --model resnet18  --ckpt save/SupCon/cifar10_models/SupCon_cifar10_resnet18_im_0.01_lr_0.5_decay_0.0001_bsz_1024_temp_0.1_trial_0_cosine_warm/ckpt_epoch_500.pth && \
 python main_SLS.py --batch_size 512  --epochs 50 --learning_rate 0.1   --imratio 0.01   --dataset c2   --model resnet18 --ckpt save/SupCon/c2_models/SupCon_c2_resnet18_im_0.01_lr_0.5_decay_0.0001_bsz_1024_temp_0.1_trial_0_cosine_warm/ckpt_epoch_500.pth && \
 python main_SLS.py --batch_size 512 --epochs 50  --learning_rate 0.1   --imratio 0.01   --dataset cifar100   --model resnet18 --ckpt save/SupCon/cifar100_models/SupCon_cifar100_resnet18_im_0.01_lr_0.5_decay_0.0001_bsz_1024_temp_0.1_trial_0_cosine_warm/ckpt_epoch_500.pth && \
-python main_SLS.py --batch_size 512 --epochs 50  --learning_rate 0.1   --imratio 0.01   --dataset stl10   --model resnet18 --ckpt save/SupCon/stl10_models/SupCon_stl10_resnet18_im_0.01_lr_0.5_decay_0.0001_bsz_1024_temp_0.1_trial_0_cosine_warm/ckpt_epoch_500.pth && \
-python main_SLS.py --batch_size 512 --loss mdca --epochs 50  --learning_rate 0.1   --imratio 0.01   --dataset cifar10  --model resnet18  --ckpt save/SupCon/cifar10_models/SupCon_cifar10_resnet18_im_0.01_lr_0.5_decay_0.0001_bsz_1024_temp_0.1_trial_0_cosine_warm/ckpt_epoch_500.pth && \
-python main_SLS.py --batch_size 512 --loss mdca  --epochs 50 --learning_rate 0.1   --imratio 0.01   --dataset c2   --model resnet18 --ckpt save/SupCon/c2_models/SupCon_c2_resnet18_im_0.01_lr_0.5_decay_0.0001_bsz_1024_temp_0.1_trial_0_cosine_warm/ckpt_epoch_500.pth && \
-python main_SLS.py --batch_size 512 --loss mdca --epochs 50  --learning_rate 0.1   --imratio 0.01   --dataset cifar100   --model resnet18 --ckpt save/SupCon/cifar100_models/SupCon_cifar100_resnet18_im_0.01_lr_0.5_decay_0.0001_bsz_1024_temp_0.1_trial_0_cosine_warm/ckpt_epoch_500.pth && \
+python main_SLS.py --batch_size 512 --epochs 50  --learning_rate 0.1   --imratio 0.01   --dataset stl10   --model resnet18 --ckpt save/SupCon/stl10_models/SupCon_stl10_resnet18_im_0.01_lr_0.5_decay_0.0001_bsz_1024_temp_0.1_trial_0_cosine_warm/ckpt_epoch_500.pth "
+
+export CUDA_VISIBLE_DEVICES='1'
+screen -dm bash -c  \
+"python main_SLS.py --batch_size 512 --loss mdca --epochs 50  --learning_rate 0.1   --imratio 0.01   --dataset cifar10  --model resnet18  --ckpt save/SupCon/cifar10_models/SupCon_cifar10_resnet18_im_0.01_lr_0.5_decay_0.0001_bsz_1024_temp_0.1_trial_0_cosine_warm/ckpt_epoch_500.pth && \
+python main_SLS.py --batch_size 512 --loss mdca  --epochs 50 --learning_rate 0.1   --imratio 0.01   --dataset c2   --model resnet18 --ckpt save/SupCon/c2_models/SupCon_c2_resnet18_im_0.01_lr_0.5_decay_0.0001_bsz_1024_temp_0.1_trial_0_cosine_warm/ckpt_epoch_500.pth 
+"
+export CUDA_VISIBLE_DEVICES='2'
+screen -dm bash -c  \
+"python main_SLS.py --batch_size 512 --loss mdca --epochs 50  --learning_rate 0.1   --imratio 0.01   --dataset cifar100   --model resnet18 --ckpt save/SupCon/cifar100_models/SupCon_cifar100_resnet18_im_0.01_lr_0.5_decay_0.0001_bsz_1024_temp_0.1_trial_0_cosine_warm/ckpt_epoch_500.pth && \
 python main_SLS.py --batch_size 512 --loss mdca --epochs 50  --learning_rate 0.1   --imratio 0.01   --dataset stl10   --model resnet18 --ckpt save/SupCon/stl10_models/SupCon_stl10_resnet18_im_0.01_lr_0.5_decay_0.0001_bsz_1024_temp_0.1_trial_0_cosine_warm/ckpt_epoch_500.pth
-
-
 "
 
 # export CUDA_VISIBLE_DEVICES='7'
@@ -230,6 +234,15 @@ screen -dm bash -c  \
 "python main_supcon.py --batch_size 1024   --learning_rate 0.5   --temp 0.1 --dataset c2 --imratio 0.01 --model resnet18 --cosine --warm --epochs 1000 --delta 1"
 
 
-export CUDA_VISIBLE_DEVICES='6'
+export CUDA_VISIBLE_DEVICES='6,7'
 screen -dm bash -c  \
-"python main_supcon.py --batch_size 1024   --learning_rate 0.5   --temp 0.07 --dataset c2 --imratio 0.01 --model resnet18 --cosine --warm --epochs 1000 --delta 0"
+"python main_supcon.py --batch_size 2048   --learning_rate 0.5   --temp 0.1 --dataset c2 --imratio 0.01 --model resnet18 --cosine --warm --epochs 1000 --delta 0"
+export CUDA_VISIBLE_DEVICES='2'
+screen -dm bash -c  \
+"python main_supcon.py --batch_size 1024   --learning_rate 0.5   --temp 0.1 --dataset cifar100 --imratio 0.01 --model resnet18 --cosine --warm --epochs 1000 --delta 0"
+export CUDA_VISIBLE_DEVICES='3'
+screen -dm bash -c  \
+"python main_supcon.py --batch_size 1024   --learning_rate 0.5   --temp 0.1 --dataset cifar10 --imratio 0.01 --model resnet18 --cosine --warm --epochs 1000 --delta 0"
+export CUDA_VISIBLE_DEVICES='4'
+screen -dm bash -c  \
+"python main_supcon.py --batch_size 1024   --learning_rate 0.5   --temp 0.1 --dataset stl10 --imratio 0.01 --model resnet18 --cosine --warm --epochs 1000 --delta 0"

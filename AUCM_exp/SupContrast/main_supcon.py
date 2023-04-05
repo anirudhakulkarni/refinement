@@ -11,26 +11,40 @@ import torch
 import torch.backends.cudnn as cudnn
 from torchvision import transforms, datasets
 
-from util import TwoCropTransform, AverageMeter
-from util import adjust_learning_rate, warmup_learning_rate
-from util import set_optimizer, save_model
-from networks.resnet_big import SupConResNet
-from loss import SupConLoss
+from utils.util import TwoCropTransform, AverageMeter
+from utils.util import adjust_learning_rate, warmup_learning_rate
+from utils.util import set_optimizer, save_model
+from networks.main import SupConResNet, Cifar100IMBModel
+from solvers.losses import SupConLoss
 from dataset.datasets import set_loader
-
+from utils.deterministic import seed_everything
 try:
     import apex
     from apex import amp, optimizers
 except ImportError:
     pass
 
+def get_num_classes(opt):
+    if opt.cls_type == 'binary' and 'auc' in opt.loss :
+        return 1
+    if opt.cls_type == 'binary':
+        return 2
+    elif 'cifar100' in opt.dataset :
+        return 100
+    if 'cifar10' in opt.dataset :
+        return 10
+    elif 'imagenet' in opt.dataset:
+        return 1000
+    else:
+        raise ValueError('Unknown dataset: {}'.format(opt.dataset))
+    
 
 def parse_option():
     parser = argparse.ArgumentParser('argument for training')
 
     parser.add_argument('--print_freq', type=int, default=10,
                         help='print frequency')
-    parser.add_argument('--save_freq', type=int, default=500,
+    parser.add_argument('--save_freq', type=int, default=100,
                         help='save frequency')
     parser.add_argument('--batch_size', type=int, default=256,
                         help='batch_size')
@@ -42,7 +56,7 @@ def parse_option():
     # optimization
     parser.add_argument('--learning_rate', type=float, default=0.05,
                         help='learning rate')
-    parser.add_argument('--lr_decay_epochs', type=str, default='700,800,900',
+    parser.add_argument('--lr_decay_epochs', type=str, default='600,800,900',
                         help='where to decay lr, can be a list')
     parser.add_argument('--lr_decay_rate', type=float, default=0.1,
                         help='decay rate for learning rate')
@@ -50,18 +64,21 @@ def parse_option():
                         help='weight decay')
     parser.add_argument('--momentum', type=float, default=0.9,
                         help='momentum')
+    parser.add_argument('--cls_type', type=str, default='binary', choices=['binary', 'multi'],
+                        help='classification type: binary or multi-class')
 
     # model dataset
     parser.add_argument('--loss', type=str, default='supcon', choices=['ce', 'supcon','linear'])
     parser.add_argument('--model', type=str, default='resnet50')
     parser.add_argument('--dataset', type=str, default='cifar10',
-                        choices=['cifar10', 'cifar100', 'c2','stl10','path','melanoma'], help='dataset')
+                        choices=['cifar10', 'cifar100', 'c2','stl10','path','cifar100_imb','imagenet_lt'], help='dataset')
     parser.add_argument('--imratio', type=float, default=0.1,
                         help='imbalance ratio')
     parser.add_argument('--mean', type=str, help='mean of dataset in path in form of str tuple')
     parser.add_argument('--std', type=str, help='std of dataset in path in form of str tuple')
     parser.add_argument('--data_folder', type=str, default=None, help='path to custom dataset')
     parser.add_argument('--size', type=int, default=32, help='parameter for RandomResizedCrop')
+    parser.add_argument('--delta', type=float, default=0, help='delta for corruptions. Vary from 0 to 1')
 
     # method
     parser.add_argument('--method', type=str, default='SupCon',
@@ -80,9 +97,11 @@ def parse_option():
                         help='warm-up for large batch training')
     parser.add_argument('--trial', type=str, default='0',
                         help='id for recording multiple runs')
-
+    parser.add_argument('--seed', type=int, default=123, help='seed for random number')
+    
     opt = parser.parse_args()
 
+    opt.n_cls = get_num_classes(opt)
     # check if dataset is path that passed required arguments
     if opt.dataset == 'path':
         assert opt.data_folder is not None \
@@ -92,17 +111,17 @@ def parse_option():
     # set the path according to the environment
     if opt.data_folder is None:
         opt.data_folder = '../../data/'
-    opt.model_path = './save/SupCon/{}_models'.format(opt.dataset)
-    opt.tb_path = './save/SupCon/{}_tensorboard'.format(opt.dataset)
+    opt.model_path = './main_save/SupCon/{}_models'.format(opt.dataset)
+    opt.tb_path = './main_save/SupCon/{}_tensorboard'.format(opt.dataset)
 
     iterations = opt.lr_decay_epochs.split(',')
     opt.lr_decay_epochs = list([])
     for it in iterations:
         opt.lr_decay_epochs.append(int(it))
 
-    opt.model_name = '{}_{}_{}_im_{}_lr_{}_decay_{}_bsz_{}_temp_{}_trial_{}'.\
+    opt.model_name = '{}_{}_{}_im_{}_lr_{}_decay_{}_bsz_{}_d_{}_temp_{}_trial_{}'.\
         format(opt.method, opt.dataset, opt.model,opt.imratio, opt.learning_rate,
-               opt.weight_decay, opt.batch_size, opt.temp, opt.trial)
+               opt.weight_decay, opt.batch_size, opt.delta, opt.temp, opt.trial)
 
     if opt.cosine:
         opt.model_name = '{}_cosine'.format(opt.model_name)
@@ -138,15 +157,25 @@ import numpy as np
 from libauc.datasets import CAT_VS_DOG, CIFAR10, CIFAR100
 
 
-SEED=123
-torch.manual_seed(SEED)
-np.random.seed(SEED)
-torch.backends.cudnn.deterministic = True
-torch.backends.cudnn.benchmark = False
+# SEED=123
+# torch.manual_seed(SEED)
+# np.random.seed(SEED)
+# torch.backends.cudnn.deterministic = True
+# torch.backends.cudnn.benchmark = False
+# opt = parse_option()
+# print(opt)
+# TODO: seed is to be set different. Its done as imports issue
+seed_everything(123)
 
 
 def set_model(opt):
-    model = SupConResNet(name=opt.model)
+    if opt.cls_type == 'multi' and opt.dataset == 'cifar100_imb':
+        model = Cifar100IMBModel(name=opt.model, num_classes=128)
+    else:
+        if opt.dataset == 'imagenet_lt':
+            SupConResNet(name=opt.model, feat_dim=1024)
+        else:
+            model = SupConResNet(name=opt.model)
     criterion = SupConLoss(temperature=opt.temp)
 
     # enable synchronized Batch Normalization
@@ -179,7 +208,7 @@ def train(train_loader, model, criterion, optimizer, epoch, opt):
     # print(labels.shape)
     for idx, (images, labels) in enumerate(train_loader):
         data_time.update(time.time() - end)
-        # print(labels)
+        # print(images)
         images = torch.cat([images[0], images[1]], dim=0)
         if torch.cuda.is_available():
             images = images.cuda(non_blocking=True)

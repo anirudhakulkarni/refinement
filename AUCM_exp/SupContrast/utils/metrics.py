@@ -4,27 +4,33 @@ from sklearn.preprocessing import OneHotEncoder
 import torch
 
 def auc_m(y_true, y_pred, label1=None, label2=None, freq = False):
-    # return roc_auc_score(y_true, y_pred,multi_class='ovo')
-    # If y_pred is of format (n_samples,) then we need to reshape it to (n_samples, 1)
-    if len(y_true.shape) == 1:
-        y_true = np.reshape(y_true, [-1, 1])
-    y_true=np.reshape(y_true,[-1,1])
-    enc1 = OneHotEncoder()
-    enc1.fit(y_true)
-    y_true = enc1.transform(y_true).toarray()
-    y_pred_shape=np.shape(y_pred)
-    if len(y_pred_shape)==1 or y_pred_shape[1]==1:
-        y_pred = np.reshape(y_pred, [-1, 1])
-        y_pred = enc1.transform(y_pred).toarray()
-    def auc_binary(i, j):
-        msk = np.logical_or(y_true.argmax(axis=1) == i, y_true.argmax(axis=1) == j)
-        return roc_auc_score(y_true[:, i][msk], y_pred[:, i][msk])
-    n = y_true.shape[1]
-    
-    if not freq:
-        return np.mean([auc_binary(i, j) for i in range(n) for j in range(n) if i != j])
-    else:
-        return auc_binary(label1, label2)
+    print(y_pred.shape)
+    print(y_true.shape)
+    try:
+        return roc_auc_score(y_true, y_pred,multi_class='ovo')
+        # This can fail in some cases due to divide by zero error.
+    except:
+        print("Failed default auc: using custom implementation")
+        # If y_pred is of format (n_samples,) then we need to reshape it to (n_samples, 1)
+        if len(y_true.shape) == 1:
+            y_true = np.reshape(y_true, [-1, 1])
+        y_true=np.reshape(y_true,[-1,1])
+        enc1 = OneHotEncoder()
+        enc1.fit(y_true)
+        y_true = enc1.transform(y_true).toarray()
+        y_pred_shape=np.shape(y_pred)
+        if len(y_pred_shape)==1 or y_pred_shape[1]==1:
+            y_pred = np.reshape(y_pred, [-1, 1])
+            y_pred = enc1.transform(y_pred).toarray()
+        def auc_binary(i, j):
+            msk = np.logical_or(y_true.argmax(axis=1) == i, y_true.argmax(axis=1) == j)
+            return roc_auc_score(y_true[:, i][msk], y_pred[:, i][msk])
+        n = y_true.shape[1]
+        
+        if not freq:
+            return np.mean([auc_binary(i, j) for i in range(n) for j in range(n) if i != j])
+        else:
+            return auc_binary(label1, label2)
         
 
 
@@ -219,6 +225,11 @@ def accuracy(output, target, topk=(1,)):
 
 
 def get_all_metrics(name, output, target, opt,n_bins = 15, logits = False):
+    '''
+    Accepts:    
+    1. 1d vector of probabilities of class 1
+    2. 2d vector with each row being a probability vector
+    '''
     metrics = {}
     
     # convert probability of class 1 to 2d vector with probability of class 0 and 1
@@ -228,13 +239,36 @@ def get_all_metrics(name, output, target, opt,n_bins = 15, logits = False):
     # print(output)
     # print(target)
     # assert output.shape[1] == num classes
-    metrics[name+'_ece'] = ECELoss().loss(output, target, n_bins, logits)
-    metrics[name+'_mce'] = MCELoss().loss(output, target, n_bins, logits)
-    metrics[name+'_oel'] = OELoss().loss(output, target, n_bins, logits)
-    metrics[name+'_sce'] = SCELoss().loss(output, target, n_bins, logits)
-    metrics[name+'_ace'] = ACELoss().loss(output, target, n_bins, logits)
-    # metrics[name+'_tace'] = TACELoss().loss(output, target, n_bins, logits)
-    
+    try:
+        metrics[name+'_ece'] = ECELoss().loss(output, target, n_bins, logits)
+    except:
+        metrics[name+'_ece'] = -1
+    try:
+        metrics[name+'_mce'] = MCELoss().loss(output, target, n_bins, logits)
+    except:
+        metrics[name+'_mce'] = -1
+    try:
+        metrics[name+'_oel'] = OELoss().loss(output, target, n_bins, logits)
+    except:
+        metrics[name+'_oel'] = -1
+    try:
+        metrics[name+'_sce'] = SCELoss().loss(output, target, n_bins, logits)
+    except:
+        metrics[name+'_sce'] = -1
+    try:
+        metrics[name+'_ace'] = ACELoss().loss(output, target, n_bins, logits)
+    except:
+        metrics[name+'_ace'] = -1
+    try:
+        metrics[name+'_tace'] = TACELoss().loss(output, target, n_bins, logits)
+    except:
+        metrics[name+'_tace'] = -1
+        
+    # import utils.visualization as visualization
+    # conf_hist = visualization.ReliabilityDiagram()
+    # plt_test = conf_hist.plot(output,target,title="ReliabilityDiagram",logits=False)
+    # plt_test.savefig('plots/conf_histogram_test.png',bbox_inches='tight')
+        
     target = torch.tensor(target)
     output = torch.tensor(output)
     # print(output)
@@ -251,6 +285,6 @@ def get_all_metrics(name, output, target, opt,n_bins = 15, logits = False):
         # TODO: 
         metrics[name+'_top1'] = float(accuracy(output, target, topk=(1,))[0][0])
         metrics[name+'_auc'] = auc_m(target, output)
-        
+
     return metrics
     

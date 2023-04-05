@@ -4,6 +4,9 @@ from torchvision import transforms
 import os
 from PIL import Image
 
+from utils.util import TwoCropTransform
+
+
 # Data transformation with augmentation
 data_transforms = {
     'train': transforms.Compose([
@@ -34,9 +37,10 @@ class LT_Dataset(Dataset):
         self.img_path = []
         self.labels = []
         self.transform = transform
+        print("TXT",txt)
         with open(txt) as f:
             for line in f:
-                self.img_path.append(os.path.join(root, line.split()[0])+'.JPEG')
+                self.img_path.append(os.path.join(root, line.split()[0]))
                 self.labels.append(int(line.split()[1]))
         
     def __len__(self):
@@ -53,12 +57,13 @@ class LT_Dataset(Dataset):
         if self.transform is not None:
             sample = self.transform(sample)
 
+        return sample, label
         return sample, label, path
 
 # Load datasets
-def load_data(data_root, dataset, phase, batch_size, sampler_dic=None, num_workers=4, test_open=False, shuffle=True):
+def load_data(data_root, dataset, phase, batch_size, opt, sampler_dic=None, num_workers=4, test_open=False, shuffle=True):
     
-    txt = os.path.join(data_root,"ImageSets/CLS-LOC/", '%s.txt'%((phase if phase != 'train' else 'train_cls')))
+    txt = os.path.join(data_root,"imagenet/ImageNet_LT_%s.txt"%((phase)))
     
     # txt = './data/%s/%s_%s.txt'%(dataset, dataset, (phase if phase != 'train_plain' else 'train'))
 
@@ -69,9 +74,11 @@ def load_data(data_root, dataset, phase, batch_size, sampler_dic=None, num_worke
     else:
         transform = data_transforms[phase]
 
+    if opt.loss == 'supcon' and phase == 'train':
+        transform = TwoCropTransform(transform)
     print('Use data transformation:', transform)
 
-    set_ = LT_Dataset(os.path.join(data_root,"Data/CLS-LOC/",phase)
+    set_ = LT_Dataset(os.path.join(data_root,"imagenet/ILSVRC/Data/CLS-LOC/")
         , txt, transform)
 
     if phase == 'test' and test_open:
@@ -95,6 +102,9 @@ def load_data(data_root, dataset, phase, batch_size, sampler_dic=None, num_worke
     
 def set_loader(opt):
     # Open set is not used to test
-    train_loader = load_data(opt.data_folder, opt.dataset, 'train', opt.batch_size, None, opt.num_workers, False)
-    test_loader = load_data(opt.data_folder, opt.dataset, 'test', opt.batch_size, None, opt.num_workers, False)
+    train_loader = load_data(opt.data_folder, opt.dataset, 'train', opt.batch_size, opt, None, opt.num_workers, False)
+    if opt.loss !='supcon':
+        test_loader = load_data(opt.data_folder, opt.dataset, 'test', opt.batch_size, opt, None, opt.num_workers, False)
+    else:
+        test_loader = None
     return train_loader, test_loader

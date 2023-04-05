@@ -1,6 +1,7 @@
 from __future__ import print_function
 
 import math
+import time
 import numpy as np
 import torch
 import torch.optim as optim
@@ -14,6 +15,14 @@ class TwoCropTransform:
     def __call__(self, x):
         return [self.transform(x), self.transform(x)]
 
+class NoiseTransform:
+    """Create two crops of the same image"""
+    def __init__(self, transform, delta=1.0):
+        self.transform = transform
+        self.delta=delta
+
+    def __call__(self, x):
+        return self.transform(x)+self.delta*torch.rand_like(x)
 
 class AverageMeter(object):
     """Computes and stores the average and current value"""
@@ -67,7 +76,7 @@ def set_optimizer(opt, model):
 
 
 def save_model(model, optimizer, opt, epoch, save_file):
-    print('==> Saving...')
+    print('==> Saving at {}...'.format(save_file))
     state = {
         'opt': opt,
         'model': model.state_dict(),
@@ -98,7 +107,9 @@ def save_results(opt,best_results,name=''):
         best_results['gamma']=-1
     if 'alpha' not in best_results:
         best_results['alpha']=-1
+    current_time = time.strftime("%Y-%m-%d-%H_%M_%S", time.localtime())
     result_file[opt.save_folder+name] = {
+        'time': current_time,
         'model': opt.model,
         'dataset': opt.dataset,
         'batch_size': opt.batch_size,
@@ -109,3 +120,9 @@ def save_results(opt,best_results,name=''):
     with open(jsonfile, 'w') as f:
         json.dump(result_file, f, indent=4)
     
+
+def is_CE_like(loss):
+    CE_like = ['ifl','focal','ce','brier','dca','logitnorm']
+    if loss in CE_like:
+        return True
+    return False

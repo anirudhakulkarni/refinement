@@ -2,6 +2,11 @@ import os
 import json
 from utils.util import save_results
 from utils.argparser import update_option
+def is_no_grid(loss):
+    is_no_grid_dict = ['brier','dca','logitnorm','ls']
+    if loss in is_no_grid_dict:
+        return True
+    return False
 def grid_search(opt,train):
     if opt.loss == 'aucm':
         grid_search_AUCM(opt,train)
@@ -9,7 +14,11 @@ def grid_search(opt,train):
         grid_search_focal(opt,train)
     elif opt.loss == 'aucs':
         grid_search_AUCS(opt,train)
-    elif opt.loss == 'ce':
+    elif opt.loss == 'ce' or opt.loss == 'ls':
+        train(opt)
+    elif opt.loss == 'ifl':
+        grid_search_ifl(opt,train)
+    elif is_no_grid(opt.loss):
         train(opt)
     else:
         raise ValueError('Unknown loss: {}'.format(opt.loss))
@@ -28,6 +37,22 @@ def grid_search_focal(opt,train):
                 best_results = results
                 best_results['gamma'] = gamma
                 best_results['alpha'] = alpha
+    print('best AUC: {:.10f}\t best ECE: {:.10f}\t best SCE: {:.10f}\t gamma: {:.10f}\t alpha: {:.10f}'.format(
+        best_results['val_auc'], best_results['val_ece'], best_results['val_sce'], best_results['gamma'], best_results['alpha']))
+    print(best_results)
+
+    save_results(opt,best_results,name='_grid') 
+
+def grid_search_ifl(opt,train):
+    gamma_list = [1,2,3]
+    best_results = {}
+    for gamma in gamma_list:
+        opt.gamma = gamma
+        opt = update_option(opt)
+        results = train(opt)
+        if not best_results or results['val_auc'] > best_results['val_auc']:
+            best_results = results
+            best_results['gamma'] = gamma
     print('best AUC: {:.10f}\t best ECE: {:.10f}\t best SCE: {:.10f}\t gamma: {:.10f}\t alpha: {:.10f}'.format(
         best_results['val_auc'], best_results['val_ece'], best_results['val_sce'], best_results['gamma'], best_results['alpha']))
     print(best_results)

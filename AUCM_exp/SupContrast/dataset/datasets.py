@@ -2,7 +2,7 @@ from PIL import Image
 from torch.utils.data import Dataset
 from libauc.utils import ImbalancedDataGenerator #BUG:  this is using import from conda install
 import numpy as np
-import tensorboard_logger as tb_logger
+# import tensorboard_logger as tb_logger
 import torch
 import torch.backends.cudnn as cudnn
 from torchvision import transforms, datasets

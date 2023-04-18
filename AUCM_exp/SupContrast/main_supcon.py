@@ -5,8 +5,9 @@ import sys
 import argparse
 import time
 import math
+from time import strftime, localtime
 
-import tensorboard_logger as tb_logger
+# import tensorboard_logger as tb_logger
 import torch
 import torch.backends.cudnn as cudnn
 from torchvision import transforms, datasets
@@ -18,6 +19,8 @@ from networks.main import SupConResNet, Cifar100IMBModel
 from solvers.losses import SupConLoss
 from dataset.datasets import set_loader
 from utils.deterministic import seed_everything
+import wandb
+
 try:
     import apex
     from apex import amp, optimizers
@@ -56,6 +59,8 @@ def parse_option():
     # optimization
     parser.add_argument('--learning_rate', type=float, default=0.05,
                         help='learning rate')
+    parser.add_argument('--optim', type=str, default="sgd",
+                        help='optimizer')
     parser.add_argument('--lr_decay_epochs', type=str, default='600,800,900',
                         help='where to decay lr, can be a list')
     parser.add_argument('--lr_decay_rate', type=float, default=0.1,
@@ -79,6 +84,8 @@ def parse_option():
     parser.add_argument('--data_folder', type=str, default=None, help='path to custom dataset')
     parser.add_argument('--size', type=int, default=32, help='parameter for RandomResizedCrop')
     parser.add_argument('--delta', type=float, default=0, help='delta for corruptions. Vary from 0 to 1')
+    parser.add_argument('--prefix', type=str, default="testing", help='Extra string to be added for tracking purposes')
+    parser.add_argument('--save_dir', type=str, default="~/temp_save_dir", help='Path where models will be saved')
 
     # method
     parser.add_argument('--method', type=str, default='SupCon',
@@ -111,17 +118,17 @@ def parse_option():
     # set the path according to the environment
     if opt.data_folder is None:
         opt.data_folder = '../../data/'
-    opt.model_path = './main_save/SupCon/{}_models'.format(opt.dataset)
-    opt.tb_path = './main_save/SupCon/{}_tensorboard'.format(opt.dataset)
+    opt.model_path = os.path.join(opt.save_dir,'{}_models'.format(opt.dataset))
+    # opt.tb_path = './main_save/SupCon/{}_tensorboard'.format(opt.dataset)
 
     iterations = opt.lr_decay_epochs.split(',')
     opt.lr_decay_epochs = list([])
     for it in iterations:
         opt.lr_decay_epochs.append(int(it))
 
-    opt.model_name = '{}_{}_{}_im_{}_lr_{}_decay_{}_bsz_{}_d_{}_temp_{}_trial_{}'.\
-        format(opt.method, opt.dataset, opt.model,opt.imratio, opt.learning_rate,
-               opt.weight_decay, opt.batch_size, opt.delta, opt.temp, opt.trial)
+    opt.model_name = '{}_{}_{}_{}_im_{}_lr_{}_decay_{}_bsz_{}_d_{}_temp_{}_trial_{}_epochs_{}_optim_{}_prefix_{}'.\
+        format(strftime("%d-%b", localtime()),opt.method, opt.dataset, opt.model,opt.imratio, opt.learning_rate,
+               opt.weight_decay, opt.batch_size, opt.delta, opt.temp, opt.trial, opt.epochs, opt.optim, opt.prefix)
 
     if opt.cosine:
         opt.model_name = '{}_cosine'.format(opt.model_name)
@@ -140,9 +147,9 @@ def parse_option():
         else:
             opt.warmup_to = opt.learning_rate
 
-    opt.tb_folder = os.path.join(opt.tb_path, opt.model_name)
-    if not os.path.isdir(opt.tb_folder):
-        os.makedirs(opt.tb_folder)
+    # opt.tb_folder = os.path.join(opt.tb_path, opt.model_name)
+    # if not os.path.isdir(opt.tb_folder):
+    #     os.makedirs(opt.tb_folder)
 
     opt.save_folder = os.path.join(opt.model_path, opt.model_name)
     if not os.path.isdir(opt.save_folder):
@@ -256,7 +263,19 @@ def train(train_loader, model, criterion, optimizer, epoch, opt):
 
 
 def main():
+
     opt = parse_option()
+
+    wandb.init(
+        # set the wandb project where this run will be logged
+        entity="neelabh-madan",
+        project="Refinement_exps",
+        name=opt.model_name ,  
+    )
+    
+    # track hyperparameters and run metadata
+    wandb.config.update(opt)
+    print(opt)
 
     # build data loader
     train_loader,val_loader = set_loader(opt)
@@ -268,7 +287,7 @@ def main():
     optimizer = set_optimizer(opt, model)
 
     # tensorboard
-    logger = tb_logger.Logger(logdir=opt.tb_folder, flush_secs=2)
+    # logger = tb_logger.Logger(logdir=opt.tb_folder, flush_secs=2)
 
     # training routine
     for epoch in range(1, opt.epochs + 1):
@@ -281,8 +300,10 @@ def main():
         print('epoch {}, total time {:.2f}'.format(epoch, time2 - time1))
 
         # tensorboard logger
-        logger.log_value('loss', loss, epoch)
-        logger.log_value('learning_rate', optimizer.param_groups[0]['lr'], epoch)
+        # logger.log_value('loss', loss, epoch)
+        # logger.log_value('learning_rate', optimizer.param_groups[0]['lr'], epoch)
+        wandb.log({'loss': loss, "epochs":  epoch})
+        wandb.log({'learning_rate': optimizer.param_groups[0]['lr'], "epochs":  epoch})
 
         if epoch % opt.save_freq == 0:
             save_file = os.path.join(

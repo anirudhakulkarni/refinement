@@ -277,9 +277,9 @@ def get_all_metrics(name, output, target, opt,n_bins = 15, logits = False):
     # print(target.shape)
     if opt.n_cls==2:
         # metrics[name+'_auc'] = auc_m(target, output)
-        output=output[:, 1]
-        output = torch.unsqueeze(output,1 )
         metrics[name+'_top1'] = float(accuracy(output, target, topk=(1,))[0][0])
+        output=output[:, 1]
+        output = torch.unsqueeze(output,1)
         metrics[name+'_auc'] = roc_auc_score(target, output)
     else:
         # TODO: 

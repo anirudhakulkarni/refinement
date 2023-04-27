@@ -155,7 +155,7 @@ def set_loader(opt):
         return train_loader, val_loader
     elif opt.dataset == 'cifar100_lt':
         # https://github.com/kaidic/LDAM-DRW/blob/3193f05c1e6e8c4798c5419e97c5a479d991e3e9/cifar_train.py#L153
-        train_dataset = IMBALANCECIFAR100(root= opt.data_folder, imb_factor=args.im_ratio, rand_number=SEED, train=True, download=True, transform=train_transform)
+        train_dataset = IMBALANCECIFAR100(root= opt.data_folder, imb_factor=opt.im_ratio, rand_number=SEED, train=True, download=True, transform=train_transform)
         val_dataset = datasets.CIFAR100(root=opt.data_folder, train=False, download=True, transform=val_transform)
         train_sampler = None
 

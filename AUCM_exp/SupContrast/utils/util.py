@@ -7,6 +7,7 @@ import torch
 import torch.optim as optim
 import os
 import json
+import wandb
 class TwoCropTransform:
     """Create two crops of the same image"""
     def __init__(self, transform):
@@ -94,9 +95,9 @@ def save_model(model, optimizer, opt, epoch, save_file):
     torch.save(state, save_file)
     del state
 
-def log_results(logger, results, epoch):
+def log_results(results, epoch):
     for key, value in results.items():
-        logger.log_value(key, value, epoch)
+        wandb.log({key: value,"epoch": epoch})
         
     
 def save_results(opt,best_results,name=''):  

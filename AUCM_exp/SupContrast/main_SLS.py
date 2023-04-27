@@ -5,8 +5,10 @@ import sys
 import argparse
 import time
 import math
+from time import strftime, localtime
 
-import tensorboard_logger as tb_logger
+
+# import tensorboard_logger as tb_logger
 import torch
 import torch.backends.cudnn as cudnn
 
@@ -21,6 +23,8 @@ from sklearn.metrics import roc_auc_score
 from calibration_library.metrics import ECELoss, SCELoss
 from dataset.datasets import set_loader
 from solvers.losses import SupConLoss
+import wandb
+
 import json
 try:
     import apex
@@ -46,6 +50,7 @@ def parse_option():
     # optimization
     parser.add_argument('--learning_rate', type=float, default=0.8,
                         help='learning rate')
+    parser.add_argument('--optim', type=str, default="sgd", help='optimizer')
     parser.add_argument('--lr_decay_epochs', type=str, default='500,700,900',
                         help='where to decay lr, can be a list')
     parser.add_argument('--lr_decay_rate', type=float, default=0.2,
@@ -73,6 +78,9 @@ def parse_option():
                         help='temperature for loss function')
     parser.add_argument('--size', type=int, default=32, help='parameter for RandomResizedCrop')
     parser.add_argument('--delta', type=float, default=0, help='delta for corruptions. Vary from 0 to 1')
+    parser.add_argument('--prefix', type=str, default="testing", help='Extra string to be added for tracking purposes')
+    parser.add_argument('--save_dir', type=str, default="~/temp_save_dir", help='Path where models will be saved')
+    parser.add_argument('--freeze', type=int, default=0, help="Whether or not to freeze the encoder (1/0)")
 
     # other setting
     parser.add_argument('--cosine', action='store_true',
@@ -85,13 +93,15 @@ def parse_option():
     parser.add_argument('--method', type=str, default='SupCon',
                         choices=['SupCon', 'SimCLR'], help='choose method')
     parser.add_argument('--seed', type=int, default=123, help='seed for random number')
+    parser.add_argument('--trial', type=str, default='0',
+                        help='id for recording multiple runs')
 
     opt = parser.parse_args()
 
     # set the path according to the environment
     opt.data_folder = '../../data/'
-    opt.model_path = './main_save/SupCon/{}_models'.format(opt.dataset)
-    opt.tb_path = './main_save/SupCon/{}_tensorboard'.format(opt.dataset)
+    opt.model_path = os.path.join(opt.save_dir,'{}_models'.format(opt.dataset))
+    # opt.tb_path = './main_save/SupCon/{}_tensorboard'.format(opt.dataset)
 
     iterations = opt.lr_decay_epochs.split(',')
     opt.lr_decay_epochs = list([])
@@ -99,9 +109,9 @@ def parse_option():
         opt.lr_decay_epochs.append(int(it))
 
     # opt.model_name = 'SupSLSMDCA_{}_{}_im_{}_lr_{}_decay_{}_bsz_{}'.\
-    opt.model_name = 'SupSLS_{}_{}_{}_im_{}_lr_{}_decay_{}_bsz_{}'.\
-        format(opt.loss, opt.dataset, opt.model, opt.imratio, opt.learning_rate, opt.weight_decay,
-               opt.batch_size)
+    opt.model_name = 'SupSLS_{}_{}_{}_{}_im_{}_lr_{}_decay_{}_bsz_{}_d_{}_temp_{}_trial_{}_epochs_{}_optim_{}_prefix_{}_freeze_{}'.\
+        format(strftime("%d-%b", localtime()),opt.method, opt.dataset, opt.model,opt.imratio, opt.learning_rate,
+               opt.weight_decay, opt.batch_size, opt.delta, opt.temp, opt.trial, opt.epochs, opt.optim, opt.prefix, opt.freeze)
 
     if opt.cosine:
         opt.model_name = '{}_cosine'.format(opt.model_name)
@@ -117,9 +127,9 @@ def parse_option():
                     1 + math.cos(math.pi * opt.warm_epochs / opt.epochs)) / 2
         else:
             opt.warmup_to = opt.learning_rate
-    opt.tb_folder = os.path.join(opt.tb_path, opt.model_name)
-    if not os.path.isdir(opt.tb_folder):
-        os.makedirs(opt.tb_folder)
+    # opt.tb_folder = os.path.join(opt.tb_path, opt.model_name)
+    # if not os.path.isdir(opt.tb_folder):
+    #     os.makedirs(opt.tb_folder)
 
     opt.save_folder = os.path.join(opt.model_path, opt.model_name)
     if not os.path.isdir(opt.save_folder):
@@ -226,9 +236,13 @@ def train(train_loader, model, classifier, criterion, optimizer, epoch, opt):
 
         # compute loss
         # freeze the weights of encoder
-        # with torch.no_grad():
-        features = model.encoder(images)
-        output = classifier(features.detach())
+        if opt.freeze == 1:
+            with torch.no_grad():
+                features = model.encoder(images)
+        else:
+            features = model.encoder(images)
+
+        output = classifier(features)
         loss = criterion(output, labels.long())
         # print(output)
         output = torch.nn.functional.softmax(output, dim=1)
@@ -248,6 +262,7 @@ def train(train_loader, model, classifier, criterion, optimizer, epoch, opt):
         loss.backward()
         optimizer.step()
 
+        # TODO: Not optimal in memory requirement setting
         pred_total.append(output.detach().cpu().numpy())
         label_total.append(labels.detach().cpu().numpy())
         # measure elapsed time
@@ -362,6 +377,17 @@ def validate(val_loader, model, classifier, criterion, opt):
 def main(opt):
     best_results ={}
 
+    wandb.init(
+        # set the wandb project where this run will be logged
+        entity="neelabh-madan",
+        project="Refinement_exps",
+        name=opt.model_name ,  
+    )
+    
+    # track hyperparameters and run metadata
+    wandb.config.update(opt)
+    print(opt)
+
     # build data loader
     lossname=opt.loss
     opt.loss='supcon'
@@ -374,7 +400,7 @@ def main(opt):
 
     # build optimizer
     optimizer = set_optimizer(opt, classifier)
-    logger = tb_logger.Logger(logdir=opt.tb_folder, flush_secs=2)
+    # logger = tb_logger.Logger(logdir=opt.tb_folder, flush_secs=2)
 
     # training routine
     for epoch in range(1, opt.epochs + 1):
@@ -387,11 +413,13 @@ def main(opt):
             time2 = time.time()
             print('Train epoch {}, total time {:.2f}, AUC:{:.2f}'.format( epoch, time2 - time1, results['train_auc']))
 
-            log_results(logger, results, epoch)
+            # log_results(logger, results, epoch)
+            log_results( results, epoch)
 
             # eval for one epoch
             results = validate(val_loader, model, classifier, criterion2, opt)
-            log_results(logger, results, epoch)
+            # log_results(logger, results, epoch)
+            log_results(results, epoch)
 
             if not best_results or results['val_auc'] > best_results['val_auc']:
                 best_results = results
@@ -409,7 +437,8 @@ def main(opt):
             loss = train_supcon(train_loader1, model, criterion1, optimizer, epoch, opt)
             time2 = time.time()
             print('epoch {}, total time {:.2f}'.format(epoch, time2 - time1))
-            logger.log_value('train_loss', loss, epoch)
+            # logger.log_value('train_loss', loss, epoch)
+            wandb.log({'train_loss': loss,"epoch": epoch})
             
     print(best_results)
     print('best AUC: {:.10f}\t best ECE: {:.10f}\t best SCE: {:.10f}'.format(

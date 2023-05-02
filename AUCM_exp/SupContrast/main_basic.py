@@ -51,11 +51,11 @@ def parse_option():
     parser.add_argument('--learning_rate', type=float, default=0.8,
                         help='learning rate')
     parser.add_argument('--optim', type=str, default="sgd", help='optimizer')
-    parser.add_argument('--lr_decay_epochs', type=str, default='500,700,900',
+    parser.add_argument('--lr_decay_epochs', type=str, default='50,75',
                         help='where to decay lr, can be a list')
-    parser.add_argument('--lr_decay_rate', type=float, default=0.2,
+    parser.add_argument('--lr_decay_rate', type=float, default=0.1,
                         help='decay rate for learning rate')
-    parser.add_argument('--weight_decay', type=float, default=0,
+    parser.add_argument('--weight_decay', type=float, default=1e-4,
                         help='weight decay')
     parser.add_argument('--momentum', type=float, default=0.9,
                         help='momentum')
@@ -220,7 +220,10 @@ def train(train_loader, model, classifier, criterion, optimizer, epoch, opt):
         bsz = labels.shape[0]
 
         # warm-up learning rate
-        warmup_learning_rate(opt, epoch, idx, len(train_loader), optimizer)
+        # warmup_learning_rate(opt, epoch, idx, len(train_loader), optimizer)
+
+        # Step based LR
+        adjust_learning_rate(opt, optimizer, epoch)
 
         # compute loss
         # freeze the weights of encoder
@@ -273,6 +276,7 @@ def train(train_loader, model, classifier, criterion, optimizer, epoch, opt):
     print(label_total.shape)
     name='train'
     results = get_all_metrics('train', pred_total, label_total,opt)
+    results["lr"] = optimizer.param_groups[0]["lr"]
     print(' * Acc@1 {top1:.3f} AUC {auc:.3f} ECE {ece:.5f} SCE {sce:.5f} '
             .format(top1=results[name+'_top1'], auc=results[name+'_auc'], ece=results[name+'_ece'], sce=results[name+'_sce']))
     return results

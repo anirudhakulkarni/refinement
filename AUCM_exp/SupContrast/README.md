@@ -2,6 +2,7 @@
 python3 main_{lossType}.py
 
 
+```
 usage: argument for training [-h] [--print_freq PRINT_FREQ] [--save_freq SAVE_FREQ] [--batch_size BATCH_SIZE]
                              [--num_workers NUM_WORKERS] [--epochs EPOCHS] [--learning_rate LEARNING_RATE]
                              [--learning_rate2 LEARNING_RATE2] [--lr_decay_epochs LR_DECAY_EPOCHS]
@@ -56,12 +57,12 @@ options:
                         classification type: binary or multi-class
   --stages STAGES       2 stage training. parse initial large epochs and then frequency of small epochs
   --ckpt CKPT           path to pre-trained model
-
+```
 
 
 # Useful scripts:
 
-main.sh which has many examples
+main.sh has many examples on how to run particular example
 
 
 

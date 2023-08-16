@@ -1,6 +1,16 @@
 # How to run
 python3 main_{lossType}.py
 
+Example:
+```
+main_aucm.py
+main_linear.py
+main_linear_unfrz.py
+main_nll_multi.py
+main_nll.py
+main_SLS.py
+main_supcon.py
+```
 
 ```
 usage: argument for training [-h] [--print_freq PRINT_FREQ] [--save_freq SAVE_FREQ] [--batch_size BATCH_SIZE]

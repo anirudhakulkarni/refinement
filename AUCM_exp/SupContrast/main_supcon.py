@@ -5,7 +5,7 @@ import sys
 import argparse
 import time
 import math
-
+import numpy as np
 import tensorboard_logger as tb_logger
 import torch
 import torch.backends.cudnn as cudnn
@@ -221,6 +221,15 @@ def train(train_loader, model, criterion, optimizer, epoch, opt):
         # compute loss
         features = model(images)
         f1, f2 = torch.split(features, [bsz, bsz], dim=0)
+        # print(f1)
+        # print(f2)
+        # print("dot product of f1 and f2: ", torch.sum(torch.mul(f1, f2), dim=1))
+        # print(f1.shape)
+        # print(f2.shape)
+        # print(torch.sum(torch.mul(f1, f2), dim=1).shape)
+        # # save torch tensor as csv to file=epoch_idx.csv
+        # np.savetxt("epoch_{}_idx_{}.csv".format(epoch, idx), torch.sum(torch.mul(f1, f2), dim=1).cpu().detach(), delimiter=",")
+        # import pdb; pdb.set_trace()
         features = torch.cat([f1.unsqueeze(1), f2.unsqueeze(1)], dim=1)
         if opt.method == 'SupCon':
             loss = criterion(features, labels)

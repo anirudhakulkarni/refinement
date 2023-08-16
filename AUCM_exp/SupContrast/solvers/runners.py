@@ -400,6 +400,12 @@ def train_epoch_SupCon(train_loader, model, criterion, optimizer, epoch, opt):
         features = model(images)
         
         f1, f2 = torch.split(features, [bsz, bsz], dim=0)
+        print(f1.shape)
+        print(f2.shape)
+        print(f1)
+        print(f2)
+        # take dot product between all pairs of features
+        print(torch.mm(f1, f2.t()))
         features = torch.cat([f1.unsqueeze(1), f2.unsqueeze(1)], dim=1)
         loss = criterion(features, labels)
 
